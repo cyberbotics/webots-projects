@@ -31,6 +31,8 @@ std = torch.Tensor([0.229, 0.224, 0.225])
 
 normalize = torchvision.transforms.Normalize(mean, std)
 
+model_path = 'best_model_resnet18.pth'
+
 
 def preprocessCameraImage(camera):
     global device, normalize
@@ -41,8 +43,8 @@ def preprocessCameraImage(camera):
     return image[None, ...]
 
 
-if not os.path.isfile('best_model.pth'):
-    print('Trained model "best_model_resnet18.pth" not found, please use the "jetbot_collect_data" controller to generate it.')
+if not os.path.isfile(model_path):
+    print('Trained model "' + model_path + '" not found, please use the "jetbot_collect_data" controller to generate it.')
     exit()
 
 # Create the Robot instance.
@@ -58,7 +60,7 @@ robot.step(10 * timestep)
 print('Load the trained model..')
 model = torchvision.models.resnet18(pretrained=False)
 model.fc = torch.nn.Linear(512, 2)
-model.load_state_dict(torch.load('best_model.pth'))
+model.load_state_dict(torch.load(model_path))
 device = torch.device('cpu')
 model = model.to(device)
 model = model.eval()
