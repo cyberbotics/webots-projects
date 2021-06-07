@@ -4,8 +4,7 @@
 
 In this example, the [JetBot](https://www.cyberbotics.com/doc/guide/jetbot) robot performs collision avoidance based on a PyTorch ResNet-18 convolutional neural network (CNN).
 A pre-trained model is provided to be used directly with the Python `jetbot_collision_avoidance` controller.
-However, a Python `jetbot_collect_data` controller is also provided to build a dataset and computer the PyTorch trained model.
-
+However, a Python `jetbot_collect_data` controller is also provided to build a dataset and compute the PyTorch trained model.
 ## What is included
 
 The code consists of two controllers:
