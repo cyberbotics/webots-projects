@@ -9,7 +9,7 @@ This repo contains some additional Webots projects (PROTO files, controllers, si
 
 ## Prerequisites
 
-This repository uses the Git Large File Storage (LSF) extension that needs to be installed in order to clone the repostiory.
+This repository uses the Git Large File Storage (LSF) extension that needs to be installed in order to clone this repostiory.
 You can find [here](https://git-lfs.github.com/) the installation instructions.
 
 ## How to Use it
