@@ -6,7 +6,11 @@ This repo contains some additional Webots projects (PROTO files, controllers, si
 ## Projects
 
 * NVIDIA JetBot collision avoidance with neural networks
-* 
+
+## Prerequisites
+
+This repository uses the Git Large File Storage (LSF) extension that needs to be installed in order to clone the repostiory.
+You can find [here](https://git-lfs.github.com/) the installation instructions.
 
 ## How to Use it
 
