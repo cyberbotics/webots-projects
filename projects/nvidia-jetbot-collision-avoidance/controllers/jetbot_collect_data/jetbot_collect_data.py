@@ -36,9 +36,9 @@ print('Collect data to build the training dataset for AI collision avoidance cla
       'Manually move the robot to the desired position and press:\n'
       '- "F": if the robot can safely move forward\n'
       '- "B": if the robot should turn\n'
-      'Datasets images will be automatically stored in two different folders named "free" and "blocked".'
-      'At least 20 images per category are needed.\n\n'
-      'When dataset is ready, press "C" to compute the model.'
+      'Datasets images will be automatically stored in two different folders named "free" and "blocked".\n'
+      'At least 20 images per category are needed.\n'
+      'When dataset is ready, press "C" to compute the model.\n'
       'Copy the resulting "best_model.pth" file in in the "jetbot_collision_avoidance" controller directory to use the model.')
 
 # get the time step of the current world.
