@@ -18,3 +18,5 @@ The Python code used in this example replicates the collision avoidance code pro
 ## How to run this example
 
 Download this folder and open the `jetbot_collision_avoidance.wbt` world in Webots.
+
+Make sure that [PyTorch](https://pytorch.org/) is available in the Python version used by Webots, if not please follow the official instructions to [install PyTorch](https://pytorch.org/get-started/locally/).
