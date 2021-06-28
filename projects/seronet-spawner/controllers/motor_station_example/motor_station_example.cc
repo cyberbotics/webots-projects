@@ -15,7 +15,7 @@
  */
 
 /*
- * Description:  This controller is used to make the station belt move.
+ * Description:  This controller is used to make the ConveyorStationBelt of the ConveyorStation move.
  */
 
 #include <webots/Motor.hpp>
