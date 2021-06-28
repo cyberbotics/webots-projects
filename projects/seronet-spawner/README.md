@@ -2,11 +2,11 @@
 ![spawner_small](https://user-images.githubusercontent.com/38250944/123643493-b8748b80-d824-11eb-9a5a-6d17e9b63180.png)
 
 
-This project enables to use a REST API to spawn different kind of boxes. It comes with two worlds: the first is a demo world (`spawner_demo.wbt`) where the different controllers are already implemented. The second, `spawner_seronet.wbt`, is meant to be used with the SeRoNet-Tooling-Collection software, so all the controller (robot, conveyor belts, etc.) are `<extern>` (except the inner controller of the `ConveyorStation`, `box_creator`, which handles the REST API and is independent).
+This project enables to use a REST API to spawn different kind of boxes. It comes with two worlds: the first is a demo world (`spawner_demo.wbt`) where the different controllers are already implemented. The second, `spawner_seronet.wbt`, is meant to be used with the SeRoNet-Tooling-Collection software, so all the controllers (robot, conveyor belts, etc.) are defined as `<extern>` (except the inner controller of the `ConveyorStation`, `box_creator`, which handles the REST API and is independent).
 
 ## Configuration
 
-Both worlds make use of a `ConveyorStation` with 2 `ConveyorStationPlatform`: one will output the box requested through the REST API, while the other will be the place where robots deposit boxes to remove.
+Both worlds make use of a `ConveyorStation` with 2 `ConveyorStationPlatform`: one is the place where robots deposit boxes to remove, while the other outputs the box requested through the REST API.
 
 In general though, the `ConveyorStation` can have an adjustable number of `ConveyorStationPlatform` (by setting `platformNumber`). The name of the components for the `i`th `ConveyorStationPlatform` is:
 
@@ -15,7 +15,7 @@ In general though, the `ConveyorStation` can have an adjustable number of `Conve
 * Right motor: `motorNamePrefix`_`i`_right
 * Distance sensor: `sensorNamePrefix`_`i`
 
-If there is only one `ConveyorStationPlatform` the name are simply (`motorNamePrefix`_left, `motorNamePrefix`_right, `sensorNamePrefix`).
+If there is only one `ConveyorStationPlatform` the name are simply (`motorNamePrefix`_left, `motorNamePrefix`_right, `sensorNamePrefix`). In our case the platform n°1 is the removal place and n°2 the spawning place.
 
 
 # Dependencies
