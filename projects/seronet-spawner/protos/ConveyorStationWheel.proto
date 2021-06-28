@@ -1,0 +1,134 @@
+#VRML_SIM R2021a utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0.
+# Model of a wheel of the conveyor station.
+# tags: static
+#
+# adapted from Wenzheng Cai 2020, www.servicerobotik-ulm.de
+
+PROTO ConveyorStationWheel [
+  field SFVec3f    translation     0 0 0                   # Is `Transform.translation`.
+  field SFRotation rotation        0 1 0 0                 # Is `Transform.rotation`.
+  field SFString   name            "ConveyorStationWheel"  # Is `Solid.name`.
+  field SFFloat    staticFriction  50                      # Is `HingeJointParameters.staticFriction`.
+]
+{
+  DEF WHEEL Solid {
+    translation IS translation
+    rotation IS rotation
+    children [
+      DEF Roll_Top Transform {
+        translation 0 0 0.0138
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.243 0.16 0.16
+              roughness 1
+              metalness 0
+            }
+            geometry Box {
+              size 0.06 0.03 0.0118
+            }
+          }
+        ]
+      }
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis 0 0 1
+        }
+        endPoint Solid {
+          children [
+            Transform {
+              children [
+                DEF Roll_Bremse Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.396 0.227 0.227
+                    roughness 1
+                    metalness 0
+                  }
+                  geometry Mesh {
+                    url "meshes/wheel_holder.obj"
+                  }
+                }
+              ]
+            }
+            Transform {
+              children [
+                DEF Roll_Holder Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.243 0.16 0.16
+                    roughness 1
+                    metalness 0
+                  }
+                  geometry Mesh {
+                    url "meshes/wheel_holder.obj"
+                  }
+                }
+              ]
+            }
+            HingeJoint {
+              jointParameters HingeJointParameters {
+                anchor 0 -0.02007 -0.04115
+                staticFriction IS staticFriction
+              }
+              endPoint Solid {
+                children [
+                  Transform {
+                    children [
+                      DEF Frame_Roll_Wheel Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.243 0.16 0.16
+                          roughness 1
+                          metalness 0
+                        }
+                        geometry Mesh {
+                          url "meshes/wheel.obj"
+                        }
+                      }
+                    ]
+                  }
+                ]
+                boundingObject Transform {
+                  translation 0 -0.02007 -0.04115
+                  rotation -0.577351 -0.577351 0.577351 -2.0944
+                  children [
+                    Cylinder {
+                      height 0.055
+                      radius 0.0325
+                    }
+                  ]
+                }
+                physics Physics {
+                }
+              }
+            }
+          ]
+          name "solid(3)"
+          boundingObject Transform {
+            translation 0 0 -0.0005
+            rotation 1 0 0 1.5708
+            children [
+              Cylinder {
+                height 0.016
+                radius 0.014
+              }
+            ]
+          }
+          physics Physics {
+          }
+        }
+      }
+    ]
+    name IS name
+    boundingObject Transform {
+      translation 0 0 0.0138
+      children [
+        Box {
+          size 0.06 0.03 0.0118
+        }
+      ]
+    }
+    physics Physics {
+    }
+  }
+}
