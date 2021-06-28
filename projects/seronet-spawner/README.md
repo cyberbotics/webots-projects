@@ -1,33 +1,42 @@
-######################################################
-## Spawner - ConveyorStation
-######################################################
-
-# Conveyor Station
-
-It can have an adjustable number of platforms (by setting platformNumber).
-
-The name of the belt motors are for each platform:
-
-Left motor: motorNamePrefix_i_left
-Right motor: motorNamePrefix_i_right
+# SeRoNet Spawner
+![spawner_small](https://user-images.githubusercontent.com/38250944/123643493-b8748b80-d824-11eb-9a5a-6d17e9b63180.png)
 
 
-Where motorNamePrefix is a settable field of ConveyorStation.proto and i=[1..platformNumber]
-If there is only one platform the name are simply (motorNamePrefix_left, motorNamePrefix_right).
+This project enables to use a REST API to spawn different kind of boxes. It comes with two worlds: the first is a demo world (`spawner_demo.wbt`) where the different controllers are already implemented. The second, `spawner_seronet.wbt`, is meant to be used with the SeRoNet-Tooling-Collection software, so all the controller (robot, conveyor belts, etc.) are `<extern>` (except the inner controller of the `ConveyorStation`, `box_creator`, which handles the REST API and is independent).
+
+## Configuration
+
+Both worlds make use of a `ConveyorStation` with 2 `ConveyorStationPlatform`: one will output the box requested through the REST API, while the other will be the place where robots deposit boxes to remove.
+
+In general though, the `ConveyorStation` can have an adjustable number of `ConveyorStationPlatform` (by setting `platformNumber`). The name of the components for the `i`th `ConveyorStationPlatform` is:
 
 
-The name of the distance sensor is for each platform: sensorNamePrefix_i.
+* Left motor: `motorNamePrefix`_`i`_left
+* Right motor: `motorNamePrefix`_`i`_right
+* Distance sensor: `sensorNamePrefix`_`i`
+
+If there is only one `ConveyorStationPlatform` the name are simply (`motorNamePrefix`_left, `motorNamePrefix`_right, `sensorNamePrefix`).
 
 
-# Spawner
+# Dependencies
+* cpprestsdk: https://github.com/microsoft/cpprestsdk
 
-Assumes that platformNumber=2 (platform 1 is for the deposit of boxes and platform 2 for the spawning).
+Only for the SeRoNet example:
+* SeRoNet-Tooling-Collection: https://xito.one
+* Open62541CppWrapper: https://github.com/Servicerobotics-Ulm/Open62541CppWrapper
+* OpcUaDeviceRepository: https://github.com/Servicerobotics-Ulm/OpcUaDeviceRepository
 
-The box_creator controller handles the REST requests. The syntax for the request is:
+## How to run
+Here are the instructions to run these examples after having installed the aforementionned dependencies.
+
+### Opening world
+`spawner_demo.wbt` can be simply opened in the Webots interface, while `spawner_seronet.wbt` must be opened through the SeRoNet-Tooling-Collection so that the `<extern>` controller are linked.
+### REST API request
+Once the 
 
 Method: POST
 Address: http://0.0.0.0:10002/addObject
-BODY (application/json): {"objectId":25, "values":{"typeId":1,"size":"0.25 0.2 0.3"}}
+Body (application/json): {"objectId":25, "values":{"typeId":1,"size":"0.25 0.2 0.3"}}
 
 
 Where objectId is just an indivudal id for the box to spawn, typeId is the type of box to spawn (matching the definition of the predefined types in boxtypes.json), and size determines the size of the box in meters (/!\ for the moment y is the vertical dimension).
