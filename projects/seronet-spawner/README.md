@@ -41,8 +41,8 @@ Body (application/json): {"objectId":25, "values":{"typeId":1,"size":"0.25 0.2 0
 The different parameters of the request above are
 * `objectId`: the indivudal identifiant (integer) to give to the box.
 * values:
-  * typeId: the type of box to spawn (see `Edit box types` section below)
-  * size: the size of the box in meters (LxHxW)
+  * `typeId`: the type of box to spawn (see `Edit box types` section below)
+  * `size`: the size of the box in meters (LxHxW)
 
 ### Edit box types
 `typeId`, the type of box to spawn, search for the corresponding predefined types in `controllers/box_creator/utils/boxtypes.json` that can be edited or completed.
