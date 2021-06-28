@@ -33,9 +33,9 @@ Here are the instructions to run these examples after having installed the afore
 `spawner_demo.wbt` can be simply opened in the Webots interface, while `spawner_seronet.wbt` must be opened through the SeRoNet-Tooling-Collection so that the `<extern>` controller are linked.
 ### REST API request
 Once the world is running, use a REST Client to send the following request:
-Method: POST
-Address: http://0.0.0.0:10002/addObject
-Body (application/json): {"objectId":25, "values":{"typeId":1,"size":"0.25 0.2 0.3"}}
+* Method: POST
+* Address: http://0.0.0.0:10002/addObject
+* Body (application/json): {"objectId":25, "values":{"typeId":1,"size":"0.25 0.2 0.3"}}
 
 #### Request parameters
 The different parameters of the request above are
