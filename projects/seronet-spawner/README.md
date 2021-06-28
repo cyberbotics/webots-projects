@@ -27,18 +27,25 @@ Only for the SeRoNet example:
 * OpcUaDeviceRepository: https://github.com/Servicerobotics-Ulm/OpcUaDeviceRepository
 
 ## How to run
-Here are the instructions to run these examples after having installed the aforementionned dependencies.
+Here are the instructions to run these examples after having installed the aforementionned dependencies and downloaded this folder.
 
 ### Opening world
 `spawner_demo.wbt` can be simply opened in the Webots interface, while `spawner_seronet.wbt` must be opened through the SeRoNet-Tooling-Collection so that the `<extern>` controller are linked.
 ### REST API request
-Once the 
-
+Once the world is running, use a REST Client to send the following request:
 Method: POST
 Address: http://0.0.0.0:10002/addObject
 Body (application/json): {"objectId":25, "values":{"typeId":1,"size":"0.25 0.2 0.3"}}
 
+#### Request parameters
+The different parameters of the request above are
+*`objectId`: the indivudal identifiant (integer) to give to the box.
+*values:
+  *typeId: the type of box to spawn (see `Edit box types` section below)
+  *size: the size of the box in meters (LxHxW)
 
-Where objectId is just an indivudal id for the box to spawn, typeId is the type of box to spawn (matching the definition of the predefined types in boxtypes.json), and size determines the size of the box in meters (/!\ for the moment y is the vertical dimension).
+### Edit box types
+`typeId`, the type of box to spawn, search for the corresponding predefined types in `controllers/box_creator/utils/boxtypes.json` that can be edited or completed.
 
-The main controller of the ConveyorStation is for the OPC_UA interface, for the moment it is only motor_station_example which simply turns on the motor of the two platforms. --> An updated version (draft, not tested) of the OPC_UA_STATION controller with the new names of components is available (Spawner_OPC_UA_STATION).
+## Additional information for SeRonet-Tooling-Collection
+The main controller of the ConveyorStation is for the OPC_UA interface. An updated version (draft, not tested) of the OPC_UA_STATION controller with the new names of components,`Spawner_OPC_UA_STATION`, is set as default for the `spawner_seronet.wbt` world. The existing OPC_UA motor commands are applied to the conveyor belt of the remover part of the `ConveyorStation`. The motor of the spawner part are initialized in speed control but the interface with OPC_UA must be implemetned.
