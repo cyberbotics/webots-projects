@@ -9,5 +9,6 @@ BoxType::BoxType(string proto, double *rotation, double *size) : proto(proto) {
     this->size[i] = size[i];
   }
   this->protoCaps = proto;
-  transform(this->protoCaps.begin(), this->protoCaps.end(), this->protoCaps.begin(), ::toupper);
+  transform(this->protoCaps.begin(), this->protoCaps.end(),
+            this->protoCaps.begin(), ::toupper);
 }

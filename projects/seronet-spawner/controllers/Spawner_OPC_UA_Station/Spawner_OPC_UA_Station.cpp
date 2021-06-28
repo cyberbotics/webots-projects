@@ -8,7 +8,8 @@
  cp OPC_UA_Station ..
  */
 
-// https://github.com/Servicerobotics-Ulm/OpcUaDeviceRepository/tree/master/OPCUAProductionStation: pictures below for arguments
+// https://github.com/Servicerobotics-Ulm/OpcUaDeviceRepository/tree/master/OPCUAProductionStation:
+// pictures below for arguments
 // https://github.com/Servicerobotics-Ulm/OpcUaDeviceRepository/blob/master/OPCUAProductionStation/OpcUaProductionStation.cc:
 // see createServerSpace()
 #include "OpcUaGenericServer.hh"
@@ -62,7 +63,9 @@ private:
       value = isBoxPresent;
   }
 
-  virtual void handleMethodCall(const string &browseName, const vector<Variant> &inputs, vector<Variant> &outputs) override {
+  virtual void handleMethodCall(const string &browseName,
+                                const vector<Variant> &inputs,
+                                vector<Variant> &outputs) override {
     if (inputs.size() == 1) {
       if (browseName == "loadbox")
         motorSpeed = 1;
@@ -72,17 +75,23 @@ private:
         motorSpeed = 0;
       else
         return;
-      cout << "OPC_UA_Station:" << port << " call " << browseName << "(" << (int)(inputs[0]) << ")"
+      cout << "OPC_UA_Station:" << port << " call " << browseName << "("
+           << (int)(inputs[0]) << ")"
            << " : motorSpeed = " << motorSpeed << endl;
       // bug: integer overflow if simulation runs for 596 hours
-      // but int32 is probably atomic to read/write, so no synchronisation needed this way
+      // but int32 is probably atomic to read/write, so no synchronisation
+      // needed this way
       motorTimeout = robot->getTime() * 1000 + 1000 * (int)(inputs[0]);
     } else
-      cout << "OPC_UA_Station:" << port << " call with " << inputs.size() << " arguments?" << endl;
+      cout << "OPC_UA_Station:" << port << " call with " << inputs.size()
+           << " arguments?" << endl;
   }
 
 public:
-  MyServer(const string &rootObjectName) : GenericServer(rootObjectName, 1, port) { cancelled = false; }
+  MyServer(const string &rootObjectName)
+      : GenericServer(rootObjectName, 1, port) {
+    cancelled = false;
+  }
   virtual ~MyServer() { stopThread(); }
 
   void startThread() {
@@ -106,8 +115,10 @@ public:
   virtual bool createServerSpace() override {
     // arguments: string:name, *:type, bool:readOnly
     // the second argument 'type': its value is not used, only its type
-    if (!addVariableNode("isBoxPresent", false, true) || !addVariableNode("LED_RED", false, false) ||
-        !addVariableNode("LED_YELLOW", false, false) || !addVariableNode("LED_GREEN", false, false)) {
+    if (!addVariableNode("isBoxPresent", false, true) ||
+        !addVariableNode("LED_RED", false, false) ||
+        !addVariableNode("LED_YELLOW", false, false) ||
+        !addVariableNode("LED_GREEN", false, false)) {
       cout << "failed adding a node" << endl;
       return false;
     }
@@ -119,7 +130,8 @@ public:
     map<string, Variant> loadboxOutputArguments;
     loadboxOutputArguments["result"] = string();
 
-    if (addMethodNode("loadbox", loadboxInputArguments, loadboxOutputArguments) != true) {
+    if (addMethodNode("loadbox", loadboxInputArguments,
+                      loadboxOutputArguments) != true) {
       cout << "failed adding loadbox" << endl;
       return false;
     }
@@ -131,7 +143,8 @@ public:
     map<string, Variant> start_unloadingOutputArguments;
     start_unloadingOutputArguments["result"] = string();
 
-    if (addMethodNode("start_unloading", start_unloadingInputArguments, start_unloadingOutputArguments) != true) {
+    if (addMethodNode("start_unloading", start_unloadingInputArguments,
+                      start_unloadingOutputArguments) != true) {
       cout << "failed adding start_unloading" << endl;
       return false;
     }
@@ -143,7 +156,8 @@ public:
     map<string, Variant> stop_unloadingOutputArguments;
     stop_unloadingOutputArguments["result"] = string();
 
-    if (addMethodNode("stop_unloading", stop_unloadingInputArguments, stop_unloadingOutputArguments) != true) {
+    if (addMethodNode("stop_unloading", stop_unloadingInputArguments,
+                      stop_unloadingOutputArguments) != true) {
       cout << "failed adding stop_unloading" << endl;
       return false;
     }
@@ -164,7 +178,8 @@ int main(int argc, char *argv[]) {
 
   // OPC UA server
   if (argc != 3) {
-    std::cout << "OPC_UA_Station needs 2 controller args: Name and Port" << std::endl;
+    std::cout << "OPC_UA_Station needs 2 controller args: Name and Port"
+              << std::endl;
     return -1;
   }
   port = atoi(argv[2]);
@@ -183,10 +198,11 @@ int main(int argc, char *argv[]) {
   Motor *motorSpawnerLeft = robot->getMotor("belt_motor_2_left");
   Motor *motorSpawnerRight = robot->getMotor("belt_motor_2_right");
 
-
   // DistanceSensor *distanceDevice = robot->getDistanceSensor("isBoxPresent");
-  DistanceSensor *distanceDeviceRemover = robot->getDistanceSensor("isBoxPresent_1");
-  DistanceSensor *distanceDeviceSpawner = robot->getDistanceSensor("isBoxPresent_2");
+  DistanceSensor *distanceDeviceRemover =
+      robot->getDistanceSensor("isBoxPresent_1");
+  DistanceSensor *distanceDeviceSpawner =
+      robot->getDistanceSensor("isBoxPresent_2");
 
   // motorDevice0->setPosition(INFINITY);
   // motorDevice1->setPosition(INFINITY);
@@ -197,7 +213,7 @@ int main(int argc, char *argv[]) {
 
   // distanceDevice->enable(timeStep);
   distanceDeviceSpawner->enable(timeStep);
-  
+
   while (robot->step(timeStep) != -1) {
     isBoxPresent = distanceDeviceRemover->getValue() > 0.3;
     if (motorTimeout > 0 && robot->getTime() * 1000 >= motorTimeout) {
@@ -206,7 +222,8 @@ int main(int argc, char *argv[]) {
       motorSpeed = 0;
     }
     if (motorSpeed > 0 && isBoxPresent) {
-      cout << "OPC_UA_Station:" << port << " box arrived, motor stopped" << endl;
+      cout << "OPC_UA_Station:" << port << " box arrived, motor stopped"
+           << endl;
       motorSpeed = 0;
     }
     motorRemoverLeft->setVelocity(motorSpeed * 0.3);
@@ -215,7 +232,8 @@ int main(int argc, char *argv[]) {
     greenLedDevice->set(isBoxPresent);
     orangeLedDevice->set(motorSpeed != 0);
 
-  // Add a similar code for controlling the conveyor belt where the boxes are spawned.
+    // Add a similar code for controlling the conveyor belt where the boxes are
+    // spawned.
   }
   delete robot;
   return 0;

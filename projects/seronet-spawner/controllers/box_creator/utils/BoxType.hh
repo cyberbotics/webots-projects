@@ -15,7 +15,7 @@ private:
   double rotation[4];
   double size[3];
   list<int> ids;
-  
+
   friend class Box;
 };
 

@@ -19,14 +19,14 @@
  * environment using a REST server to add them to the simulation.
  */
 
-#include <cmath>
-#include <list>
-#include <string>
-#include <iostream>
-#include <nlohmann/json.hpp>
-#include <webots/Supervisor.hpp>
 #include "utils/Box.hh"
 #include "utils/CoordinationRESTServer.hh"
+#include <cmath>
+#include <iostream>
+#include <list>
+#include <nlohmann/json.hpp>
+#include <string>
+#include <webots/Supervisor.hpp>
 
 #define SPAWN_TIME_MARGIN 0.05
 #define MAX_DISAPPEAR_DISTANCE 0.2
@@ -46,8 +46,10 @@ int main() {
   // Get the location of the deposit station (where objects disappear).
   Node *spawnBoxPoint = station->getFromProtoDef("SpawnBoxPoint");
   Node *removeBoxPoint = station->getFromProtoDef("RemoveBoxPoint");
-  if(!spawnBoxPoint || !removeBoxPoint) {
-    cerr << "Couldn't find DEF SpawnBoxPoint and/or DEF RemoveBoxPoint in PROTO file" << endl;
+  if (!spawnBoxPoint || !removeBoxPoint) {
+    cerr << "Couldn't find DEF SpawnBoxPoint and/or DEF RemoveBoxPoint in "
+            "PROTO file"
+         << endl;
     return 0;
   }
   double spawnLocation[3];
@@ -55,7 +57,8 @@ int main() {
   double stationRotation[4];
   const double *spawnLocationPointer = spawnBoxPoint->getPosition();
   const double *removeLocationPointer = removeBoxPoint->getPosition();
-  const double *stationRotationPointer = station->getField("rotation")->getSFRotation();
+  const double *stationRotationPointer =
+      station->getField("rotation")->getSFRotation();
   for (int i = 0; i < 3; i++) {
     spawnLocation[i] = spawnLocationPointer[i];
     removeLocation[i] = removeLocationPointer[i];
@@ -74,16 +77,18 @@ int main() {
 
   json items;
   try {
-     items = json::parse(boxTypesFile);
-  }
-  catch (json::exception& ex) {
-    cerr << "Error while parsing JSON file (" << boxTypesFilePath << "): " << endl << ex.what() << endl;
+    items = json::parse(boxTypesFile);
+  } catch (json::exception &ex) {
+    cerr << "Error while parsing JSON file (" << boxTypesFilePath
+         << "): " << endl
+         << ex.what() << endl;
     return 0;
   }
 
   int nTypes = items["boxType"].size();
   if (nTypes == 0) {
-    cerr << "There must be at least one boxType defined in JSON file (" << boxTypesFilePath << "): " << endl;
+    cerr << "There must be at least one boxType defined in JSON file ("
+         << boxTypesFilePath << "): " << endl;
     return 0;
   }
 
@@ -107,16 +112,17 @@ int main() {
   server->start();
 
   while (controller->step(basicTimeStep) != -1) {
-    for (list<Box>::iterator boxIterator = boxes.begin(); boxIterator != boxes.end(); ++boxIterator) {
+    for (list<Box>::iterator boxIterator = boxes.begin();
+         boxIterator != boxes.end(); ++boxIterator) {
       // Spawn boxes in the list that are not yet spawned.
       if (!(boxIterator->isBoxSpawned())) {
-        boxIterator->spawnBox(rootChildrenField, spawnLocation, stationRotation);
+        boxIterator->spawnBox(rootChildrenField, spawnLocation,
+                              stationRotation);
       }
       // Remove boxes that are at the deposit station.
       if (boxIterator->isBoxSpawned() && !(boxIterator->isBoxRemoved())) {
         const double *boxLocation = boxIterator->getBoxPosition(controller);
-        if(boxLocation)
-        {
+        if (boxLocation) {
           double distance = 0;
           for (int j = 0; j < 3; ++j) {
             distance += pow(removeLocation[j] - boxLocation[j], 2);

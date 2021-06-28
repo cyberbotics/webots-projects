@@ -15,7 +15,8 @@ class CoordinationRESTServer {
 private:
   web::http::experimental::listener::http_listener rest_listener;
 
-  // some clients perform a "pre-flight" check by calling the options method which is handled here
+  // some clients perform a "pre-flight" check by calling the options method
+  // which is handled here
   void handle_options(web::http::http_request request);
 
   // this callback method handles the REST API POST requests
@@ -38,8 +39,8 @@ public:
   int stop(const bool &wait_till_stopped = true);
 
   // setters
-  void setBoxTypes(BoxType **boxTypes) {this->boxTypes = boxTypes;}
-  void setBoxes(list<Box> *boxes) {this->boxes = boxes;}
+  void setBoxTypes(BoxType **boxTypes) { this->boxTypes = boxTypes; }
+  void setBoxes(list<Box> *boxes) { this->boxes = boxes; }
 };
 
 #endif /* SMARTSOFT_SRC_COORDINATIONRESTSERVER_HH_ */

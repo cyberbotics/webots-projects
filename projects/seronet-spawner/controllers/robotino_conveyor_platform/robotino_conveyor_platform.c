@@ -15,8 +15,8 @@
  */
 
 /*
- * Description:  This controller is used to move the ConveyorPlatform belt using the keyboard.
- *               The keys are the following:
+ * Description:  This controller is used to move the ConveyorPlatform belt using
+ * the keyboard. The keys are the following:
  *
  *               Belt: +/-
  *               Reset: Space bar
@@ -41,12 +41,13 @@ int main() {
   wb_motor_set_position(motor_belt, INFINITY);
   wb_motor_set_velocity(motor_belt, 0.0);
 
-  double target_belt_speed = 0.0;  // in [m/s].
-  int sign;                        // sign of the increment (decrement if -1).
+  double target_belt_speed = 0.0; // in [m/s].
+  int sign;                       // sign of the increment (decrement if -1).
 
   wb_keyboard_enable(TIME_STEP);
 
-  printf("To move the ConveyorPlatform with your keyboard, click first inside the simulation window and press: \n \
+  printf(
+      "To move the ConveyorPlatform with your keyboard, click first inside the simulation window and press: \n \
   Belt : +/-       \n \
   Reset: Space bar \n");
 
@@ -54,21 +55,21 @@ int main() {
     int key = wb_keyboard_get_key();
     bool is_key_valid = 1;
     switch (key) {
-      case '+':
-        sign = 1;
-        break;
+    case '+':
+      sign = 1;
+      break;
 
-      case '-':
-        sign = -1;
-        break;
+    case '-':
+      sign = -1;
+      break;
 
-      case ' ':
-        sign = 0;
-        break;
+    case ' ':
+      sign = 0;
+      break;
 
-      default:
-        is_key_valid = 0;
-        sign = 0;
+    default:
+      is_key_valid = 0;
+      sign = 0;
     }
 
     if (is_key_valid) {

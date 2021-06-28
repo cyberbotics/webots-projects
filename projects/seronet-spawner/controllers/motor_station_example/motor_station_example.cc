@@ -33,7 +33,7 @@ int main() {
   Motor *motorsOut[2];
   char motorOutNames[2][20] = {"belt_motor_2_left", "belt_motor_2_right"};
 
-  for (int i = 0; i < 2 ; i++) {
+  for (int i = 0; i < 2; i++) {
     motorsIn[i] = robot->getMotor(motorInNames[i]);
     motorsOut[i] = robot->getMotor(motorOutNames[i]);
     motorsIn[i]->setPosition(INFINITY);
