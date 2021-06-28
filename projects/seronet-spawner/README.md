@@ -35,7 +35,7 @@ Here are the instructions to run these examples after having installed the afore
 Once the world is running, use a REST Client to send the following request:
 * Method: POST
 * Address: http://0.0.0.0:10002/addObject
-* Body (application/json): {"objectId":25, "values":{"typeId":1,"size":"0.25 0.2 0.3"}}
+* Body (application/json): {"`objectId`":25, "values":{"`typeId`":1,"`size`":"0.25 0.2 0.3"}}
 
 #### Request parameters
 The different parameters of the request above are
