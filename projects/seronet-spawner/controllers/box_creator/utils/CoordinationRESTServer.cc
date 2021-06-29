@@ -129,9 +129,8 @@ CoordinationRESTServer::handle_add_new_object(const web::json::value &input) {
   }
 
   bool addOK = true;
-  if (addOK) {
+  if (addOK)
     return status_codes::OK;
-  }
 
   // error code 500: internal server error
   return status_codes::InternalError;
