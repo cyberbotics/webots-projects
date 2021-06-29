@@ -19,8 +19,8 @@
  * environment using a REST server to add them to the simulation.
  */
 
-#include "utils/Box.hh"
-#include "utils/CoordinationRESTServer.hh"
+#include "utils/Box.hpp"
+#include "utils/CoordinationRESTServer.hpp"
 #include <cmath>
 #include <iostream>
 #include <list>

@@ -1,7 +1,7 @@
-#ifndef BOX_HH_
-#define BOX_HH_
+#ifndef BOX_HPP_
+#define BOX_HPP_
 
-#include "BoxType.hh"
+#include "BoxType.hpp"
 #include <webots/Supervisor.hpp>
 using namespace webots;
 

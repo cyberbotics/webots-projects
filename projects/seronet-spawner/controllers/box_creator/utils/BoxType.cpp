@@ -1,4 +1,4 @@
-#include "BoxType.hh"
+#include "BoxType.hpp"
 #include <algorithm>
 
 BoxType::BoxType(string proto, double *rotation, double *size) : proto(proto) {

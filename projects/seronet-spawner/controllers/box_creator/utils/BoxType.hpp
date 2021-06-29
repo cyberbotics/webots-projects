@@ -1,5 +1,5 @@
-#ifndef BOXTYPE_HH_
-#define BOXTYPE_HH_
+#ifndef BOXTYPE_HPP_
+#define BOXTYPE_HPP_
 
 #include <list>
 #include <string>

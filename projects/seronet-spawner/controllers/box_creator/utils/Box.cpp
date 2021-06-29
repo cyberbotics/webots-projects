@@ -1,4 +1,4 @@
-#include "Box.hh"
+#include "Box.hpp"
 #include <iostream>
 using namespace std;
 

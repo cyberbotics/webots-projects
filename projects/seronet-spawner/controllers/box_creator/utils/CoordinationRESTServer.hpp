@@ -1,14 +1,14 @@
 /*
- * CoordinationRESTServer.hh
+ * CoordinationRESTServer.hpp
  *
  *  Created on: Aug 13, 2020
  *      Author: alexej
  */
 
-#ifndef SMARTSOFT_SRC_COORDINATIONRESTSERVER_HH_
-#define SMARTSOFT_SRC_COORDINATIONRESTSERVER_HH_
+#ifndef SMARTSOFT_SRC_COORDINATIONRESTSERVER_HPP_
+#define SMARTSOFT_SRC_COORDINATIONRESTSERVER_HPP_
 
-#include "Box.hh"
+#include "Box.hpp"
 #include "cpprest/http_listener.h"
 
 class CoordinationRESTServer {

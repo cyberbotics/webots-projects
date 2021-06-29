@@ -1,11 +1,11 @@
 /*
- * CoordinationRESTServer.cc
+ * CoordinationRESTServer.cpp
  *
  *  Created on: Aug 13, 2020
  *      Author: alexej
  */
 
-#include "CoordinationRESTServer.hh"
+#include "CoordinationRESTServer.hpp"
 #include <iostream>
 #include <nlohmann/json.hpp>
 
@@ -93,7 +93,7 @@ void CoordinationRESTServer::handle_post(web::http::http_request request) {
 
   if (resource == "addObject")
     response.set_status_code(handle_add_new_object(jvalue));
-  else  // error code 404: resource not found
+  else // error code 404: resource not found
     response.set_status_code(web::http::status_codes::NotFound);
 
   // reply with the response object
