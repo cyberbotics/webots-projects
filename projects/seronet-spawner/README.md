@@ -18,7 +18,7 @@ The name of the components for the `i`th `ConveyorStationPlatform` is:
 * Right motor: `motorNamePrefix`_`i`_right
 * Distance sensor: `sensorNamePrefix`_`i`
 
-If there is only one `ConveyorStationPlatform` the names are simply (`motorNamePrefix`_left, `motorNamePrefix`_right, `sensorNamePrefix`). In our case, the platform n°1 is the removal place and n°2 the spawning place.
+If there is only one `ConveyorStationPlatform` the names are simply (`motorNamePrefix`_left, `motorNamePrefix`_right, `sensorNamePrefix`). In our case, the platform number 1 is the removal place and number 2 the spawning place.
 
 
 # Dependencies
