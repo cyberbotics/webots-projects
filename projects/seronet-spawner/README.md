@@ -2,7 +2,9 @@
 ![spawner_small](https://user-images.githubusercontent.com/38250944/123643493-b8748b80-d824-11eb-9a5a-6d17e9b63180.png)
 
 
-This project enables to use a REST API to spawn different kind of boxes, such as `CardboardBox` or `PlasticCrate`. It comes with two worlds: the first is a demo world (`spawner_demo.wbt`) where the different controllers are already implemented. The second, `spawner_seronet.wbt`, is meant to be used with the SeRoNet-Tooling-Collection software, so all the controllers (robot, conveyor belts, etc.) are defined as `<extern>` (except the inner controller of the `ConveyorStation`, `box_creator`, which handles the REST API and is independent).
+This project enables to use a REST API to spawn different kind of boxes, such as `CardboardBox` or `PlasticCrate`.
+It comes with two worlds: the first is a demo world (`spawner_demo.wbt`) where the different controllers are already implemented.
+The second, `spawner_seronet.wbt`, is meant to be used with the SeRoNet-Tooling-Collection software, so all the controllers (robot, conveyor belts, etc.) are defined as `<extern>` (except the inner controller of the `ConveyorStation`, `box_creator`, which handles the REST API and is independent).
 
 ## Configuration
 
