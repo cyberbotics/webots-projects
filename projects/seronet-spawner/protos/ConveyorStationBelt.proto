@@ -1,0 +1,151 @@
+#VRML_SIM R2021a utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0.
+# Model of a single conveyor belt used to create the platforms of the conveyor station.
+# tags: static
+#
+# adapted from Wenzheng Cai 2020, www.servicerobotik-ulm.de
+
+PROTO ConveyorStationBelt [
+  field SFVec3f    translation      0 0 0                   # Is `Transform.translation`.
+  field SFRotation rotation         1 0 0 1.5708            # Is `Transform.translation`.
+  field SFString   name             "ConveyorStationBelt"   # Is `Solid.name`.
+  field SFString   motorName        "belt_motor"            # Defines the name prefix of the left and right motors.
+  field SFVec3f    size             1.0 0.05 0.1            # Defines the dimensions of the belt.
+  field SFFloat    speed            0.3                     # Defines the rubber band speed in meters per second.
+  field SFFloat    acceleration     -1                      # Defines the acceleration of the conveyor belt.
+  field SFFloat    mass             1.0                     # Defines the mass of the belt.
+]
+{
+  Track {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+      # Belt
+      DEF UPPER_BELT Shape {
+        appearance Rubber {
+          type "dotted"
+          textureTransform TextureTransform {
+            scale %{=5.0 * fields.size.value.x}% %{=5.0 * fields.size.value.z}%
+            translation 0 0
+          }
+        }
+        geometry Box {
+          size IS size
+        }
+      }
+      DEF BELT_END_CYLINDER_1 TrackWheel {
+        position %{= fields.size.value.x / 2 }% 0
+        radius %{= fields.size.value.y / 2 }%
+        inner FALSE
+        children [
+          Transform {
+            rotation 1 0 0 -1.5708
+            children [
+              DEF BELT_CYLINDER Shape {
+                appearance Rubber {
+                  type "dotted"
+                  textureTransform TextureTransform {
+                    scale %{=5.0 * 2 * 3.14 * fields.size.value.y / 2}% %{= 5 * fields.size.value.z}%
+                    translation 0.075 0
+                  }
+                }
+                geometry Cylinder {
+                  height %{= fields.size.value.z}%
+                  radius %{= fields.size.value.y / 2 }%
+                }
+              }
+            ]
+          }
+        ]
+      }
+      DEF BELT_END_CYLINDER_2 TrackWheel {
+        position %{= - fields.size.value.x / 2 }% 0
+        radius %{= fields.size.value.y / 2 }%
+        inner FALSE
+        children [
+          Transform {
+            rotation 1 0 0 -1.5708
+            children [
+              USE BELT_CYLINDER
+            ]
+          }
+        ]
+      }
+
+      # Support
+      DEF SUPPORT_BOX Transform {
+        translation 0 -0.002 0
+        children [
+          Shape {
+            appearance DEF SUPPORT_APPEARANCE PBRAppearance {
+              baseColor 0.93 0.93 0.93
+              roughness 1
+              metalness 0
+            }
+            geometry Box {
+              size %{=fields.size.value.x}% %{=fields.size.value.y+0.002}% %{=fields.size.value.z+0.01}%
+            }
+          }
+        ]
+      }
+      DEF SUPPORT_CYLINDER_1 Transform {
+        translation %{= fields.size.value.x / 2 }% 0 0
+        rotation 1 0 0 -1.5708
+        children [
+          DEF SUPPORT_CYLINDER Shape {
+            appearance USE SUPPORT_APPEARANCE
+            geometry Cylinder {
+              height %{= fields.size.value.z + 0.01}%
+              radius %{= fields.size.value.y / 2  -0.001}%
+            }
+          }
+        ]
+      }
+      DEF SUPPORT_CYLINDER_2 Transform {
+        translation %{= -fields.size.value.x / 2 }% 0 0
+        rotation 1 0 0 -1.5708
+        children [
+          USE SUPPORT_CYLINDER
+        ]
+      }
+    ]
+    device [
+      LinearMotor {
+        name IS motorName
+        acceleration IS acceleration
+        maxVelocity IS speed
+        sound ""
+      }
+    ]
+    textureAnimation %{= 1 / fields.size.value.x}% 0
+    boundingObject Group {
+      children [
+        USE UPPER_BELT
+        Transform {
+          translation %{= fields.size.value.x / 2 }% 0 0
+          rotation 1 0 0 -1.5708
+          children [
+            USE BELT_CYLINDER
+          ]
+        }
+        Transform {
+          translation %{= -fields.size.value.x / 2 }% 0 0
+          rotation 1 0 0 -1.5708
+          children [
+            USE BELT_CYLINDER
+          ]
+        }
+        USE SUPPORT_BOX
+        USE SUPPORT_CYLINDER_1
+        USE SUPPORT_CYLINDER_2
+
+      ]
+    }
+    physics Physics {
+      density -1
+      mass IS mass
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Items List 1",
+  "boxType": {
+    "0": {
+    "proto": "PlasticCrate",
+    "rotation": [1, 0, 0, 1.5708],
+    "size": [0.35, 0.23, 0.27]
+    },
+    "1": {
+      "proto": "CardboardBox",
+      "rotation": [1, 0, 0, 1.5708],
+      "size": [0.35, 0.23, 0.27]
+    }
+  }
+}

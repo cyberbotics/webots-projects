@@ -1,0 +1,384 @@
+#VRML_SIM R2021a utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0.
+# Model of a platform of the conveyor station.
+# tags: static
+#
+# adapted from Wenzheng Cai 2020, www.servicerobotik-ulm.de
+
+PROTO ConveyorStationPlatform [
+  field SFVec3f    translation      0 0 0                      # Is `Transform.translation`.
+  field SFRotation rotation         0 1 0 0                    # Is `Transform.rotation`.
+  field SFString   name             "ConveyorStationPlatform"  # Is `Solid.name`.
+  field SFString   motorNamePrefix  "belt_motor"               # Prefix for `ConveyorStationBelt.motorName`.
+  field SFString   sensorName       "belt_sensor"              # Prefix for `ConveyorStationPlatform.sensorName`.
+  #field SFVec3f    size             1.0 0.1 0.05              # Defines the dimensions of the two belts of the platform.
+  field SFVec3f    size             1.0 0.05 0.1               # Temporary size until Track compatible FLU.
+  field SFFloat    beltSpacing      0.2528                     # Defines the spacing between the two belts of the platform.
+  field SFFloat    speed            0.3                        # Defines the rubber band speed in meters per second.
+  field SFFloat    acceleration     -1                         # Defines the acceleration of the conveyor belt.
+  field SFFloat    mass             4.0                        # Defines the mass of the platform.
+]
+{
+  %{
+    local beltSpacing = fields.beltSpacing.value
+    if beltSpacing < 0.1 then
+      io.stderr:write("'beltSpacing' must be bigger or equal to 0.1.\n")
+      beltSpacing = 0.1
+    elseif beltSpacing > 0.26 then
+      io.stderr:write("'beltSpacing' must be smaller or equal to 0.26.\n")
+      beltSpacing = 0.26
+    end
+    local beltSpacingOffset = beltSpacing - fields.beltSpacing.defaultValue -- Default beltSpacing value: 0.2528 m.
+  }%
+
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+      ConveyorStationBelt {
+        size IS size
+        translation -0.015  %{= beltSpacing / 2 }% 0
+        name %{= "\"" .. fields.name.value .. "_left\""}%
+        motorName %{= "\"" .. fields.motorNamePrefix.value .. "_left\""}%
+      }
+      ConveyorStationBelt {
+        size IS size
+        translation -0.015 %{= -beltSpacing / 2 }% 0
+        name %{= "\"" .. fields.name.value .. "_right\""}%
+        motorName %{= "\"" .. fields.motorNamePrefix.value .. "_right\""}%
+      }
+      DistanceSensor {
+        translation -0.24 0 -0.0315
+        rotation 1 0 0 -1.5708
+        children [
+          Transform {
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.827451 0.843137 0.811765
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.005
+                }
+              }
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.900008 0.222004 0.222004
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.002
+                }
+              }
+            ]
+          }
+        ]
+        name IS sensorName
+        lookupTable [
+          0.0 1 0
+          0.1 0 0
+        ]
+      }
+      # Fixings
+      Solid {
+        translation 0 0 -0.0515
+        children [
+          DEF FIXINGS_BO Group {
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.862 0.835 0.835
+                  roughness 1
+                  metalness 0
+                }
+                geometry Box {
+                  size 0.64 0.03 0.03
+                }
+              }
+              Transform {
+                translation 0.336 %{= 0.1254 + beltSpacingOffset / 2 }% 0.0349
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0 0 0
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.007 0.04
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation -0.334 %{= 0.1254 + beltSpacingOffset / 2 }% 0.0349
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0 0 0
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.007 0.04
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.336 %{= -( 0.1254 + beltSpacingOffset / 2) }% 0.0349
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0 0 0
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.007 0.04
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation -0.334 %{= -( 0.1254 + beltSpacingOffset / 2) }% 0.0349
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0 0 0
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.007 0.04
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.336 0.1789 0.06
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.729412 0.741176 0.713725
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.007 0.09
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation -0.334 0.1789 0.06
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.729412 0.741176 0.713725
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.007 0.09
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.336 -0.1789 0.06
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.729412 0.741176 0.713725
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.007 0.09
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation -0.334 -0.1789 0.06
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.729412 0.741176 0.713725
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.007 0.09
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.471 -0.07 -0.073
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862 0.835 0.835
+                      roughness 1
+                      metalness 0
+                    }
+                      geometry Mesh {
+                        url "meshes/docking_element.obj"
+                      }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.37 0.1664 0.015
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862745 0.835294 0.835294
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.02 0.08
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.405 0.1664 -0.012
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862745 0.835294 0.835294
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.0496 0.02 0.02
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.37 -0.1688 0.015
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862745 0.835294 0.835294
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.02 0.02 0.08
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.405 -0.1688 -0.012
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862745 0.835294 0.835294
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.0496 0.02 0.02
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation -0.0095 0.17 0.0967
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862745 0.835294 0.835294
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.76 0.011 0.019
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation -0.0095 -0.17 0.0967
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862745 0.835294 0.835294
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.76 0.011 0.019
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.4265 0.1719 0.0967
+                rotation 0 0 1 0.032
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862745 0.835294 0.835294
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.112 0.011 0.019
+                    }
+                  }
+                ]
+              }
+              Transform {
+                translation 0.4265 -0.1719 0.0967
+                rotation 0 0 1 -0.032
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.862745 0.835294 0.835294
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.112 0.011 0.019
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+        boundingObject USE FIXINGS_BO
+        physics Physics {
+          density -1
+          mass 2
+        }
+      }
+    ]
+    physics Physics {
+      density -1
+      mass IS mass
+      centerOfMass [
+        0 0 0
+      ]
+      inertiaMatrix [
+        1 1 1
+        0 0 0
+      ]
+    }
+  }
+}

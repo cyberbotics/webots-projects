@@ -1,0 +1,23 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+
+PROJECT(Spawner_OPC_UA_Station)
+
+FIND_PACKAGE(Open62541CppWrapper 1.0)
+
+include_directories(
+  $ENV{WEBOTS_HOME}/include/controller/cpp
+  /usr/local/include/Open62541CppWrapper
+)
+
+ADD_EXECUTABLE(${PROJECT_NAME} Spawner_OPC_UA_Station.cpp)
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} Open62541CppWrapper pthread)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} $ENV{WEBOTS_HOME}/lib/controller/libCppController.so)
+
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES
+  CXX_STANDARD 14
+)
+
+set(CMAKE_INSTALL_PREFIX ./)
+install(TARGETS ${PROJECT_NAME} DESTINATION ./)
+

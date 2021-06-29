@@ -1,0 +1,507 @@
+#VRML_SIM R2021b utf8
+WorldInfo {
+  info [
+    "This simulation enables to create or make disappear boxes through a REST API"
+  ]
+  title "Spawner Simulation"
+  contactProperties [
+    ContactProperties { # Summit XLS, Fabtino
+      material1 "InteriorWheelMat"
+      coulombFriction [
+        0, 2, 0
+      ]
+      frictionRotation -0.785398 0
+      bounce 0
+      forceDependentSlip [
+        10, 0
+      ]
+      softCFM 0.0001
+    }
+    ContactProperties { # Summit XLS, Fabtino
+      material1 "ExteriorWheelMat"
+      coulombFriction [
+        0, 2, 0
+      ]
+      frictionRotation 0.785398 0
+      bounce 0
+      forceDependentSlip [
+        10, 0
+      ]
+      softCFM 0.0001
+    }
+    ContactProperties { #MiR100
+      material1 "wheel"
+      softCFM 0.0001
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.7045179966378101 -0.40960533681536665 -0.5795497049139242 4.6481254808533725
+  position 5.792957142109906 -10.795667556016417 5.019520236041215
+}
+TexturedBackground {
+  texture "empty_office"
+}
+ConveyorStation {
+  translation -7.82882 -4.63824 0
+  name "Spawner OPC UA Station"
+  hasCover TRUE
+  platformSpacing 1.5
+  sensorNamePrefix "isBoxPresent"
+  controller "motor_station_example"
+}
+SummitXlSteel {
+  translation -4.7336223014882455 -2.4094734259015644 0.11631387606435804
+  rotation 0 0 1 3.14159
+  bodySlot [
+    RobotinoConveyorBelt {
+      motorName "belt_motor"
+      height 0.1919
+    }
+  ]
+}
+PointLight {
+  attenuation 0 0 1
+  intensity 10.8
+  location -4 6 5
+  castShadows TRUE
+}
+PointLight {
+  attenuation 0 0 1
+  intensity 9.6
+  location 5 6 5
+}
+Floor {
+  translation 0 -4.3 0
+  rotation 1 0 0 1.5707963267948966
+  name "floor(1)"
+  size 20 16.4
+  tileSize 1 1
+  appearance ThreadMetalPlate {
+  }
+}
+Door {
+  hidden translation_5 5.872288766362033e-10 0 0.001000001872038525
+  translation 10.04 -4 3.27
+  rotation -0.577350238249544 0.577350284659666 0.577350284659666 4.188790158376268
+  name "door(1)"
+  position -5.630191101815228e-10
+  doorAppearance GlossyPaint {
+    baseColor 0.16 0.16 0.16
+  }
+  frameAppearance GlossyPaint {
+    baseColor 0.35 0.3503166247043564 0.35
+  }
+}
+OilBarrel {
+  translation 9.337425 2.8961435 0.44
+  rotation 0.095015672953225 0.703907672174855 0.703907672174855 2.952130096118733
+  name "oil barrel(1)"
+}
+OilBarrel {
+  translation 8.4218847 2.1373536 0.44
+  rotation 0.095015672953225 0.703907672174855 0.703907672174855 2.952130096118733
+  name "oil barrel(2)"
+}
+OilBarrel {
+  translation 8.2750954 3.0222101 0.44
+  rotation 0.971720448280751 -0.166972109037792 -0.166972109037792 1.599479513459624
+}
+Door {
+  hidden translation_5 5.872284880581446e-10 0 0.0010000018720373594
+  translation -10.05 0 0.02
+  rotation 0.577350279502986 0.577350264032945 0.577350264032945 2.094395086923155
+  position -5.630187610887394e-10
+  doorAppearance GlossyPaint {
+    baseColor 0.16 0.16 0.16
+  }
+  frameAppearance GlossyPaint {
+    baseColor 0.35 0.3503166247043564 0.35
+  }
+}
+Floor {
+  translation 0 -4.22 7
+  rotation 1.8946853e-08 -0.707106781186547 0.707106781186547 3.141592615696087
+  size 20 16.4
+  tileSize 1 1
+  appearance PBRAppearance {
+    baseColorMap ImageTexture {
+      url [
+        "textures/asphalt.jpg"
+      ]
+    }
+    roughness 1
+    metalness 0
+  }
+}
+LJoint {
+  translation -7.571 3.19 0.712
+  rotation 0.577350279502986 0.577350264032945 0.577350264032945 2.094395086923155
+  name "L joint pipe(1)"
+}
+LJoint {
+  translation -7.571 3.277 2.422
+  rotation 0.577350278331609 -0.577350264618634 0.577350264618634 4.188790152865542
+}
+Wrench {
+  translation -0.35779010377793236 -4.347915635258928 0.7387777668692189
+  rotation 0.9999999991153524 -2.9759323904915192e-05 2.972672000040224e-05 1.5712063594016872
+  name "wrench(1)"
+}
+Wrench {
+  translation 0.8606651257239378 -4.696695302176462 0.7387777668692189
+  rotation 0.7932064316314014 -0.43070653689908495 -0.43048279395462064 1.8007909036797567
+}
+Hammer {
+  translation -0.8077836174367952 -4.680489601806789 0.752494048766872
+  rotation 0.18967486839131112 0.6950214803355473 0.6935189876080706 2.780821247976572
+  name "hammer(1)"
+}
+Hammer {
+  translation 1.525241166916697 -4.8883954028005965 0.7524940487669084
+  rotation 0.8637739744888604 0.35312062738523226 0.35944449294818503 1.7251179050461383
+}
+WoodenPallet {
+  translation -3.05 -12.1 0.52
+  rotation -1 0 0 5.759586587564277
+}
+Table {
+  translation -0.23882837 -4.8402928 0
+  rotation 1 0 0 1.5707963267948966
+  size 4.5 0.72 1.5
+}
+CardboardBox {
+  translation 2.2324987 -11.807743 0.31
+  rotation 1 0 0 1.5707963267948966
+}
+PaintBucket {
+  translation -0.7215108826833394 -5.177851932279931 0.7384189912735759
+  rotation 0.9347261296944068 -0.25007241207269726 -0.2524893090541821 1.6317212815876065
+}
+Screwdriver {
+  translation -0.07239328538060794 -5.20107356064942 0.7518803664795184
+  rotation 0.6234167676477561 -0.4100594189009872 0.6657347871233771 2.48771305835662
+}
+WoodenPalletStack {
+  translation -6.8424942 -11.754332 0
+  rotation 0.577350279502986 0.577350264032945 0.577350264032945 2.094395086923155
+  name "wooden pallet stack(1)"
+  palletNumber 6
+}
+WoodenPalletStack {
+  translation -5.2560137 -11.74814 0
+  rotation 0.577350279502986 0.577350264032945 0.577350264032945 2.094395086923155
+  palletNumber 20
+}
+WoodenBox {
+  translation 0.070787217 -11.12746 0.3
+  rotation -0.935113119114731 0.250562820924732 0.250562820924732 4.645351474266668
+  name "wooden box(1)"
+}
+WoodenBox {
+  translation 0.14546116 -11.909219 0.3
+  rotation 1 0 0 1.5707963267948966
+  name "wooden box(2)"
+}
+WoodenBox {
+  translation -1.1321262 -11.1489 0.3
+  rotation 0.862856210520177 0.357406743058074 0.357406743058073 1.71777151624413
+  name "wooden box(3)"
+}
+WoodenBox {
+  translation 1.5463886 -11.768592 0.3
+  rotation 1 0 0 1.5707963267948966
+  name "wooden box(4)"
+}
+WoodenBox {
+  translation -0.49883855 -11.765703 0.3
+  rotation 1 0 0 1.5707963267948966
+  name "wooden box(5)"
+}
+WoodenBox {
+  translation 0.95220994 -10.946614 0.3
+  rotation -0.677661491465059 0.519987933987584 0.519987933987584 4.332744312017075
+  name "wooden box(6)"
+}
+WoodenBox {
+  translation 0.91693757 -11.921006 0.3
+  rotation 1 0 0 1.5707963267948966
+  name "wooden box(7)"
+}
+WoodenBox {
+  translation 0.74212598 -12.012516 0.9
+  rotation 1 0 0 1.5707963267948966
+  name "wooden box(8)"
+}
+WoodenBox {
+  translation -0.5072975 -11.706525 1.52
+  rotation 1 0 0 1.5707963267948966
+  name "wooden box(9)"
+}
+WoodenBox {
+  translation -0.48872581 -11.691652 0.93
+  rotation 1 0 0 1.5707963267948966
+}
+LeverValve {
+  translation -7.5791585 3 0.692
+  rotation 0.577350279502986 0.577350264032945 0.577350264032945 2.094395086923155
+}
+LargeValve {
+  translation -5.7149744 2.9726835 0.706
+  rotation 0.577350279502986 0.577350264032945 0.577350264032945 2.094395086923155
+}
+PipeSection {
+  translation -7.5740452 3 0.18
+  rotation -0.999999999996564 1.853589793e-06 -1.853589793e-06 4.712388980381254
+  name "pipe section(1)"
+  height 1.2
+}
+PipeSection {
+  translation -5.2940471 3 0.7
+  rotation 0.57735170363365 0.577349551966277 -0.577349551966277 2.094392950728495
+  name "pipe section(2)"
+  height 0.9
+  radius 0.02
+}
+PipeSection {
+  translation -7.5720026 3.234 1.56
+  rotation -0.999999999996564 1.853589793e-06 -1.853589793e-06 4.712388980381254
+  name "pipe section(3)"
+  height 1.6
+}
+PipeSection {
+  translation -4.8579962 3 0.35
+  rotation -0.999999999996564 1.853589793e-06 -1.853589793e-06 4.712388980381254
+  name "pipe section(4)"
+  height 0.7
+  radius 0.02
+}
+PipeSection {
+  translation -6.6249962 3 0.70600102
+  rotation 1 0 0 1.5707963267948966
+  name "pipe section(5)"
+  height 1.7
+}
+PipeSection {
+  translation -7.572 3.74 2.4659975
+  rotation 0.707105483444044 0 0.707108078926669 3.14159262713874
+  name "pipe section(6)"
+  height 0.8
+}
+PipeSection {
+  translation -5.714996 3.37 0.65600436
+  rotation -5.898305e-09 1 8.660243e-09 4.712385322993327
+  height 0.8
+}
+SmallValve {
+  translation -4.8638332 3 0.707
+  rotation 0.577350279502986 0.577350264032945 0.577350264032945 2.094395086923155
+}
+Cabinet {
+  translation -0.46 3.84 0
+  rotation 1 0 0 1.5707963267948966
+  name "cabinet(1)"
+  columnsWidths [
+    1.3, 0.17, 0.17
+  ]
+  layout [
+    "Shelf (1, 5, 3, 0)"
+    "Shelf (1, 4, 3, 0)"
+    "Shelf (1, 3, 3, 0)"
+    "Shelf (1, 2, 3, 0)"
+  ]
+}
+Cabinet {
+  translation 1.49 3.84 0
+  rotation 1 0 0 1.5707963267948966
+  columnsWidths [
+    1, 1
+  ]
+  layout [
+    "RightSidedDoor (1, 1, 1, 5, 1.5)"
+    "LeftSidedDoor (2, 1, 1, 5, 1.5)"
+  ]
+}
+Wall {
+  translation 0 3.86 0
+  rotation 1 0 0 1.5707963267948966
+  name "wall(1)"
+  size 20.19 7 0.2
+  appearance DEF WALL RedBricks {
+    textureTransform TextureTransform {
+      scale 6 2
+    }
+  }
+}
+Wall {
+  translation 0 -12.46 0
+  rotation 1 0 0 1.5707963267948966
+  name "wall(2)"
+  size 20.19 7 0.2
+  appearance USE WALL
+}
+Wall {
+  translation -10 -4.3 0
+  rotation 0.577329610363353 0.577360598325561 0.577360598325561 2.094426090909812
+  name "wall(3)"
+  size 16.5 7 0.2
+  appearance USE WALL
+}
+Wall {
+  translation 10 -4.3 0
+  rotation -0.577329607599929 -0.577360599707199 -0.577360599707199 4.188759212124565
+  size 16.5 7 0.2
+  appearance USE WALL
+}
+Solid {
+  translation 9.89 -4.01 5.44
+  rotation 0.577350279502986 -0.577350264032945 0.577350264032945 2.094395086923155
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.8 0.8 0.8
+        baseColorMap ImageTexture {
+          url [
+            "textures/fire_exit.jpg"
+          ]
+        }
+        roughness 0.5
+        metalness 0
+        textureTransform TextureTransform {
+          rotation 1.5708
+        }
+      }
+      geometry Plane {
+        size 0.3 0.6
+      }
+    }
+  ]
+  name "solid(1)"
+}
+Solid {
+  translation -9.87 -0.01 2.31
+  rotation 0.577350294661541 0.577350256453668 0.577350256453668 4.188790177360439
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.8 0.8 0.8
+        baseColorMap ImageTexture {
+          url [
+            "textures/fire_exit.jpg"
+          ]
+        }
+        roughness 0.5
+        metalness 0
+        textureTransform TextureTransform {
+          rotation 1.5708
+        }
+      }
+      geometry Plane {
+        size 0.3 0.6
+      }
+    }
+  ]
+  name "solid(2)"
+}
+Solid {
+  translation 9.25 -3.95 3.21
+  rotation 1 0 0 1.5707963267948966
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.8 0.8 0.8
+        baseColorMap ImageTexture {
+          url [
+            "textures/steel_floor.jpg"
+          ]
+        }
+        roughness 0.5
+        metalness 0
+        textureTransform TextureTransform {
+          scale 2 2
+        }
+      }
+      geometry Box {
+        size 1.5 0.12 2.6
+      }
+    }
+  ]
+}
+StraightStairsRail {
+  translation 8.52 -2.73 3.27
+  rotation -0.577350276739562 0.577350265414658 0.577350265414658 4.188790216111296
+  name "straight stairs rail(1)"
+  run 2.5
+  rise 0
+  newelHeight 0.89
+  balusterHeight 0.9
+  nBalusters 9
+  appearance PBRAppearance {
+    baseColor 0.8 0.8 0.8
+    roughness 0.5
+    metalness 0
+    textureTransform TextureTransform {
+      rotation 1.5708
+    }
+  }
+}
+StraightStairsRail {
+  translation 8.57 -5.23 3.27
+  rotation -1 -3.589793e-09 -3.589793e-09 4.71238898038469
+  run 1.3
+  rise 0
+  newelHeight 0.89
+  balusterHeight 0.9
+  nBalusters 5
+  appearance PBRAppearance {
+    baseColor 0.8 0.8 0.8
+    roughness 0.5
+    metalness 0
+    textureTransform TextureTransform {
+      rotation 1.5708
+    }
+  }
+}
+StraightStairs {
+  translation 9.201 0.17 0
+  rotation 0.577348970842376 -0.577350918362156 -0.577350918362156 2.094397049915165
+  stepSize 0.3 0.01 1.34
+  stepRise 0.297
+  nSteps 10
+  stepAppearance PBRAppearance {
+    baseColor 0.8 0.8 0.8
+    roughness 0.5
+    metalness 0
+    textureTransform TextureTransform {
+      rotation 1.5708
+      scale 3 1
+    }
+  }
+  stringerAppearance PBRAppearance {
+    baseColor 0.8 0.8 0.8
+    roughness 0.5
+    metalness 0
+    textureTransform TextureTransform {
+      rotation 1.5708
+      scale 3 3
+    }
+  }
+  leftRail []
+  rightRail [
+    StraightStairsRail {
+      run 3
+      rise 2.97
+      newelHeight 0.862
+      balusterHeight 0.83
+      nBalusters 12
+      appearance PBRAppearance {
+        baseColor 0.8 0.8 0.8
+        roughness 0.5
+        metalness 0
+        textureTransform TextureTransform {
+          rotation 1.5708
+        }
+      }
+    }
+  ]
+}

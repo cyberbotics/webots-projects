@@ -1,0 +1,518 @@
+#VRML_SIM R2021a utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0.
+# Configurable station containing an adaptable number of conveyor platforms.
+
+PROTO ConveyorStation [
+  field SFVec3f        translation               0 0 0              # Is `Transform.translation`.
+  field SFRotation     rotation                  0 0 1 0            # Is `Transform.rotation`.
+  field SFString       name                      "ConveyorStation"  # Is `Solid.name`.
+  field SFFloat        height                    0.7285             # Height of the conveyor belts
+  field SFBool         hasCover                  FALSE              # To cover the back of the conveyor belts.
+  field SFInt32        platformNumber            2                  # Number of `ConveyorStationPlatform`.
+  field SFFloat        platformSpacing           0.4                # Spacing between the `ConveyorStationPlatform`
+  field SFFloat        beltSpacing               0.2528             # Spacing between the `ConveyorStationBelt`
+  field SFString       platformNamePrefix        "ConveyorBelt"     # Prefix for `ConveyorStationPlatform.name`.
+  field SFString       motorNamePrefix           "belt_motor"       # Prefix for `ConveyorStationBelt.motorName`.
+  field SFString       sensorNamePrefix          "belt_sensor"      # Prefix for `ConveyorStationPlatform.sensorName`.
+  field SFString       controller                ""                 # Is `Robot.controller`.
+  field MFString       controllerArgs            []                 # Is `Robot.controllerArgs`.
+  field SFString       customData                ""                 # Is `Robot.customData`.
+  field SFBool         supervisor                TRUE               # Is `Robot.supervisor`.
+  field SFBool         synchronization           TRUE               # Is `Robot.synchronization`.
+  field SFFloat        mass                      20                 # Defines the mass of the station.
+]
+{
+  %{
+    local WHEEL_HEIGHT = 0.095
+    local COVER_HEIGHT = 0.42
+
+    local DEFAULT_FACE_HEIGHT = 0.5
+    local heightOffset = fields.height.value - fields.height.defaultValue -- Default height value: 0.7285 m.
+    local faceHeight = DEFAULT_FACE_HEIGHT + heightOffset
+
+    local platformSpacing = fields.platformSpacing.value
+    if platformSpacing < fields.platformSpacing.defaultValue then
+      io.stderr:write("'platformSpacing' must be bigger or equal to " .. fields.platformSpacing.defaultValue .. ".\n")
+        platformSpacing = fields.platformSpacing.defaultValue
+    end
+    local width = platformSpacing  * ( fields.platformNumber.value + 1/4)
+  }%
+
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    controller IS controller
+    controllerArgs IS controllerArgs
+    supervisor IS supervisor
+    children [
+      DEF BOX_CREATOR_CONTROL Robot {
+        controller "box_creator"
+        supervisor TRUE
+      }
+      DEF STATION Solid {
+        children [
+          # Spawn/Deposit points valid only if there are two platforms.
+          DEF SpawnDockingPoint Transform {
+            translation 0.775 %{= platformSpacing / 2 }% 0
+          }
+          DEF SpawnBoxPoint Transform {
+            translation -0.33 %{= platformSpacing / 2 }% %{= fields.height.value }%
+          }
+          DEF RemoveDockingPoint Transform {
+            translation 0.775 %{= -platformSpacing / 2 }% 0
+          }
+          DEF RemoveBoxPoint Transform {
+            translation -0.33 %{= -platformSpacing / 2 }% %{= fields.height.value }%
+          }
+          DEF BODY Group {
+            children [
+              DEF VERTICAL_PILLARS Group {
+                children [
+                  DEF VERTICAL_FL Transform {
+                    translation 0.336 %{= -(width - 0.032) / 2 }% %{= WHEEL_HEIGHT + faceHeight + 0.002}%
+                    children [
+                      DEF VERTICAL_PILLAR Shape {
+                        appearance DEF BODY_APPEARANCE BrushedAluminium {
+                          IBLStrength 1.7
+                        }
+                        geometry Box {
+                          size 0.03 0.03 1
+                        }
+                      }
+                    ]
+                  }
+                  DEF VERTICAL_BL Transform {
+                    translation -0.336 %{= -(width - 0.032) / 2 }%  %{= WHEEL_HEIGHT + faceHeight + 0.002}%
+                    children [
+                      USE VERTICAL_PILLAR
+                    ]
+                  }
+                  DEF VERTICAL_BR Transform {
+                    translation -0.336 %{= (width - 0.032) / 2 }%  %{= WHEEL_HEIGHT + faceHeight + 0.002}%
+                    children [
+                      USE VERTICAL_PILLAR
+                    ]
+                  }
+                  DEF VERTICAL_FR Transform {
+                    translation 0.336 %{= (width - 0.032) / 2 }%  %{= WHEEL_HEIGHT + faceHeight + 0.002}%
+                    children [
+                      USE VERTICAL_PILLAR
+                    ]
+                  }
+                ]
+              }
+              DEF HORIZONTAL_PILLARS_BOTTOM Group {
+                children [
+                  Transform {
+                    translation 0.336 0 %{= WHEEL_HEIGHT + 0.015 }%
+                    children [
+                      DEF HORIZONTAL_PILLAR_width Shape {
+                        appearance USE BODY_APPEARANCE
+                        geometry Box {
+                          size 0.03 %{= width - 0.032 }% 0.03
+                        }
+                      }
+                    ]
+                  }
+                  Transform {
+                    translation 0 %{= -(width - 0.032) / 2 }% %{= WHEEL_HEIGHT + 0.015 }%
+                    children [
+                      DEF HORIZONTAL_PILLAR_LENGTH Shape {
+                        appearance USE BODY_APPEARANCE
+                        geometry Box {
+                          size 0.672 0.03 0.03
+                        }
+                      }
+                    ]
+                  }
+                  Transform {
+                    translation -0.336 0 %{= WHEEL_HEIGHT + 0.015 }%
+                    children [
+                      USE HORIZONTAL_PILLAR_width
+                    ]
+                  }
+                  Transform {
+                    translation 0 %{= (width - 0.032) / 2 }% %{= WHEEL_HEIGHT + 0.015 }%
+                    children [
+                      USE HORIZONTAL_PILLAR_LENGTH
+                    ]
+                  }
+                ]
+              }
+              DEF HORIZONTAL_PILLARS_TOP Transform {
+                translation 0 0 %{= WHEEL_HEIGHT + faceHeight - 0.045}%
+                scale 0.99999 0.99999 1
+                children [
+                  USE HORIZONTAL_PILLARS_BOTTOM
+                ]
+              }
+              DEF FACES Transform {
+                translation 0 0 %{= WHEEL_HEIGHT + faceHeight / 2 }%
+                children [
+                  DEF FACE_FRONT Transform {
+                    translation 0.352 0 0.04
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.933333 0.933333 0.92549
+                          roughness 0.2
+                          metalness 0
+                        }
+                        geometry Box {
+                          size 0.002 %{= width }% %{= faceHeight + 0.08 }%
+                        }
+                      }
+                      Transform {
+                        translation 0.00110008 -7.50548e-08 -0.04
+                        rotation 0.7071067811862364 0.7071067811862364 0 3.14159
+                        children [
+                          Shape {
+                            appearance PBRAppearance {
+                              roughness 0.1
+                              metalness 0
+                            }
+                            geometry Plane {
+                              size %{= 0.8 * width }% %{= 0.297 + heightOffset}%
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  DEF FACE_BACK Transform {
+                    translation -0.352 0 0
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.933333 0.933333 0.92549
+                          roughness 0.2
+                          metalness 0
+                        }
+                        geometry Box {
+                          size 0.002 %{= width }% %{= faceHeight }%
+                        }
+                      }
+                    ]
+                  }
+                  DEF FACE_LEFT Transform {
+                    translation 0 %{= (width - 0.56) / 2 + 0.28 }% 0
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.933333 0.933333 0.92549
+                          roughness 0.2
+                          metalness 0
+                        }
+                        geometry Box {
+                          size 0.706 0.002 %{= faceHeight }%
+                        }
+                      }
+                      Transform {
+                        translation 0 0.0011 0
+                        rotation 0 1 0 3.14159
+                        children [
+                          Shape {
+                            appearance PBRAppearance {
+                              roughness 0.1
+                              metalness 0
+                            }
+                            geometry Plane {
+                              size 0.55 %{= 0.25 + heightOffset}%
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  DEF FACE_RIGHT Transform {
+                    translation 0 %{= -((width - 0.56) / 2 + 0.28) }% 0
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.933333 0.933333 0.92549
+                          roughness 0.2
+                          metalness 0
+                        }
+                        geometry Box {
+                          size 0.706 0.002 %{= 0.5 + heightOffset}%
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              %{ if fields.hasCover.value then }%
+              DEF COVER_TOP Transform {
+                translation -0.318 0 %{= WHEEL_HEIGHT + faceHeight + COVER_HEIGHT / 2}%
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      roughness 0.1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.47 %{= width }% %{= COVER_HEIGHT }%
+                    }
+                  }
+                ]
+              }
+              DEF COVER_BOTTOM Transform {
+                translation -0.453 0 %{= WHEEL_HEIGHT + faceHeight / 2 }%
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      roughness 0.1
+                      metalness 0
+                    }
+                    geometry Box {
+                      size 0.2 %{= width }% %{= faceHeight }%
+                    }
+                  }
+                ]
+              }
+              DEF COVER_FRONT Transform {
+                translation -0.082 0 %{= WHEEL_HEIGHT + faceHeight + COVER_HEIGHT / 2}%
+                rotation 0 0 1 -1.5707953071795862
+                children [
+                  Shape {
+                    appearance Rubber {
+                      type "dotted"
+                      textureTransform TextureTransform {
+                        scale %{= 4 *width }% %{= 2 }%
+                      }
+                    }
+                    geometry Plane {
+                      size %{= width -0.09}% %{= COVER_HEIGHT - 0.07 }%
+                    }
+                  }
+                ]
+              }
+              %{ end }%
+            ]
+          }
+          Transform {
+            translation 0 0 -0.108
+            children [
+              DEF CONVEYORS Group {
+                children [
+                  %{
+                    local OFFSET = -(fields.platformNumber.value + 1) / 2
+                    for i = 1,fields.platformNumber.value do
+                  }%
+                  ConveyorStationPlatform {
+                    translation 0 %{= (i + OFFSET) * platformSpacing }% %{= WHEEL_HEIGHT + faceHeight + 0.2265 }%
+                    #size 1 0.04 0.03
+                    size 1 0.03 0.04  #temporary until Track compatible FLU
+                    %{ if fields.platformNumber.value == 1 then }%
+                      name IS platformNamePrefix
+                      motorNamePrefix IS motorNamePrefix
+                      sensorName IS sensorNamePrefix
+                      beltSpacing IS beltSpacing
+                    %{ else }%
+                      name %{= "\"" .. fields.platformNamePrefix.value .. "_" .. i .. "\"" }%
+                      motorNamePrefix %{= "\"" .. fields.motorNamePrefix.value .. "_" .. i .. "\"" }%
+                      sensorName %{= "\"" .. fields.sensorNamePrefix.value .. "_" .. i .. "\"" }%
+                      beltSpacing IS beltSpacing
+                    %{ end }%
+                  }
+                  %{ end }%
+                ]
+              }
+              DEF WHEELS Group {
+                children [
+                  DEF WHEEL_FL ConveyorStationWheel {
+                    translation 0.3204 %{= (width - 0.032) / 2 }% 0.1832
+                    name "wheel_fl"
+                  }
+                  DEF WHEEL_FR ConveyorStationWheel {
+                    translation 0.32  %{= -(width - 0.032) / 2 }% 0.1832
+                    name "wheel_fr"
+                  }
+                  DEF WHEEL_BR ConveyorStationWheel {
+                    translation -0.319 %{= -(width - 0.032) / 2 }% 0.1832
+                    name "wheel_br"
+                  }
+                  DEF WHEEL_BL ConveyorStationWheel {
+                    translation -0.3186 %{= (width - 0.032) / 2 }% 0.1832
+                    name "wheel_bl"
+                  }
+                ]
+              }
+              DEF LIGHT Transform {
+                translation -0.31 %{= -(width - 0.032) / 2 }% %{= WHEEL_HEIGHT + faceHeight + 0.555 }%
+                children [
+                  Transform {
+                    rotation 1 0 0 1.5708
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0 0 0
+                          metalness 0
+                          normalMapFactor 0.5
+                          textureTransform TextureTransform {
+                            scale 10 10
+                          }
+                        }
+                        geometry DEF LIGHT_CYLINDER Cylinder {
+                          height 0.115
+                          radius 0.016
+                        }
+                      }
+                    ]
+                  }
+                  LED {
+                    translation 0 0 0.074
+                    rotation 1 0 0 1.5708
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0 1 0
+                          metalness 0
+                          normalMapFactor 0.5
+                          textureTransform TextureTransform {
+                            scale 10 10
+                          }
+                        }
+                        geometry DEF LED_SHAPE Cylinder {
+                          height 0.033
+                          radius 0.016
+                        }
+                      }
+                    ]
+                    name "green_led"
+                    color [
+                      0 1 0
+                    ]
+                  }
+                  LED {
+                    translation 0 0 0.107
+                    rotation 1 0 0 1.5708
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 1 0.5 0
+                          metalness 0
+                          normalMapFactor 0.5
+                          textureTransform TextureTransform {
+                            scale 10 10
+                          }
+                        }
+                        geometry USE LED_SHAPE
+                      }
+                    ]
+                    name "orange_led"
+                    color [
+                      1 0.5 0
+                    ]
+                  }
+                  LED {
+                    translation 0 0 0.14
+                    rotation 1 0 0 1.5708
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 1 0 0
+                          metalness 0
+                          normalMapFactor 0.5
+                          textureTransform TextureTransform {
+                            scale 10 10
+                          }
+                        }
+                        geometry USE LED_SHAPE
+                      }
+                    ]
+                    name "red_led"
+                  }
+                  Transform {
+                    translation 0 0 0.1615
+                    rotation 1 0 0 1.5708
+                    children [
+                      DEF LIGHT_INDICATOR_TOP_BLACK Shape {
+                        appearance PBRAppearance {
+                          baseColor 0 0 0
+                          metalness 0
+                          normalMapFactor 0.5
+                          textureTransform TextureTransform {
+                            scale 10 10
+                          }
+                        }
+                        geometry Cylinder {
+                          height 0.01
+                          radius 0.016
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+        boundingObject Group {
+          children [
+            USE VERTICAL_FL
+            USE VERTICAL_BL
+            USE VERTICAL_BR
+            USE VERTICAL_FR
+            DEF FACES_BO Transform {
+              translation 0 0 %{= WHEEL_HEIGHT + faceHeight / 2 }%
+              children [
+                Box {
+                  size 0.706 %{= width }% %{= faceHeight }%
+                }
+              ]
+            }
+            %{ if fields.hasCover.value then }%
+            DEF COVER_TOP_LEFT_FACE Transform {
+              translation -0.318 %{= width / 2 }% %{= WHEEL_HEIGHT + faceHeight + COVER_HEIGHT / 2 }%
+              children [
+                Box {
+                    size 0.47 0.001 %{= COVER_HEIGHT }%
+                }
+              ]
+            }
+            DEF COVER_TOP_TOP_FACE Transform {
+              translation -0.318 0 %{= WHEEL_HEIGHT + faceHeight + COVER_HEIGHT }%
+              children [
+                Box {
+                    size 0.47 %{= width }% 0.001
+                }
+              ]
+            }
+            DEF COVER_TOP_RIGHT_FACE Transform {
+              translation -0.318 %{= -width / 2 }% %{= WHEEL_HEIGHT + faceHeight + COVER_HEIGHT / 2 }%
+              children [
+                Box {
+                    size 0.47 0.001 %{= COVER_HEIGHT }%
+                }
+              ]
+            }
+            DEF COVER_TOP_BACK_FACE Transform {
+              translation -0.553 0 %{= WHEEL_HEIGHT + faceHeight + COVER_HEIGHT / 2 }%
+              children [
+                Box {
+                    size 0.001 %{= width }% %{= COVER_HEIGHT }%
+                }
+              ]
+            }
+            USE COVER_BOTTOM
+            %{ end }%
+            DEF LIGHT_BO Transform {
+              translation -0.31  %{= -(width - 0.032) / 2 }% %{= WHEEL_HEIGHT + faceHeight + 0.447 }%
+              rotation 1 0 0 1.5708
+              children [
+                USE LIGHT_CYLINDER
+              ]
+            }
+          ]
+        }
+        physics Physics {
+          density -1
+          mass IS mass
+        }
+      }
+    ]
+  }
+}
