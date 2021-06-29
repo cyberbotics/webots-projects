@@ -51,4 +51,7 @@ The different parameters of the request above are
 `typeId`, the type of box to spawn, search for the corresponding predefined types in `controllers/box_creator/utils/boxtypes.json` that can be edited or completed.
 
 ## Additional information for SeRonet-Tooling-Collection
-The main controller of the ConveyorStation is for the OPC_UA interface. An updated version (draft, not tested) of the OPC_UA_STATION controller with the new names of components, `Spawner_OPC_UA_STATION`, is set as default for the `spawner_seronet.wbt` world. The existing OPC_UA motor commands are applied to the conveyor belt of the remover part of the `ConveyorStation`. The motor of the spawner part are initialized in speed control but the interface with OPC_UA must be implemented.
+The main controller of the ConveyorStation is for the OPC_UA interface.
+An updated version (draft, not tested) of the OPC_UA_STATION controller with the new names of components, `Spawner_OPC_UA_STATION`, is set as default for the `spawner_seronet.wbt` world.
+The existing OPC_UA motor commands are applied to the conveyor belt of the remover part of the `ConveyorStation`.
+The motor of the spawner part are initialized in speed control but the interface with OPC_UA must be implemented.
