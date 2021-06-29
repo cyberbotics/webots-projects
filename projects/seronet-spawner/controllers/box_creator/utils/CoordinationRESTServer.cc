@@ -91,12 +91,10 @@ void CoordinationRESTServer::handle_post(web::http::http_request request) {
   // extract the json value from the request object
   auto jvalue = request.extract_json().get();
 
-  if (resource == "addObject") {
+  if (resource == "addObject")
     response.set_status_code(handle_add_new_object(jvalue));
-  } else {
-    // error code 404: resource not found
+  else  // error code 404: resource not found
     response.set_status_code(web::http::status_codes::NotFound);
-  }
 
   // reply with the response object
   request.reply(response);
