@@ -23,7 +23,7 @@ PROTO Kasten [
   %{
     local wbrotation = require('wbrotation')
 
-    -- check inputs
+    -- check input
     if fields.size.value.x <= 0.0 then
       io.stderr:write("'size' must be positive\n")
       size = fields.size.defaultValue.x
@@ -183,5 +183,4 @@ PROTO Kasten [
     locked IS locked
   }
 }
-
 
