@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-CXX_SOURCES = box_creator.cc utils/CoordinationRESTServer.cc utils/Box.cc utils/BoxType.cc
+CXX_SOURCES = box_creator.cpp utils/CoordinationRESTServer.cpp utils/Box.cc utils/BoxType.cpp
 LIBRARIES = -lpthread -lcrypto -lcpprest
 
 ### Do not modify: this includes Webots global Makefile.include
