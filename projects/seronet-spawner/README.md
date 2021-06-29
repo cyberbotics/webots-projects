@@ -10,7 +10,8 @@ The second, `spawner_seronet.wbt`, is meant to be used with the SeRoNet-Tooling-
 
 Both worlds make use of a `ConveyorStation` with 2 `ConveyorStationPlatform`: one is the place where robots deposit boxes to remove, while the other outputs the box requested by the REST API.
 
-In general though, the `ConveyorStation` can have an adjustable number of `ConveyorStationPlatform` (by setting `platformNumber`). The name of the components for the `i`th `ConveyorStationPlatform` is:
+In general though, the `ConveyorStation` can have an adjustable number of `ConveyorStationPlatform` (by setting `platformNumber`).
+The name of the components for the `i`th `ConveyorStationPlatform` is:
 
 
 * Left motor: `motorNamePrefix`_`i`_left
