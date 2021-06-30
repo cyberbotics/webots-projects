@@ -22,7 +22,8 @@ If there is only one `ConveyorStationPlatform` the names are simply (`motorNameP
 
 
 # Dependencies
-* cpprestsdk: https://github.com/microsoft/cpprestsdk
+* [cpprestsdk](https://github.com/microsoft/cpprestsdk): `sudo apt install  libcpprest-dev`
+* [nlohmann](https://json.nlohmann.me/): `sudo apt install nlohmann-json3-dev`
 
 Only for the SeRoNet example:
 * SeRoNet-Tooling-Collection: https://xito.one
