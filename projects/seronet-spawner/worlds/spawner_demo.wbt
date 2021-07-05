@@ -127,7 +127,7 @@ Floor {
   appearance PBRAppearance {
     baseColorMap ImageTexture {
       url [
-        "webots://projects/default/worlds/textures/asphalt.jpg"
+        "https://raw.githubusercontent.com/cyberbotics/webots/R2021b/projects/default/worlds/textures/asphalt.jpg"
       ]
     }
     roughness 1
@@ -362,7 +362,7 @@ Solid {
         baseColor 0.8 0.8 0.8
         baseColorMap ImageTexture {
           url [
-            "webots://projects/samples/environments/factory/worlds/textures/fire_exit.jpg"
+            "https://raw.githubusercontent.com/cyberbotics/webots/R2021b/projects/samples/environments/factory/worlds/textures/fire_exit.jpg"
           ]
         }
         roughness 0.5
@@ -387,7 +387,7 @@ Solid {
         baseColor 0.8 0.8 0.8
         baseColorMap ImageTexture {
           url [
-            "webots://projects/samples/environments/factory/worlds/textures/fire_exit.jpg"
+            "https://raw.githubusercontent.com/cyberbotics/webots/R2021b/projects/samples/environments/factory/worlds/textures/fire_exit.jpg"
           ]
         }
         roughness 0.5
@@ -412,7 +412,7 @@ Solid {
         baseColor 0.8 0.8 0.8
         baseColorMap ImageTexture {
           url [
-            "webots://projects/default/worlds/textures/steel_floor.jpg"
+            "https://raw.githubusercontent.com/cyberbotics/webots/R2021b/projects/default/worlds/textures/steel_floor.jpg"
           ]
         }
         roughness 0.5
