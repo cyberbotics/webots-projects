@@ -390,7 +390,7 @@ PROTO ConveyorStationPlatform [
         }
         physics Physics {
           density -1
-          mass 2
+          mass 0.2
         }
       }
     ]
