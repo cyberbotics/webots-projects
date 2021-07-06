@@ -392,6 +392,7 @@ PROTO ConveyorStationPlatform [
           density -1
           mass 0.2
         }
+        name "docking_element"
       }
     ]
     physics Physics {
