@@ -20,6 +20,7 @@ PROTO ConveyorStation [
   field SFString       customData                ""                 # Is `Robot.customData`.
   field SFBool         supervisor                TRUE               # Is `Robot.supervisor`.
   field SFBool         synchronization           TRUE               # Is `Robot.synchronization`.
+  field SFFloat        mass                      20                 # Defines the mass of the station.
 ]
 {
   %{
@@ -508,8 +509,8 @@ PROTO ConveyorStation [
           ]
         }
         physics Physics {
-          density 150
-          mass -1
+          density -1
+          mass IS mass
         }
       }
     ]
