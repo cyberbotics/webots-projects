@@ -363,9 +363,9 @@ PROTO ConveyorStationPlatform [
               roughness 1
               metalness 0
             }
-              geometry Mesh {
-                url "meshes/docking_element.obj"
-              }
+            geometry Mesh {
+              url "meshes/docking_element.obj"
+            }
           }
         ]
         boundingObject Group {
