@@ -516,7 +516,7 @@ PROTO ConveyorStation [
         }
         physics Physics {
           density -1
-          mass %{= 0.5 * fields.mass.value }% # Remaining of the mass is for the ConveyorStationPlatform and COnveyorStationWheel.
+          mass %{= 0.5 * fields.mass.value }% # Remaining of the mass is for the platforms, belts and wheels.
         }
       }
     ]
