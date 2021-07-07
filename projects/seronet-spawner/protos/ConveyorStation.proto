@@ -310,11 +310,13 @@ PROTO ConveyorStation [
                       motorNamePrefix IS motorNamePrefix
                       sensorName IS sensorNamePrefix
                       beltSpacing IS beltSpacing
+                      mass %{= 0.45 * fields.mass.value }%
                     %{ else }%
                       name %{= "\"" .. fields.platformNamePrefix.value .. "_" .. i .. "\"" }%
                       motorNamePrefix %{= "\"" .. fields.motorNamePrefix.value .. "_" .. i .. "\"" }%
                       sensorName %{= "\"" .. fields.sensorNamePrefix.value .. "_" .. i .. "\"" }%
                       beltSpacing IS beltSpacing
+                      mass %{= 0.45 * fields.mass.value / fields.platformNumber.value }%
                     %{ end }%
                   }
                   %{ end }%
@@ -325,18 +327,22 @@ PROTO ConveyorStation [
                   DEF WHEEL_FL ConveyorStationWheel {
                     translation 0.3204 %{= (width - 0.032) / 2 }% 0.1832
                     name "wheel_fl"
+                    mass %{= 0.0125 * fields.mass.value }%
                   }
                   DEF WHEEL_FR ConveyorStationWheel {
                     translation 0.32  %{= -(width - 0.032) / 2 }% 0.1832
                     name "wheel_fr"
+                    mass %{= 0.0125 * fields.mass.value }%
                   }
                   DEF WHEEL_BR ConveyorStationWheel {
                     translation -0.319 %{= -(width - 0.032) / 2 }% 0.1832
                     name "wheel_br"
+                    mass %{= 0.0125 * fields.mass.value }%
                   }
                   DEF WHEEL_BL ConveyorStationWheel {
                     translation -0.3186 %{= (width - 0.032) / 2 }% 0.1832
                     name "wheel_bl"
+                    mass %{= 0.0125 * fields.mass.value }%
                   }
                 ]
               }
@@ -510,7 +516,7 @@ PROTO ConveyorStation [
         }
         physics Physics {
           density -1
-          mass IS mass
+          mass %{= 0.5 * fields.mass.value }% # Remaining of the mass is for the platforms, belts and wheels.
         }
       }
     ]
