@@ -42,12 +42,14 @@ PROTO ConveyorStationPlatform [
         translation -0.015  %{= beltSpacing / 2 }% 0
         name %{= "\"" .. fields.name.value .. "_left\""}%
         motorName %{= "\"" .. fields.motorNamePrefix.value .. "_left\""}%
+        mass %{= 0.15 * fields.mass.value}%
       }
       ConveyorStationBelt {
         size IS size
         translation -0.015 %{= -beltSpacing / 2 }% 0
         name %{= "\"" .. fields.name.value .. "_right\""}%
         motorName %{= "\"" .. fields.motorNamePrefix.value .. "_right\""}%
+        mass %{= 0.15 * fields.mass.value}%
       }
       DistanceSensor {
         translation -0.24 0 -0.0315
@@ -350,7 +352,7 @@ PROTO ConveyorStationPlatform [
         boundingObject USE FIXINGS_BO
         physics Physics {
           density -1
-          mass 2
+          mass %{= 0.3 * fields.mass.value }%
         }
       }
       # Docking element
@@ -390,14 +392,14 @@ PROTO ConveyorStationPlatform [
         }
         physics Physics {
           density -1
-          mass 0.2
+          mass %{= 0.1 * fields.mass.value }%
         }
         name "docking_element"
       }
     ]
     physics Physics {
       density -1
-      mass IS mass
+      mass %{= 0.3 * fields.mass.value }%
       centerOfMass [
         0 0 0
       ]
