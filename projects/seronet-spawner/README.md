@@ -31,9 +31,11 @@ Only for the SeRoNet example:
 * OpcUaDeviceRepository: https://github.com/Servicerobotics-Ulm/OpcUaDeviceRepository
 
 ## How to run
-Here are the instructions to run these examples after having installed the aforementionned dependencies and downloaded this folder.
+Here are the instructions to run these examples after having installed the aforementionned dependencies and cloned this folder.
 
 ### Opening world
+First, make sure that the variable `WEBOTS_HOME` is set (see [Installation Procedure](https://cyberbotics.com/doc/guide/installation-procedure)). Then, compile the controllers by running `make` within the `controllers` folder.
+
 `spawner_demo.wbt` can be simply opened in the Webots interface, while `spawner_seronet.wbt` must be opened through the SeRoNet-Tooling-Collection so that the `<extern>` controller are linked.
 ### REST API request
 Once the world is running, use a REST Client to send the following request:

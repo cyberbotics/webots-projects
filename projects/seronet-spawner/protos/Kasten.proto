@@ -1,4 +1,4 @@
-#VRML_SIM R2021a utf8
+#VRML_SIM R2021b utf8
 # license: Apache License 2.0
 # license url: https://cyberbotics.com/webots_assets_license
 # This is a PROTO file for Webots for a customizable tool shelf.
@@ -34,13 +34,13 @@ PROTO Kasten [
       io.stderr:write("'size' must be positive\n")
       size = fields.size.defaultValue.z
     end
-    
+
     if fields.plateWidth.value <= 0.0 then
       io.stderr:write("'plateWidth' must be positive\n")
       plateWidth = fields.plateWidth.defaultValue
     end
   }%
-  
+
   Solid {
     translation IS translation
     rotation IS rotation
@@ -55,7 +55,7 @@ PROTO Kasten [
                 metalness 0
               }
               geometry DEF PLATE Box {
-                size %{= fields.size.value.x - 2 * fields.plateWidth.value }%  
+                size %{= fields.size.value.x - 2 * fields.plateWidth.value }%
                      %{= fields.plateWidth.value }%
                      %{= fields.size.value.z - 2 * fields.plateWidth.value }%
               }
@@ -63,12 +63,12 @@ PROTO Kasten [
           ]
         }
     %{
-    for m = 0, 1 do  
+    for m = 0, 1 do
       for n = 0, 1 do
       }%
         Transform {
-          translation %{= -math.pow(-1, m) * 0.5 * (fields.size.value.x - fields.plateWidth.value) }% 
-                      %{= 0.5 * (fields.size.value.y + fields.plateWidth.value) }% 
+          translation %{= -math.pow(-1, m) * 0.5 * (fields.size.value.x - fields.plateWidth.value) }%
+                      %{= 0.5 * (fields.size.value.y + fields.plateWidth.value) }%
                       %{= -math.pow(-1, n) * 0.5 * (fields.size.value.z - fields.plateWidth.value) }%
           children [
             Shape {
@@ -78,7 +78,7 @@ PROTO Kasten [
                 metalness 0
               }
               geometry DEF ROUND Cylinder {
-                height %{= fields.size.value.y - fields.plateWidth.value + 0.003 }%  
+                height %{= fields.size.value.y - fields.plateWidth.value + 0.003 }%
                 radius %{= 0.5 * fields.plateWidth.value }%
               }
             }
@@ -88,14 +88,14 @@ PROTO Kasten [
       end
     end
     }%
-    
+
     %{
-    for j = 0, 1 do  
+    for j = 0, 1 do
       for k = 0, 1 do
       }%
         Transform {
-          translation %{= -j * math.pow(-1, k) * 0.5 * (fields.size.value.x - fields.plateWidth.value) }% 
-		%{= 0.5 * (fields.size.value.y + fields.plateWidth.value) }% 
+          translation %{= -j * math.pow(-1, k) * 0.5 * (fields.size.value.x - fields.plateWidth.value) }%
+		%{= 0.5 * (fields.size.value.y + fields.plateWidth.value) }%
 		%{= -(1 - j) * math.pow(-1, k) * 0.5 * (fields.size.value.z - fields.plateWidth.value) }%
           children [
 	 Shape {
@@ -105,8 +105,8 @@ PROTO Kasten [
 	     metalness 0
 	   }
 	   geometry DEF PLATE Box {
-	     size %{= (1 - j) * (fields.size.value.x - fields.plateWidth.value) + j * fields.plateWidth.value }% 
-	          %{= fields.size.value.y - fields.plateWidth.value + 0.003 }% 
+	     size %{= (1 - j) * (fields.size.value.x - fields.plateWidth.value) + j * fields.plateWidth.value }%
+	          %{= fields.size.value.y - fields.plateWidth.value + 0.003 }%
 	          %{= (1 - j) * fields.plateWidth.value + j * (fields.size.value.z - fields.plateWidth.value) }%
 	   }
 	 }
@@ -115,7 +115,7 @@ PROTO Kasten [
       %{
       end
     end
-    }% 
+    }%
     ]
     name IS name
     model "Kasten"
@@ -126,23 +126,23 @@ PROTO Kasten [
           translation 0 %{= 0.5 * fields.plateWidth.value }% 0
           children [
             Box {
-              size %{= fields.size.value.x - 2 * fields.plateWidth.value }%  
+              size %{= fields.size.value.x - 2 * fields.plateWidth.value }%
                    %{= fields.plateWidth.value }%
                    %{= fields.size.value.z - 2 * fields.plateWidth.value }%
             }
           ]
         }
     %{
-    for m = 0, 1 do  
+    for m = 0, 1 do
       for n = 0, 1 do
       }%
         Transform {
-          translation %{= -math.pow(-1, m) * 0.5 * (fields.size.value.x - fields.plateWidth.value) }% 
-                      %{= 0.5 * (fields.size.value.y + fields.plateWidth.value) }% 
+          translation %{= -math.pow(-1, m) * 0.5 * (fields.size.value.x - fields.plateWidth.value) }%
+                      %{= 0.5 * (fields.size.value.y + fields.plateWidth.value) }%
                       %{= -math.pow(-1, n) * 0.5 * (fields.size.value.z - fields.plateWidth.value) }%
           children [
             Cylinder {
-              height %{= fields.size.value.y - fields.plateWidth.value + 0.003 }%  
+              height %{= fields.size.value.y - fields.plateWidth.value + 0.003 }%
               radius %{= 0.5 * fields.plateWidth.value }%
             }
           ]
@@ -151,19 +151,19 @@ PROTO Kasten [
       end
     end
     }%
-    
+
     %{
-    for j = 0, 1 do  
+    for j = 0, 1 do
       for k = 0, 1 do
       }%
         Transform {
-          translation %{= -j * math.pow(-1, k) * 0.5 * (fields.size.value.x - fields.plateWidth.value) }% 
-		%{= 0.5 * (fields.size.value.y + fields.plateWidth.value) }% 
+          translation %{= -j * math.pow(-1, k) * 0.5 * (fields.size.value.x - fields.plateWidth.value) }%
+		%{= 0.5 * (fields.size.value.y + fields.plateWidth.value) }%
 		%{= -(1 - j) * math.pow(-1, k) * 0.5 * (fields.size.value.z - fields.plateWidth.value) }%
           children [
 	 Box {
-	   size %{= (1 - j) * (fields.size.value.x - fields.plateWidth.value) + j * fields.plateWidth.value }% 
-	        %{= fields.size.value.y - fields.plateWidth.value + 0.003 }% 
+	   size %{= (1 - j) * (fields.size.value.x - fields.plateWidth.value) + j * fields.plateWidth.value }%
+	        %{= fields.size.value.y - fields.plateWidth.value + 0.003 }%
 	        %{= (1 - j) * fields.plateWidth.value + j * (fields.size.value.z - fields.plateWidth.value) }%
 	 }
           ]
@@ -171,7 +171,7 @@ PROTO Kasten [
       %{
       end
     end
-    }% 
+    }%
     ]
     }
     physics Physics {
