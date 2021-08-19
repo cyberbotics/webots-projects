@@ -52,7 +52,7 @@ Robot {
                   appearance PBRAppearance {
                     baseColorMap ImageTexture {
                       url [
-                        "webots://projects/samples/forest_fire/worlds/textures/animation/fire1_01.png"
+                        "textures/animation/fire1_01.png"
                       ]
                       repeatS FALSE
                       repeatT FALSE
