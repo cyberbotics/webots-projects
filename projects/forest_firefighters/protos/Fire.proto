@@ -54,7 +54,7 @@ PROTO Fire [
       Transform {
         translation 0 100000 0
         children Shape {
-          appearance FlameAppearance { url "textures/fire1_01.png" }
+          appearance FlameAppearance { url "textures/fire_01.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
