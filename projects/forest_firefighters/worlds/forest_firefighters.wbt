@@ -38,12 +38,6 @@ TexturedBackgroundLight {
 }
 Robot {
   rotation 0 0 1 0
-  children [
-    Fire {
-      translation 0 4 0
-      scale 10 10 10
-    }
-  ]
   controller "fire"
   supervisor TRUE
 }

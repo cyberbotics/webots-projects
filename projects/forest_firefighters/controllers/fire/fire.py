@@ -19,17 +19,33 @@ This supervisor controller simulate a wild fire in a Sassafras forest.
 from controller import Supervisor
 
 
-class Fire (Supervisor):
+class Tree:
+    def __init__(self, node):
+        self.node = node
+        self.fire = None
+        self.fire_level = 0
+        self.fire_loop = 0
+
+
+class Fire(Supervisor):
     timeStep = 128
 
     def __init__(self):
         super(Fire, self).__init__()
         root = self.getRoot()
-        children = root.getField("children")
-        n = children.getCount()
+        self.children = root.getField("children")
+        n = self.children.getCount()
+        self.trees = []
         for i in range(n):
-            node = children.getMFNode(i)
+            node = self.children.getMFNode(i)
+            if node.getTypeName() == 'Sassafras':
+                self.trees.append(Tree(node))
+                print('Added one tree')
             print(node.getTypeName())
+        self.ignite(self.trees[0])
+
+    def ignite(self, tree):
+        self.children.importMFNodeFromString(-1, 'Fire { translation 0 4 0 scale 10 10 10 }')
 
     def run(self):
         while True:
