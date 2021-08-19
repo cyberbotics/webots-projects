@@ -45,7 +45,9 @@ class Fire(Supervisor):
         self.ignite(self.trees[0])
 
     def ignite(self, tree):
-        self.children.importMFNodeFromString(-1, 'Fire { translation 0 4 0 scale 10 10 10 }')
+        translation = tree.node.getField('translation').getSFVec3f()
+        fire = f'Fire {{ translation {translation[0]} {translation[1]} {translation[2]} scale 10 10 10 }}'
+        self.children.importMFNodeFromString(-1, fire)
 
     def run(self):
         while True:
