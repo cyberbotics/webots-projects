@@ -40,9 +40,12 @@ class Fire(Supervisor):
             node = self.children.getMFNode(i)
             if node.getTypeName() == 'Sassafras':
                 self.trees.append(Tree(node))
-                print('Added one tree')
-            print(node.getTypeName())
-        self.ignite(self.trees[0])
+        n = len(self.trees)
+        if n == 0:
+            print('No sassafras tree found.')
+        else:
+            print(f'Starting wildfire in a forest of {n} sassafras trees.')
+            self.ignite(self.trees[0])
 
     def ignite(self, tree):
         translation = tree.node.getField('translation').getSFVec3f()
