@@ -7,4 +7,4 @@ They will also be able to improve the models of the robot and even design new on
 
 ![screenshot](forest_fire.png)
 
-![video](forest_firefighters.mp4)
+https://user-images.githubusercontent.com/1264964/130241653-c0fd0966-1ce2-41d1-aeae-452a187b95be.mp4
