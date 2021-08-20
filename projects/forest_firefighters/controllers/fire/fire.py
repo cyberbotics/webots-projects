@@ -16,6 +16,7 @@
 This supervisor controller simulate a wild fire in a Sassafras forest.
 """
 
+import math
 from controller import Supervisor
 
 
@@ -23,10 +24,20 @@ class Tree:
     def __init__(self, node):
         self.node = node
         self.fire = None
+        self.fire_count = 0
+        self.translation = node.getField('translation').getSFVec3f()
+
+    def distance(self, t):  # distance with another tree
+        dx = self.translation[0] - t.translation[0]
+        dy = self.translation[1] - t.translation[1]
+        dz = self.translation[2] - t.translation[2]
+        return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 
 class Fire(Supervisor):
     timeStep = 128
+    flameCycle = 13  # there are 13 images in the flame animation
+    flamePeak = 17   # after 17 flame cycles, the fire starts to decrease
 
     def __init__(self):
         super(Fire, self).__init__()
@@ -46,22 +57,22 @@ class Fire(Supervisor):
             self.ignite(self.trees[0])
 
     def ignite(self, tree):
-        translation = tree.node.getField('translation').getSFVec3f()
+        if tree.fire_count > 1:  # already burnt
+            return
         tree.fire_scale = 1
-        fire = f'Fire {{ translation {translation[0]} {translation[1]} {translation[2]} ' \
+        fire = f'Fire {{ translation {tree.translation[0]} {tree.translation[1]} {tree.translation[2]} ' \
                f'scale {tree.fire_scale} {tree.fire_scale} {tree.fire_scale} }}'
         self.children.importMFNodeFromString(-1, fire)
         tree.fire = self.children.getMFNode(-1)
         tree.fire_translation_field = tree.fire.getField('translation')
         tree.fire_scale_field = tree.fire.getField('scale')
         tree.fire_translation = tree.fire_translation_field.getSFVec3f()
-        tree.fire_count = 0
 
     def burn(self, tree):
         tree.fire_count += 1
-        if tree.fire_count % 13 == 0:  # there are 13 images in the flame animation
-            tree.fire_scale *= 1.2 if tree.fire_count < 17 * 13 else 0.8
-            if tree.fire_count == 17 * 13:  # after 17 cycles of growing flames, we consider the tree is burnt
+        if tree.fire_count % self.flameCycle == 0:
+            tree.fire_scale *= 1.2 if tree.fire_count < self.flamePeak * self.flameCycle else 0.8
+            if tree.fire_count == self.flamePeak * self.flameCycle:
                 tree.node.getField('burnt').setSFBool(True)
             tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
             if tree.fire_scale < 1:
@@ -70,6 +81,18 @@ class Fire(Supervisor):
         t = [tree.fire_translation[0], tree.fire_translation[1], tree.fire_translation[2]]
         t[1] -= 100000 * tree.fire_scale * (tree.fire_count % 13)
         tree.fire_translation_field.setSFVec3f(t)
+        self.propagate(tree)
+
+    def propagate(self, tree):  # propagate fire to neighbouring trees
+        fire_strength = 1.0 / (1.0 + abs(tree.fire_count - self.flamePeak * self.flameCycle))
+        print(f'Fire strength {fire_strength}')
+        for t in self.trees:
+            if t == tree:
+                continue
+            p = fire_strength / tree.distance(t)
+            print(f'Fire propagation level {p}')
+            if p > 0.1:
+                self.ignite(t)
 
     def run(self):
         while True:
