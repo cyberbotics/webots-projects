@@ -6,3 +6,5 @@ Users will be able to run the wildfire simulation and program the behavior of th
 They will also be able to improve the models of the robot and even design new ones.
 
 ![screenshot](forest_fire.png)
+
+![video](forest_firefighters.mp4)
