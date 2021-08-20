@@ -35,9 +35,9 @@ class Tree:
 
 
 class Fire(Supervisor):
-    timeStep = 128
-    flameCycle = 13  # there are 13 images in the flame animation
-    flamePeak = 17   # after 17 flame cycles, the fire starts to decrease
+    time_step = 128
+    flame_cycle = 13  # there are 13 images in the flame animation
+    flame_peak = 17   # after 17 flame cycles, the fire starts to decrease
 
     def __init__(self):
         super(Fire, self).__init__()
@@ -70,9 +70,9 @@ class Fire(Supervisor):
 
     def burn(self, tree):
         tree.fire_count += 1
-        if tree.fire_count % self.flameCycle == 0:
-            tree.fire_scale *= 1.2 if tree.fire_count < self.flamePeak * self.flameCycle else 0.8
-            if tree.fire_count == self.flamePeak * self.flameCycle:
+        if tree.fire_count % self.flame_cycle == 0:
+            tree.fire_scale *= 1.2 if tree.fire_count < self.flame_peak * self.flame_cycle else 0.8
+            if tree.fire_count == self.flame_peak * self.flame_cycle:
                 tree.node.getField('burnt').setSFBool(True)
             tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
             if tree.fire_scale < 1:
@@ -84,7 +84,7 @@ class Fire(Supervisor):
         self.propagate(tree)
 
     def propagate(self, tree):  # propagate fire to neighbouring trees
-        fire_strength = 1.0 / (1.0 + abs(tree.fire_count - self.flamePeak * self.flameCycle))
+        fire_strength = 1.0 / (1.0 + abs(tree.fire_count - self.flame_peak * self.flame_cycle))
         print(f'Fire strength {fire_strength}')
         for t in self.trees:
             if t == tree:
@@ -96,7 +96,7 @@ class Fire(Supervisor):
 
     def run(self):
         while True:
-            if self.step(self.timeStep) == -1:
+            if self.step(self.time_step) == -1:
                 break
             for tree in self.trees:
                 if tree.fire:
