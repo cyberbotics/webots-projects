@@ -23,8 +23,6 @@ class Tree:
     def __init__(self, node):
         self.node = node
         self.fire = None
-        self.fire_level = 0
-        self.fire_loop = 0
 
 
 class Fire(Supervisor):
@@ -49,13 +47,37 @@ class Fire(Supervisor):
 
     def ignite(self, tree):
         translation = tree.node.getField('translation').getSFVec3f()
-        fire = f'Fire {{ translation {translation[0]} {translation[1]} {translation[2]} scale 10 10 10 }}'
+        tree.fire_scale = 1
+        fire = f'Fire {{ translation {translation[0]} {translation[1]} {translation[2]} ' \
+               f'scale {tree.fire_scale} {tree.fire_scale} {tree.fire_scale} }}'
         self.children.importMFNodeFromString(-1, fire)
+        tree.fire = self.children.getMFNode(-1)
+        tree.fire_translation_field = tree.fire.getField('translation')
+        tree.fire_scale_field = tree.fire.getField('scale')
+        tree.fire_translation = tree.fire_translation_field.getSFVec3f()
+        tree.fire_count = 0
+
+    def burn(self, tree):
+        tree.fire_count += 1
+        if tree.fire_count % 13 == 0:  # there are 13 images in the flame animation
+            tree.fire_scale *= 1.2 if tree.fire_count < 17 * 13 else 0.8
+            if tree.fire_count == 17 * 13:  # after 17 cycles of growing flames, we consider the tree is burnt
+                tree.node.getField('burnt').setSFBool(True)
+            tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
+            if tree.fire_scale < 1:
+                # tree.fire.remove()  # crashes Webots
+                tree.fire = None
+        t = [tree.fire_translation[0], tree.fire_translation[1], tree.fire_translation[2]]
+        t[1] -= 100000 * tree.fire_scale * (tree.fire_count % 13)
+        tree.fire_translation_field.setSFVec3f(t)
 
     def run(self):
         while True:
             if self.step(self.timeStep) == -1:
                 break
+            for tree in self.trees:
+                if tree.fire:
+                    self.burn(tree)
 
 
 controller = Fire()
