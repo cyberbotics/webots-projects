@@ -17,6 +17,7 @@ This supervisor controller simulate a wild fire in a Sassafras forest.
 """
 
 import math
+import random
 from controller import Supervisor
 
 
@@ -26,6 +27,7 @@ class Tree:
         self.fire = None
         self.fire_count = 0
         self.translation = node.getField('translation').getSFVec3f()
+        self.robustness = random.uniform(0.05, 0.15)
 
     def distance(self, t):  # distance with another tree
         dx = self.translation[0] - t.translation[0]
@@ -54,7 +56,7 @@ class Fire(Supervisor):
             print('No sassafras tree found.')
         else:
             print(f'Starting wildfire in a forest of {n} sassafras trees.')
-            self.ignite(self.trees[0])
+            self.ignite(random.choice(self.trees))
 
     def ignite(self, tree):
         if tree.fire_count > 1:  # already burnt
@@ -91,7 +93,7 @@ class Fire(Supervisor):
                 continue
             p = fire_strength / tree.distance(t)
             print(f'Fire propagation level {p}')
-            if p > 0.1:
+            if p > tree.robustness:
                 self.ignite(t)
 
     def run(self):
