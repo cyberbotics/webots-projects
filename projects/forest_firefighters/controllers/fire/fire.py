@@ -52,14 +52,19 @@ class Wind():
         return strength * direction
 
     def evolve(self):
-        self.x = self.x + self.evolution_speed * random.uniform(-self.high_wind, self.high_wind)
-        self.y = self.y + self.evolution_speed * random.uniform(-self.high_wind, self.high_wind)
+        self.x = 1#self.x + self.evolution_speed * random.uniform(-self.high_wind, self.high_wind)
+        self.y = 0#self.y + self.evolution_speed * random.uniform(-self.high_wind, self.high_wind)
 
-    def corrected_distance(self, tree1, tree2, propagation_radius):
+    def correctedDistance(self, tree1, tree2, propagation_radius):
         dx = tree1.translation[0] + propagation_radius * self.x - tree2.translation[0]
         dy = tree1.translation[1] + propagation_radius * self.y - tree2.translation[1]
         dz = tree1.translation[2] - tree2.translation[2]
         return math.sqrt(dx * dx + dy * dy + dz * dz)
+
+    def getAngle(self):
+        return math.atan2(self.y, self.x)
+    def getSpeed(self):
+        return math.sqrt(self.x**2 + self.y**2)
 
 class Fire(Supervisor):
     time_step = 128
@@ -124,12 +129,11 @@ class Fire(Supervisor):
     def propagate(self, tree):  # propagate fire to neighbouring trees
         fire_peak = self.flame_peak * self.flame_cycle
         fire_strength = (min(tree.fire_count, 2 * fire_peak - tree.fire_count)  / fire_peak) ** 2
-        print(f'Fire strength {fire_strength}')
         for t in self.trees:
             if t == tree:
                 continue
             propagation_radius = self.max_propagation * fire_strength
-            distance =  self.wind.corrected_distance(tree, t, propagation_radius)
+            distance =  self.wind.correctedDistance(tree, t, propagation_radius)
 
             if distance + t.robustness < propagation_radius:
                 self.ignite(t)
@@ -139,8 +143,7 @@ class Fire(Supervisor):
             if self.step(self.time_step) == -1:
                 break
             self.wind.evolve()
-            
-            print(f'wind: ({self.wind.x}, {self.wind.y})')
+            self.wwiSendText('{"angle":%f, "speed":%f}' % (self.wind.getAngle(), self.wind.getSpeed()))
             for tree in self.trees:
                 if tree.fire:
                     self.burn(tree)
