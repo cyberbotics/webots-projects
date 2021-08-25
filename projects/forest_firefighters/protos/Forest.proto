@@ -1,0 +1,98 @@
+#VRML_SIM R2021b utf8
+# license: Copyright Cyberbotics Ltd. Licensed for use only with Webots.
+# license url: https://cyberbotics.com/webots_assets_license
+# tags: nonDeterministic
+# template language: javascript
+
+PROTO Forest [
+  field SFVec3f    translation  0 0 0
+  field SFRotation rotation     0 1 0 0
+  field MFVec2f    shape        [-100 0, 0 100, 100 0] # Alternatively, the position of each trees can be defined using the shape field. This field defines the shape of the forest, in that case the position of the trees is randomly generated from this shape.
+  field SFFloat    density      0.002                     # If the forest is defined using the `shape` field, this field defines the density of three to be generated (in trees per meter square).
+  field SFInt32    randomSeed   0                       # Defines the seed of the random number generator. A value of 0 sets the seed to the node id and a value smaller than 0 sets a time based random seed.
+  field SFFloat    maxSize      6                       # Defines the maximum size of the trees.
+  field SFFloat    minSize      2                       # Defines the minimum size of the trees.
+]
+{
+  %<
+    import * as wbgeometry from 'wbgeometry.js';
+    import * as wbrandom from 'wbrandom.js';
+    import * as wbrotation from 'wbrotation.js';
+
+
+    if (fields.randomSeed.value === 0)
+      wbrandom.seed(context.id);
+    else if (fields.randomSeed.value < 0)
+      wbrandom.seed(Date.now());
+    else
+      wbrandom.seed(fields.randomSeed.value);
+
+    // fields checks
+    const shape = fields.shape.value;
+    const nbShapePoint = shape.length;
+    const maxSize = fields.maxSize.value;
+    const minSize = fields.minSize.value;
+
+    let density = fields.density.value;
+    if (density < 0) {
+      density = fields.density.defaultValue;
+      console.error('\'density\' must be greater or equal to 0. Value reset to ' + density + '.');
+    }
+
+    // compute the maximum tree number
+    let xMin = shape[0].x;
+    let xMax = shape[0].x;
+    let yMin = shape[0].y;
+    let yMax = shape[0].y;
+
+    for (let i = 0; i < nbShapePoint; ++i) {
+      if (xMax < shape[i].x)
+        xMax = shape[i].x;
+
+      if (xMin > shape[i].x)
+        xMin = shape[i].x;
+
+      if (yMax < shape[i].y)
+        yMax = shape[i].y;
+
+      if (yMin > shape[i].y)
+        yMin = shape[i].y;
+    }
+    let numberOfTree = Math.round((xMax - xMin) * (yMax - yMin) * density);  // we assume a density of 0.01 tree per meter square
+
+    let trees = [];
+
+    // generate the list of threes
+    for (let i = 0; i < numberOfTree; ++i) {
+      let x = wbrandom.real(xMin, xMax);
+      let y = wbrandom.real(yMin, yMax);
+      let sizeFactor = wbrandom.real();
+
+      if (wbgeometry.isPoint2InPolygon({x: x, y: y}, shape))
+          trees.push({x: x, y: y, angle: wbrandom.real(2 * Math.PI), size: maxSize * sizeFactor + minSize * (1 - sizeFactor)});
+    }
+
+    numberOfTree = trees.length
+    
+  >%
+
+  Transform {
+    translation IS translation
+    rotation IS rotation
+    children [
+      %< for (let i = 0; i < numberOfTree; ++i) { >%
+        Sassafras {
+          translation %<= trees[i].x >% %<= trees[i].y >% 0
+          %<
+            const rA = {x: 0, y: 0, z: 1, a: trees[i].angle}
+            const rB = {x: 1, y: 0, z: 0, a: Math.PI / 2}
+            const rotation = wbrotation.combine(rA, rB);
+          >%
+          rotation %<= rotation.x >% %<= rotation.y >% %<= rotation.z >% %<= rotation.a >%
+          size %<= trees[i].size >%
+          name %<= `"Sassafras ${i}"` >%
+        }
+      %< } >%
+    ]
+  }
+}
