@@ -18,10 +18,7 @@ This supervisor controller simulate a wild fire in a Sassafras forest.
 
 import math
 import random
-from controller import Supervisor
-
-
-
+from controller import Supervisor, Robot
 
 class Tree:
     def __init__(self, node):
@@ -40,7 +37,7 @@ class Tree:
         dz = self.translation[2] - t.translation[2]
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
-class Wind:
+class Wind():
     low_wind = 0
     high_wind = 1
     evolution_speed = 0.01
@@ -74,25 +71,28 @@ class Fire(Supervisor):
         super(Fire, self).__init__()
         root = self.getRoot()
         self.children = root.getField("children")
-        n = self.children.getCount()
         self.trees = []
+        self.findAllTrees(root)
+
         self.wind = Wind()
-        for i in range(n):
-            node = self.children.getMFNode(i)
-            print(node.getTypeName())
-            if node.getTypeName() == "Transform":
-                children = node.getField("children")
-                m = children.getCount()
-                for j in range(m):
-                    child = children.getMFNode(j)
-                    if child.getTypeName() == "Sassafras":
-                        self.trees.append(Tree(child))
         n = len(self.trees)
         if n == 0:
             print('No sassafras tree found.')
         else:
             print(f'Starting wildfire in a forest of {n} sassafras trees.')
             self.ignite(random.choice(self.trees))
+
+    # find all "Sassafras" trees recursively and add them to the tree list
+    def findAllTrees(self, node):
+        children = node.getField("children")
+        if children is not None:
+            n = children.getCount()
+            for i in range(n):
+                child = children.getMFNode(i)
+                if child.getTypeName() == "Sassafras":
+                    self.trees.append(Tree(child))
+                else:
+                    self.findAllTrees(child)
 
     def ignite(self, tree):
         if tree.fire_count > 1:  # already burnt
@@ -139,6 +139,7 @@ class Fire(Supervisor):
             if self.step(self.time_step) == -1:
                 break
             self.wind.evolve()
+            
             print(f'wind: ({self.wind.x}, {self.wind.y})')
             for tree in self.trees:
                 if tree.fire:
