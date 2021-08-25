@@ -21,12 +21,17 @@ import random
 from controller import Supervisor
 
 
+
+
 class Tree:
     def __init__(self, node):
+        print(node.getTypeName())
         self.node = node
         self.fire = None
         self.fire_count = 0
         self.translation = node.getField('translation').getSFVec3f()
+        self.size = node.getField('size').getSFFloat()
+        print(self.translation)
         self.robustness = random.uniform(0.05, 0.15)
 
     def distance(self, t):  # distance with another tree
@@ -35,11 +40,35 @@ class Tree:
         dz = self.translation[2] - t.translation[2]
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
+class Wind:
+    low_wind = 0
+    high_wind = 1
+    evolution_speed = 0.01
+
+    def __init__(self):
+        self.x = self.initialize_wind()
+        self.y = self.initialize_wind()
+
+    def initialize_wind(self):
+        strength = random.triangular(self.low_wind, self.high_wind)
+        direction = random.choice((-1, 1))
+        return strength * direction
+
+    def evolve(self):
+        self.x = self.x + self.evolution_speed * random.uniform(-self.high_wind, self.high_wind)
+        self.y = self.y + self.evolution_speed * random.uniform(-self.high_wind, self.high_wind)
+
+    def corrected_distance(self, tree1, tree2, propagation_radius):
+        dx = tree1.translation[0] + propagation_radius * self.x - tree2.translation[0]
+        dy = tree1.translation[1] + propagation_radius * self.y - tree2.translation[1]
+        dz = tree1.translation[2] - tree2.translation[2]
+        return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 class Fire(Supervisor):
     time_step = 128
     flame_cycle = 13  # there are 13 images in the flame animation
     flame_peak = 17   # after 17 flame cycles, the fire starts to decrease
+    max_propagation = 30 # the maximum distance that the fire can propagate in meter
 
     def __init__(self):
         super(Fire, self).__init__()
@@ -47,10 +76,17 @@ class Fire(Supervisor):
         self.children = root.getField("children")
         n = self.children.getCount()
         self.trees = []
+        self.wind = Wind()
         for i in range(n):
             node = self.children.getMFNode(i)
-            if node.getTypeName() == 'Sassafras':
-                self.trees.append(Tree(node))
+            print(node.getTypeName())
+            if node.getTypeName() == "Transform":
+                children = node.getField("children")
+                m = children.getCount()
+                for j in range(m):
+                    child = children.getMFNode(j)
+                    if child.getTypeName() == "Sassafras":
+                        self.trees.append(Tree(child))
         n = len(self.trees)
         if n == 0:
             print('No sassafras tree found.')
@@ -61,7 +97,7 @@ class Fire(Supervisor):
     def ignite(self, tree):
         if tree.fire_count > 1:  # already burnt
             return
-        tree.fire_scale = 1
+        tree.fire_scale = tree.size
         fire = f'Fire {{ translation {tree.translation[0]} {tree.translation[1]} {tree.translation[2]} ' \
                f'scale {tree.fire_scale} {tree.fire_scale} {tree.fire_scale} }}'
         self.children.importMFNodeFromString(-1, fire)
@@ -86,20 +122,24 @@ class Fire(Supervisor):
         self.propagate(tree)
 
     def propagate(self, tree):  # propagate fire to neighbouring trees
-        fire_strength = 1.0 / (1.0 + abs(tree.fire_count - self.flame_peak * self.flame_cycle))
+        fire_peak = self.flame_peak * self.flame_cycle
+        fire_strength = (min(tree.fire_count, 2 * fire_peak - tree.fire_count)  / fire_peak) ** 2
         print(f'Fire strength {fire_strength}')
         for t in self.trees:
             if t == tree:
                 continue
-            p = fire_strength / tree.distance(t)
-            print(f'Fire propagation level {p}')
-            if p > tree.robustness:
+            propagation_radius = self.max_propagation * fire_strength
+            distance =  self.wind.corrected_distance(tree, t, propagation_radius)
+
+            if distance + t.robustness < propagation_radius:
                 self.ignite(t)
 
     def run(self):
         while True:
             if self.step(self.time_step) == -1:
                 break
+            self.wind.evolve()
+            print(f'wind: ({self.wind.x}, {self.wind.y})')
             for tree in self.trees:
                 if tree.fire:
                     self.burn(tree)
