@@ -16,19 +16,19 @@
 This supervisor controller simulate a wild fire in a Sassafras forest.
 """
 
+import json
 import math
 import random
+
 from controller import Supervisor, Robot
 
 class Tree:
     def __init__(self, node):
-        print(node.getTypeName())
         self.node = node
         self.fire = None
         self.fire_count = 0
         self.translation = node.getField('translation').getSFVec3f()
         self.size = node.getField('size').getSFFloat()
-        print(self.translation)
         self.robustness = random.uniform(0.05, 0.15)
 
     def distance(self, t):  # distance with another tree
@@ -38,33 +38,36 @@ class Tree:
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 class Wind():
-    low_wind = 0
-    high_wind = 1
-    evolution_speed = 0.01
+    intensity_evolve = 0.01
+    angle_evolve = 0.005
+    random_evolution = True
 
     def __init__(self):
-        self.x = self.initialize_wind()
-        self.y = self.initialize_wind()
-
-    def initialize_wind(self):
-        strength = random.triangular(self.low_wind, self.high_wind)
-        direction = random.choice((-1, 1))
-        return strength * direction
+        self.intensity = random.random()
+        self.angle = random.uniform(0, 2 * math.pi)
 
     def evolve(self):
-        self.x = 1#self.x + self.evolution_speed * random.uniform(-self.high_wind, self.high_wind)
-        self.y = 0#self.y + self.evolution_speed * random.uniform(-self.high_wind, self.high_wind)
+        if self.random_evolution:
+            self.intensity = max(0, min(1, self.intensity + self.intensity_evolve * random.uniform(-1, 1)))
+            self.angle = self.angle + self.angle_evolve * random.uniform(-2 * math.pi, 2 * math.pi) % (2 * math.pi) 
+
+    def update(self, message):
+        if message == "stop":
+            self.random_evolution = False
+        elif message == "start":
+            self.random_evolution = True
+        else:
+            wind = json.loads(message)
+            self.angle = wind["angle"]
+            self.intensity = wind["intensity"]
 
     def correctedDistance(self, tree1, tree2, propagation_radius):
-        dx = tree1.translation[0] + propagation_radius * self.x - tree2.translation[0]
-        dy = tree1.translation[1] + propagation_radius * self.y - tree2.translation[1]
+        x_wind = self.intensity * math.cos(self.angle)
+        y_wind = self.intensity * math.sin(self.angle)
+        dx = tree1.translation[0] + propagation_radius * x_wind - tree2.translation[0]
+        dy = tree1.translation[1] + propagation_radius * y_wind - tree2.translation[1]
         dz = tree1.translation[2] - tree2.translation[2]
         return math.sqrt(dx * dx + dy * dy + dz * dz)
-
-    def getAngle(self):
-        return math.atan2(self.y, self.x)
-    def getSpeed(self):
-        return math.sqrt(self.x**2 + self.y**2)
 
 class Fire(Supervisor):
     time_step = 128
@@ -142,8 +145,13 @@ class Fire(Supervisor):
         while True:
             if self.step(self.time_step) == -1:
                 break
+
+            message = self.wwiReceiveText()
+            if message:
+                self.wind.update(message)
+
             self.wind.evolve()
-            self.wwiSendText('{"angle":%f, "speed":%f}' % (self.wind.getAngle(), self.wind.getSpeed()))
+            self.wwiSendText('{"angle":%f, "intensity":%f}' % (self.wind.angle, self.wind.intensity))
             for tree in self.trees:
                 if tree.fire:
                     self.burn(tree)
