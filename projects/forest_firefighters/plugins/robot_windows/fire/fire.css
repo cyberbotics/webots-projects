@@ -1,0 +1,17 @@
+#input-check {
+  display: inline-block;
+  margin-left: 20px;
+  padding: 7px;
+  background: #DC143C;
+  color: black;
+  font-weight: bold;
+  border-radius: 3px;
+}
+#input-check.checked {
+  background: #4CAF50;
+  color: #F6F6F6;
+  border-radius: 3px;
+}
+#input-check input {
+  display: none;
+}
