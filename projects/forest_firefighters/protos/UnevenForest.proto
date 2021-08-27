@@ -8,14 +8,14 @@
 PROTO UnevenForest [
   field SFVec3f    translation    0 0 0
   field SFRotation rotation       0 1 0 0
-  field SFString   name           "uneven terrain"
-  field SFVec3f    size           50 50 5                                                            # Defines the size of the terrain.
+  field SFString   name           "uneven forest"
+  field SFVec3f    size           100 100 30                                                            # Defines the size of the terrain.
   field SFInt32    xDimension     50                                                                 # Defines the number of points in the grid height array in the x direction.
   field SFInt32    zDimension     50                                                                 # Defines the number of points in the grid height array in the y direction.
-  field SFFloat    density        0.02
-  field SFFloat    maxTreeSize    6                                                                  # Defines the maximum size of the trees.
-  field SFFloat    minTreeSize    2                                                                  # Defines the minimum size of the trees.                                                              
-  field SFNode     appearance     SandyGround { textureTransform TextureTransform { scale 50 50 } }  # Defines the appearance of the terrain.
+  field SFFloat    density        0.01
+  field SFFloat    maxTreeSize    2                                                                  # Defines the maximum size of the trees.
+  field SFFloat    minTreeSize    0.2                                                                  # Defines the minimum size of the trees.                                                              
+  field SFNode     appearance     Grass { textureTransform TextureTransform { scale 50 50 } }  # Defines the appearance of the terrain.
   field SFInt32    randomSeed     1                                                                  # Defines the seed of the random number generator. A value smaller or equal to 0 sets a random seed.
   field SFBool     flatCenter     FALSE                                                              # Defines whether the center of the terrain should be flat.
   field SFBool     flatBounds     FALSE                                                              # Defines whether the bounds of the terrain should be flat.
@@ -98,6 +98,7 @@ PROTO UnevenForest [
 
     let heights = []
 
+    // compute the height of each point in the elevation grid
     for (let i = 0; i <= xDimension - 1; ++i) {
       let heightsLine = []
       for (let j = 0; j <= zDimension - 1; ++j) {
@@ -125,20 +126,41 @@ PROTO UnevenForest [
       console.error('\'density\' must be greater or equal to 0. Value reset to ' + density + '.');
     }
 
-    let numberOfTree = Math.round(fields.size.value.x *  fields.size.value.y * density * 0.01);
+    let numberOfTree = Math.round(fields.size.value.x *  fields.size.value.y * density);
     let maxTreeSize = fields.maxTreeSize.value;
     let minTreeSize = fields.minTreeSize.value;
     let trees = [];
 
-    // generate the list of threes
+    // generate the list of trees
     for (let i = 0; i < numberOfTree; ++i) {
-      let xTree = wbrandom.real(0, fields.size.value.x);
-      let yTree = wbrandom.real(0, fields.size.value.y);
-      let size = wbrandom.real(minTreeSize, maxTreeSize);
-      let xIndex = Math.floor(xTree / fields.size.value.x * xDimension);
-      let yIndex = Math.floor(yTree / fields.size.value.y * zDimension);
+      let xTree = wbrandom.real(0, size.x);
+      let yTree = wbrandom.real(0, size.y);
+      let treeSize = wbrandom.real(minTreeSize, maxTreeSize);
 
-      trees.push({x: xTree, y: yTree, z: heights[xIndex][yIndex], angle: wbrandom.real(2 * Math.PI), size: size});
+      // compute the exact z translation needed
+      let xIndex = xTree / size.x * (xDimension - 1);
+      let yIndex = yTree / size.y * (zDimension - 1);
+
+      let x1 = Math.floor(xIndex);
+      let y1 = Math.floor(yIndex);
+      let x2 = Math.ceil(xIndex);
+      let y2 = Math.ceil(yIndex);
+
+      let dx1 = xIndex - x1;
+      let dy1 = yIndex - y1;
+      let dx2 = x2 - xIndex;
+      let dy2 = y2 - yIndex;
+
+      let h11 = heights[x1][y1];
+      let h12 = heights[x1][y2];
+      let h21 = heights[x2][y1];
+      let h22 = heights[x2][y2];
+
+      let h1 = h11 * (1 - dy1) + h12 * (1 - dy2);
+      let h2 = h21 * (1 - dy1) + h22 * (1 - dy2);
+      let h = h1 * (1 - dx1) + h2 * (1 - dx2);
+
+      trees.push({x: xTree, y: yTree, z: h, angle: wbrandom.real(2 * Math.PI), size: treeSize});
     }
   >%
   Solid {
@@ -146,8 +168,8 @@ PROTO UnevenForest [
     rotation IS rotation
     children [
       DEF UNEVEN_TERRAIN_ELEVATION_GRID Transform {
-        translation %<= - size.x * 0.5 >% %<= size.y * 0.5 >% 0
-        rotation 1 0 0 1.5708
+        translation 0 0 0
+        rotation 0.5773509358554485 0.5773489358556708 0.5773509358554485 2.0944
         children [
           Shape {
             appearance IS appearance
@@ -172,7 +194,7 @@ PROTO UnevenForest [
       }
       %< for (let i = 0; i < numberOfTree; ++i) { >%
         Sassafras {
-          translation %<= trees[i].x - size.x * 0.5 >% %<= trees[i].y - size.y * 0.5 >% %<= trees[i].z >%
+          translation %<= trees[i].x >% %<= trees[i].y >% %<= trees[i].z>%
           %<
             const rA = {x: 0, y: 0, z: 1, a: trees[i].angle}
             const rB = {x: 1, y: 0, z: 0, a: Math.PI / 2}
@@ -185,7 +207,6 @@ PROTO UnevenForest [
       %< } >%
     ]
     name IS name
-    model "uneven terrain"
     boundingObject USE UNEVEN_TERRAIN_ELEVATION_GRID
   }
 }
