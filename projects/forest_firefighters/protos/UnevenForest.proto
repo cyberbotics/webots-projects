@@ -11,10 +11,11 @@ PROTO UnevenForest [
   field SFString   name           "uneven forest"
   field SFVec3f    size           100 100 30                                                            # Defines the size of the terrain.
   field SFInt32    xDimension     50                                                                 # Defines the number of points in the grid height array in the x direction.
-  field SFInt32    zDimension     50                                                                 # Defines the number of points in the grid height array in the y direction.
+  field SFInt32    yDimension     50                                                                 # Defines the number of points in the grid height array in the y direction.
   field SFFloat    density        0.01
+  field SFFloat    margin         20                                                                 
   field SFFloat    maxTreeSize    2                                                                  # Defines the maximum size of the trees.
-  field SFFloat    minTreeSize    0.2                                                                  # Defines the minimum size of the trees.                                                              
+  field SFFloat    minTreeSize    1                                                                  # Defines the minimum size of the trees.                                                              
   field SFNode     appearance     Grass { textureTransform TextureTransform { scale 50 50 } }  # Defines the appearance of the terrain.
   field SFInt32    randomSeed     1                                                                  # Defines the seed of the random number generator. A value smaller or equal to 0 sets a random seed.
   field SFBool     flatCenter     FALSE                                                              # Defines whether the center of the terrain should be flat.
@@ -90,10 +91,10 @@ PROTO UnevenForest [
       console.error('\'xDimension\' must be bigger than 2. Value reset to ' + xDimension + '.');
     }
 
-    let zDimension = fields.zDimension.value;
-    if (zDimension < 2) {
-      zDimension = fields.zDimension.defaultValue;
-      console.error('\'zDimension\' must be bigger than 2. Value reset to ' + zDimension + '.');
+    let yDimension = fields.yDimension.value;
+    if (yDimension < 2) {
+      yDimension = fields.yDimension.defaultValue;
+      console.error('\'yDimension\' must be bigger than 2. Value reset to ' + yDimension + '.');
     }
 
     let heights = []
@@ -101,10 +102,10 @@ PROTO UnevenForest [
     // compute the height of each point in the elevation grid
     for (let i = 0; i <= xDimension - 1; ++i) {
       let heightsLine = []
-      for (let j = 0; j <= zDimension - 1; ++j) {
+      for (let j = 0; j <= yDimension - 1; ++j) {
         let height = 1.0;
         const x = i / xDimension;
-        const z = j / zDimension;
+        const z = j / yDimension;
         if (nOctave > 0)
             height = 0.5 * (1.0 + fBm(x, z, perlinSize, nOctave, dirs, perm));
 
@@ -126,6 +127,12 @@ PROTO UnevenForest [
       console.error('\'density\' must be greater or equal to 0. Value reset to ' + density + '.');
     }
 
+    let margin = fields.margin.value;
+    if (margin < 0) {
+      density = fields.density.defaultValue;
+      console.error('\'margin\' must be greater or equal to 0. Value reset to ' + margin + '.');
+    }
+
     let numberOfTree = Math.round(fields.size.value.x *  fields.size.value.y * density);
     let maxTreeSize = fields.maxTreeSize.value;
     let minTreeSize = fields.minTreeSize.value;
@@ -133,13 +140,13 @@ PROTO UnevenForest [
 
     // generate the list of trees
     for (let i = 0; i < numberOfTree; ++i) {
-      let xTree = wbrandom.real(0, size.x);
-      let yTree = wbrandom.real(0, size.y);
+      let xTree = wbrandom.real(margin, size.x - margin);
+      let yTree = wbrandom.real(margin, size.y - margin);
       let treeSize = wbrandom.real(minTreeSize, maxTreeSize);
 
       // compute the exact z translation needed
       let xIndex = xTree / size.x * (xDimension - 1);
-      let yIndex = yTree / size.y * (zDimension - 1);
+      let yIndex = yTree / size.y * (yDimension - 1);
 
       let x1 = Math.floor(xIndex);
       let y1 = Math.floor(yIndex);
@@ -174,11 +181,11 @@ PROTO UnevenForest [
           Shape {
             appearance IS appearance
             geometry ElevationGrid {
-              %< if (xDimension > 2 && zDimension > 2) { >%
-                xDimension IS xDimension
-                xSpacing %<= size.x / (xDimension - 1) >%
-                zDimension IS zDimension
-                zSpacing %<= size.y / (zDimension - 1) >%
+              %< if (xDimension > 2 && yDimension > 2) { >%
+                xDimension IS yDimension
+                xSpacing %<= size.y / (yDimension - 1) >%
+                zDimension IS xDimension
+                zSpacing %<= size.x / (xDimension - 1) >%
 
                 height [
                   %< for (let i = 0; i <= heights.length - 1; ++i) { >%
