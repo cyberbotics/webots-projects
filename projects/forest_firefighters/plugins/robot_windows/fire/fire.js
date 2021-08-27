@@ -5,15 +5,16 @@ var canvas = document.getElementById("canvas");
 const centerOffset = canvas.height / 2;
 const radius = 0.8 * centerOffset;
 const pointerLength = 0.75 * centerOffset;
-const axis_width = 0.01 * centerOffset
+const axisWidth = 0.01 * centerOffset
 
 var ctx = canvas.getContext("2d");
 ctx.translate(centerOffset, centerOffset);
 
+// initialize the robot window
 window.onload = function() {
   window.robotWindow = webots.window();
   window.robotWindow.setTitle('Fire');
-  drawFace(radius);
+  drawDial(radius);
   window.robotWindow.receive = receive;
 };
 
@@ -51,65 +52,75 @@ function receive(message) {
 }
 
 function drawWindIndicator(angle, intensity) {
-  drawFace();
-  displayWind(angle, intensity);
+  drawDial();
+  drawHand(angle, intensity);
 }
 
-function drawFace() {
+function drawDial() {
+  // white circle
   ctx.beginPath();
   ctx.arc(0, 0, radius, 0, 2*Math.PI);
   ctx.fillStyle = 'white';
   ctx.fill();
 
+  // black disk
   ctx.beginPath();
-  ctx.lineWidth = axis_width;
+  ctx.lineWidth = axisWidth;
   ctx.arc(0, 0, radius, 0, 2*Math.PI);
+  ctx.strokeStyle = 'black';
   ctx.stroke();
 
+  // small center black circle
   ctx.beginPath();
-  ctx.arc(0, 0, 3 * axis_width, 0, 2*Math.PI);
+  ctx.arc(0, 0, 3 * axisWidth, 0, 2*Math.PI);
   ctx.fillStyle = 'black';
   ctx.fill();
 
+  // x and y axis
   drawAxis('red', Math.PI / 2, 'x')
   drawAxis('green', 0, 'y')
 }
 
 function drawAxis(color, angle, letter) {
+
+  // axis shape
   ctx.beginPath();
   ctx.moveTo(0,0);
   ctx.rotate(angle)
 
   ctx.lineCap = "round";
-  ctx.lineWidth = axis_width;
+  ctx.lineWidth = axisWidth;
 
   ctx.lineTo(0, -pointerLength);
-  ctx.lineTo(-4 * axis_width, -pointerLength + 4 * axis_width);
+  ctx.lineTo(-4 * axisWidth, -pointerLength + 4 * axisWidth);
   ctx.lineTo(0, -pointerLength);
-  ctx.lineTo(4 * axis_width, -pointerLength + 4 * axis_width);
+  ctx.lineTo(4 * axisWidth, -pointerLength + 4 * axisWidth);
   ctx.strokeStyle = color;
   ctx.stroke();
 
-  ctx.font = '30px verdana';
+  // axis letter
+  ctx.font = '25px Arial';
   ctx.fillStyle = color;
-  ctx.fillText(letter, -4 * axis_width, -radius - 5 * axis_width);
+  ctx.fillText(letter, -4 * axisWidth, -radius - 5 * axisWidth);
 
   ctx.rotate(-angle)
-  ctx.strokeStyle = 'black';
 }
 
-function displayWind(angle, intensity) {
+function drawHand(angle, intensity) {
+  // wind hand for the direction
   let alpha = angle + Math.PI/2 % (2 * Math.PI)
   ctx.beginPath();
-  ctx.lineWidth = 2 * axis_width;
+  ctx.lineWidth = 2 * axisWidth;
   ctx.lineCap = "round";
   ctx.moveTo(0,0);
   ctx.rotate(alpha);
   ctx.lineTo(0, -pointerLength);
+  ctx.strokeStyle = 'black';
   ctx.stroke();
 
+  // wind circle for the intensity
   ctx.beginPath();
-  ctx.arc(0, -intensity * pointerLength, 5 * axis_width, 0, 2*Math.PI);
+  ctx.arc(0, -intensity * pointerLength, 5 * axisWidth, 0, 2*Math.PI);
   ctx.fillStyle = 'black';
   ctx.fill();
   

@@ -5,10 +5,12 @@
 </head>
 
 <body>
-  <h2>Wind direction and intensity:</h2>
-  <canvas id="canvas" width="400" height="400"
-    style="background-color:white">
+  <h2>Wind controller</h2>
+  <p>The wind direction and intensity can be controlled using the figure below:</p>
+  <canvas id="canvas" width="300" height="300"
+    style="background-color:rgb(190, 190, 190)">
   </canvas>
+  <p>The wind can have a random evolution over the time:</p>
   <label id="input-check"><input onchange="toggleStopCheckbox(this)" type="checkbox"><span>Stop random evolution</span></label>
   <script src="fire.js"></script>
 </body>
