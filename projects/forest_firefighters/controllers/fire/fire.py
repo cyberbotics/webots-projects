@@ -23,19 +23,15 @@ import random
 from controller import Supervisor, Robot
 
 class Tree:
+    robustness_variation = 2
+
     def __init__(self, node):
         self.node = node
         self.fire = None
         self.fire_count = 0
         self.translation = node.getField('translation').getSFVec3f()
         self.size = node.getField('size').getSFFloat()
-        self.robustness = random.uniform(0.05, 0.15)
-
-    def distance(self, t):  # distance with another tree
-        dx = self.translation[0] - t.translation[0]
-        dy = self.translation[1] - t.translation[1]
-        dz = self.translation[2] - t.translation[2]
-        return math.sqrt(dx * dx + dy * dy + dz * dz)
+        self.robustness = random.uniform(self.robustness_variation, self.robustness_variation)
 
 class Wind():
     intensity_evolve = 0.01
@@ -51,7 +47,7 @@ class Wind():
             self.intensity = max(0, min(1, self.intensity + self.intensity_evolve * random.uniform(-1, 1)))
             self.angle = self.angle + self.angle_evolve * random.uniform(-2 * math.pi, 2 * math.pi) % (2 * math.pi) 
 
-    def update(self, message):
+    def update(self, message): # update the wind according to the message
         if message == "stop":
             self.random_evolution = False
         elif message == "start":
@@ -61,7 +57,7 @@ class Wind():
             self.angle = wind["angle"]
             self.intensity = wind["intensity"]
 
-    def correctedDistance(self, tree1, tree2, propagation_radius):
+    def correctedDistance(self, tree1, tree2, propagation_radius): # distance between two trees considering the wind
         x_wind = self.intensity * math.cos(self.angle)
         y_wind = self.intensity * math.sin(self.angle)
         dx = tree1.translation[0] + propagation_radius * x_wind - tree2.translation[0]
@@ -73,34 +69,39 @@ class Fire(Supervisor):
     time_step = 128
     flame_cycle = 13  # there are 13 images in the flame animation
     flame_peak = 17   # after 17 flame cycles, the fire starts to decrease
-    max_propagation = 30 # the maximum distance that the fire can propagate in meter
+    max_propagation = 20 # the maximum distance that the fire can propagate in meter
 
     def __init__(self):
         super(Fire, self).__init__()
-        root = self.getRoot()
-        self.children = root.getField("children")
-        self.trees = []
-        self.findAllTrees(root)
 
         self.wind = Wind()
+
+        root = self.getRoot()
+        self.children = root.getField('children')
+
+        self.trees = []
+
+        # Add all the Sassafras trees from the forest to the list of trees
+        n = self.children.getCount()
+        for i in range(n):
+            child = self.children.getMFNode(i)
+            child_name = child.getField('name')
+            if child_name is not None:
+                if child_name.getSFString()  == 'uneven forest':
+                    forest_children = child.getField('children')
+                    if forest_children is not None:
+                        m = forest_children.getCount()
+                        for j in range(m):
+                            forest_child = forest_children.getMFNode(j)
+                            if forest_child.getTypeName() == 'Sassafras':
+                                self.trees.append(Tree(forest_child))
+
         n = len(self.trees)
         if n == 0:
             print('No sassafras tree found.')
         else:
             print(f'Starting wildfire in a forest of {n} sassafras trees.')
             self.ignite(random.choice(self.trees))
-
-    # find all "Sassafras" trees recursively and add them to the tree list
-    def findAllTrees(self, node):
-        children = node.getField("children")
-        if children is not None:
-            n = children.getCount()
-            for i in range(n):
-                child = children.getMFNode(i)
-                if child.getTypeName() == "Sassafras":
-                    self.trees.append(Tree(child))
-                else:
-                    self.findAllTrees(child)
 
     def ignite(self, tree):
         if tree.fire_count > 1:  # already burnt
