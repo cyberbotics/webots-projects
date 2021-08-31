@@ -20,7 +20,7 @@ import json
 import math
 import random
 
-from controller import Supervisor, Robot
+from controller import Supervisor
 
 class Tree:
     robustness_variation = 2
@@ -32,6 +32,37 @@ class Tree:
         self.translation = node.getField('translation').getSFVec3f()
         self.size = node.getField('size').getSFFloat()
         self.robustness = random.uniform(self.robustness_variation, self.robustness_variation)
+
+    def distance(self, coordinates):
+        dx = self.translation[0] - coordinates[0]
+        dy = self.translation[1] - coordinates[1]
+        dz = self.translation[2] - coordinates[2]
+        return math.sqrt(dx * dx + dy * dy + dz * dz)
+
+class Robot():
+    def __init__(self, node):
+        self.node = node
+        self.name = node.getField('name').getSFString()
+        self.droppingWater = False
+        self.waterBalls = []
+
+    def dropWater(self, children, quantity):
+        position = self.node.getField('translation').getSFVec3f()
+
+        radius = min(0.3, 0.01 * quantity)
+        water = f'Water {{ translation {position[0]} {position[1]} {position[2]} ' \
+                         f'radius {radius} ' \
+                         f'name "water {len(self.waterBalls)} {self.name}" }}'
+        children.importMFNodeFromString(-1, water)
+        self.waterBalls.append(children.getMFNode(-1))
+
+    def cleanWater(self):
+        for waterBall in self.waterBalls:
+            altitude = waterBall.getField('translation').getSFVec3f()[2]
+            if altitude < 0:
+                self.waterBalls.remove(waterBall)
+                waterBall.remove()
+
 
 class Wind():
     intensity_evolve = 0.01
@@ -66,13 +97,15 @@ class Wind():
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 class Fire(Supervisor):
-    time_step = 128
     flame_cycle = 13  # there are 13 images in the flame animation
     flame_peak = 17   # after 17 flame cycles, the fire starts to decrease
     max_propagation = 20 # the maximum distance that the fire can propagate in meter
+    max_extinction = 5 # the maximum distance from a tree where water can stop its fire in meter
 
     def __init__(self):
         super(Fire, self).__init__()
+
+        self.time_step = int(self.getBasicTimeStep())
 
         self.wind = Wind()
 
@@ -81,10 +114,13 @@ class Fire(Supervisor):
 
         self.trees = []
 
-        # Add all the Sassafras trees from the forest to the list of trees
+        self.robots = []
+
         n = self.children.getCount()
         for i in range(n):
             child = self.children.getMFNode(i)
+
+            # Add all the Sassafras trees from the forest to the list of trees
             child_name = child.getField('name')
             if child_name is not None:
                 if child_name.getSFString()  == 'uneven forest':
@@ -95,6 +131,11 @@ class Fire(Supervisor):
                             forest_child = forest_children.getMFNode(j)
                             if forest_child.getTypeName() == 'Sassafras':
                                 self.trees.append(Tree(forest_child))
+
+            # Add all the robot that may extinguish the fire
+            if child.getBaseTypeName() == 'Robot':
+                if child.getField('translation') is not None and child.getField('customData') is not None:
+                    self.robots.append(Robot(child))
 
         n = len(self.trees)
         if n == 0:
@@ -122,7 +163,7 @@ class Fire(Supervisor):
             if tree.fire_count == self.flame_peak * self.flame_cycle:
                 tree.node.getField('burnt').setSFBool(True)
             tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
-            if tree.fire_scale < 1:
+            if tree.fire_scale < tree.size:
                 # tree.fire.remove()  # crashes Webots
                 tree.fire = None
         t = [tree.fire_translation[0], tree.fire_translation[1], tree.fire_translation[2]]
@@ -142,6 +183,15 @@ class Fire(Supervisor):
             if distance + t.robustness < propagation_radius:
                 self.ignite(t)
 
+    def checkExtinction(self, tree):  # check and extinct the fire if there is water close enough
+        for robot in self.robots:
+            for water in robot.waterBalls:
+                water_position = water.getField('translation').getSFVec3f()
+                if tree.distance(water_position) < self.max_extinction:
+                    print("Good job")
+                    tree.fire.remove()  # crashes Webots
+                    tree.fire = None
+
     def run(self):
         while True:
             if self.step(self.time_step) == -1:
@@ -153,10 +203,20 @@ class Fire(Supervisor):
 
             self.wind.evolve()
             self.wwiSendText('{"angle":%f, "intensity":%f}' % (self.wind.angle, self.wind.intensity))
+
+            for robot in self.robots:
+                robot.cleanWater()
+
+                customData = robot.node.getField('customData').getSFString()
+                if customData != "":
+                    quantity_of_water = int(customData)
+                    if quantity_of_water > 0:
+                        robot.dropWater(self.children, quantity_of_water)
+
             for tree in self.trees:
                 if tree.fire:
                     self.burn(tree)
-
+                    self.checkExtinction(tree)
 
 controller = Fire()
 controller.run()

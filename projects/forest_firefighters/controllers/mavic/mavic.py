@@ -23,6 +23,8 @@ class Mavic (Robot):
         self.keyboard = self.getKeyboard()
         self.keyboard.enable(10 * self.timeStep)
 
+        self.water_to_drop = 0
+
         # Get and enable devices.
         self.camera = self.getDevice("camera")
         self.camera.enable(self.timeStep)
@@ -71,6 +73,15 @@ class Mavic (Robot):
 
             key = self.keyboard.getKey()
 
+            # Drop the water from the drone
+            if key == ord('D'):
+                self.water_to_drop += 1
+            elif self.water_to_drop > 0:
+                self.setCustomData(str(self.water_to_drop))
+                self.water_to_drop = 0
+            else:
+                self.setCustomData(str(0))
+
             if key == Keyboard.LEFT:
                 yaw_disturbance = 1.3  
             elif key == Keyboard.RIGHT:
@@ -80,10 +91,10 @@ class Mavic (Robot):
             elif key == Keyboard.DOWN:
                 pitch_disturbance = 2
             elif key == Keyboard.UP + Keyboard.SHIFT:
-                self.target_altitude += 0.05;
+                self.target_altitude += 0.05
                 print(f"target altitude: {self.target_altitude} [m]\n")
             elif key == Keyboard.DOWN + Keyboard.SHIFT:
-                self.target_altitude -= 0.05;
+                self.target_altitude -= 0.05
                 print(f"target altitude: {self.target_altitude} [m]\n")
 
             roll_input = self.K_ROLL_P * clamp(roll, -1, 1) + roll_acceleration + roll_disturbance

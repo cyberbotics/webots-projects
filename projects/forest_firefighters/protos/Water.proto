@@ -1,0 +1,40 @@
+#VRML_SIM R2021b utf8
+# license: Creative Commons Attribution 4.0 International License.
+# license url: https://creativecommons.org/licenses/by/4.0/legalcode
+# A fire with flame animation
+
+PROTO Water [
+  field SFVec3f    translation       0 0 0
+  field SFFloat    radius            0.1
+  field SFString   name              "water"
+]
+{
+  Solid {
+    translation IS translation
+    name IS name
+    children [
+      Shape {
+        appearance PBRAppearance {
+          baseColor 0.447059 0.623529 0.811765
+          transparency 0.5
+          metalness 0
+        }
+        geometry Sphere {
+          radius IS radius
+        }
+      }
+    ]
+    physics Physics {
+      density -1
+      mass 1
+      centerOfMass [
+        0 0 0
+      ]
+      inertiaMatrix [
+        1 1 1
+        0 0 0
+      ]
+    }
+  }
+}
+
