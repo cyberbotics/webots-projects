@@ -43,6 +43,17 @@ class Mavic (Robot):
             motor.setPosition(float('inf'))
             motor.setVelocity(1)
 
+        # Display manual control message.
+        print("You can control the drone with your computer keyboard:");
+        print("- 'up': move forward.");
+        print("- 'down': move backward.");
+        print("- 'right': turn right.");
+        print("- 'left': turn left.");
+        print("- 'shift + up': increase the target altitude.");
+        print("- 'shift + down': decrease the target altitude.");
+        print("- 'shift + right': strafe right.");
+        print("- 'shift + left': strafe left.");
+
     def run(self):
 
         while self.step(self.timeStep) != -1:
