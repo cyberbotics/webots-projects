@@ -1,53 +1,100 @@
 import math
-from controller import Robot, Camera, IMU
+from controller import Robot, Keyboard
 
-TIME_STEP = 32
+def clamp(value, value_min, value_max):
+    return min(max(value, value_min), value_max)
 
-robot = Robot()
+class Mavic (Robot):
+    # Constants, empirically found.
+    K_VERTICAL_THRUST = 68.5  # with this thrust, the drone lifts.
+    K_VERTICAL_OFFSET = 0.6   # Vertical offset where the robot actually targets to stabilize itself.
+    K_VERTICAL_P = 3.0        # P constant of the vertical PID.
+    K_ROLL_P = 50.0           # P constant of the roll PID.
+    K_PITCH_P = 30.0;         # P constant of the pitch PID.
 
-# Get and enable devices.
-camera = robot.getDevice("camera")
-camera.enable(TIME_STEP)
-imu = robot.getDevice("inertial unit")
-imu.enable(TIME_STEP)
-gps = robot.getDevice("gps")
-gps.enable(TIME_STEP)
-compass = robot.getDevice("compass")
-compass.enable(TIME_STEP)
-gyro = robot.getDevice("gyro")
-gyro.enable(TIME_STEP)
+    target_altitude = 20
 
+    def __init__(self):
+        Robot.__init__(self)
 
-front_left_motor = robot.getDevice("front left propeller");
-front_right_motor = robot.getDevice("front right propeller");
-rear_left_motor = robot.getDevice("rear left propeller");
-rear_right_motor = robot.getDevice("rear right propeller");
-motors = {front_left_motor, front_right_motor, rear_left_motor, rear_right_motor};
-for motor in motors: 
-    motor.setPosition(float('inf'))
-    motor.setVelocity(1.0)
+        self.timeStep = int(self.getBasicTimeStep())
 
-# Wait one second.
-while robot.step(TIME_STEP) != -1:
-    if robot.getTime() > 1:
-        break
+        # keyboard
+        self.keyboard = self.getKeyboard()
+        self.keyboard.enable(10 * self.timeStep)
 
-# Constants, empirically found.
-k_vertical_thrust = 68.5  # with this thrust, the drone lifts.
-k_vertical_offset = 0.6   # Vertical offset where the robot actually targets to stabilize itself.
-k_vertical_p = 3.0        # P constant of the vertical PID.
-k_roll_p = 50.0           # P constant of the roll PID.
-k_pitch_p = 30.0;         # P constant of the pitch PID.
-
-while robot.step(TIME_STEP) != -1:
-    roll = imu.getRollPitchYaw() + math.PI / 2.0
-    const double pitch = wb_inertial_unit_get_roll_pitch_yaw(imu)[1];
-    const double altitude = wb_gps_get_values(gps)[1];
-    const double roll_acceleration = wb_gyro_get_values(gyro)[0];
-    const double pitch_acceleration = wb_gyro_get_values(gyro)[1];
+        # Get and enable devices.
+        self.camera = self.getDevice("camera")
+        self.camera.enable(self.timeStep)
+        self.imu = self.getDevice("inertial unit")
+        self.imu.enable(self.timeStep)
+        self.gps = self.getDevice("gps")
+        self.gps.enable(self.timeStep)
+        self.gyro = self.getDevice("gyro")
+        self.gyro.enable(self.timeStep)
 
 
-    front_right_motor.setVelocity(-150)
-    rear_left_motor.setVelocity(-150)
-    front_left_motor.setVelocity(150)
-    rear_right_motor.setVelocity(150)
+        self.front_left_motor = self.getDevice("front left propeller");
+        self.front_right_motor = self.getDevice("front right propeller");
+        self.rear_left_motor = self.getDevice("rear left propeller");
+        self.rear_right_motor = self.getDevice("rear right propeller");
+        motors = {self.front_left_motor, self.front_right_motor, self.rear_left_motor, self.rear_right_motor};
+        for motor in motors: 
+            motor.setPosition(float('inf'))
+            motor.setVelocity(1)
+
+    def run(self):
+
+        while self.step(self.timeStep) != -1:
+            roll_ref = 0
+            pitch_ref = 0
+
+            # Read sensors
+            roll, pitch, _ = self.imu.getRollPitchYaw()
+            _, _, altitude = self.gps.getValues()
+            roll_acceleration, pitch_acceleration, _ = self.gyro.getValues()
+
+            roll_disturbance = 0
+            pitch_disturbance = 0
+            yaw_disturbance = 0
+
+            key = self.keyboard.getKey()
+
+            if key == Keyboard.LEFT:
+                yaw_disturbance = 1.3  
+            elif key == Keyboard.RIGHT:
+                yaw_disturbance = -1.3  
+            elif key == Keyboard.UP:
+                pitch_disturbance = -2
+            elif key == Keyboard.DOWN:
+                pitch_disturbance = 2
+            elif key == Keyboard.UP + Keyboard.SHIFT:
+                self.target_altitude += 0.05;
+                print(f"target altitude: {self.target_altitude} [m]\n")
+            elif key == Keyboard.DOWN + Keyboard.SHIFT:
+                self.target_altitude -= 0.05;
+                print(f"target altitude: {self.target_altitude} [m]\n")
+
+            roll_input = self.K_ROLL_P * clamp(roll, -1, 1) + roll_acceleration + roll_disturbance
+            pitch_input = self.K_PITCH_P * clamp(pitch, -1, 1) + pitch_acceleration + pitch_disturbance
+            yaw_input = yaw_disturbance
+            clamped_difference_altitude = clamp(self.target_altitude - altitude + self.K_VERTICAL_OFFSET, -1, 1)
+            vertical_input = self.K_VERTICAL_P * pow(clamped_difference_altitude, 3.0)
+
+            front_left_motor_input = self.K_VERTICAL_THRUST + vertical_input - yaw_input + pitch_input - roll_input
+            front_right_motor_input = self.K_VERTICAL_THRUST + vertical_input + yaw_input + pitch_input + roll_input
+            rear_left_motor_input = self.K_VERTICAL_THRUST + vertical_input + yaw_input - pitch_input - roll_input
+            rear_right_motor_input = self.K_VERTICAL_THRUST + vertical_input - yaw_input - pitch_input + roll_input
+
+            self.front_left_motor.setVelocity(front_left_motor_input)
+            self.front_right_motor.setVelocity(-front_right_motor_input)
+            self.rear_left_motor.setVelocity(-rear_left_motor_input)
+            self.rear_right_motor.setVelocity(rear_right_motor_input)
+
+robot = Mavic()
+robot.run()
+
+
+
+
+
