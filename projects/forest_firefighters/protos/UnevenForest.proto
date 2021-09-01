@@ -9,14 +9,14 @@ PROTO UnevenForest [
   field SFVec3f    translation    0 0 0
   field SFRotation rotation       0 1 0 0
   field SFString   name           "uneven forest"
-  field SFVec3f    size           100 100 30                                                            # Defines the size of the terrain.
-  field SFInt32    xDimension     50                                                                 # Defines the number of points in the grid height array in the x direction.
-  field SFInt32    yDimension     50                                                                 # Defines the number of points in the grid height array in the y direction.
-  field SFFloat    density        0.01
-  field SFFloat    margin         20                                                                 
+  field SFVec3f    size           50 50 30                                                            # Defines the size of the terrain.
+  field SFInt32    xDimension     15                                                                 # Defines the number of points in the grid height array in the x direction.
+  field SFInt32    yDimension     15                                                                 # Defines the number of points in the grid height array in the y direction.
+  field SFFloat    density        0.02
+  field SFFloat    margin         5                                                                 
   field SFFloat    maxTreeSize    2                                                                  # Defines the maximum size of the trees.
   field SFFloat    minTreeSize    1                                                                  # Defines the minimum size of the trees.                                                              
-  field SFNode     appearance     Grass { textureTransform TextureTransform { scale 50 50 } }  # Defines the appearance of the terrain.
+  field SFNode     appearance     Grass { textureTransform TextureTransform { scale 20 20 } }  # Defines the appearance of the terrain.
   field SFInt32    randomSeed     1                                                                  # Defines the seed of the random number generator. A value smaller or equal to 0 sets a random seed.
   field SFBool     flatCenter     FALSE                                                              # Defines whether the center of the terrain should be flat.
   field SFBool     flatBounds     FALSE                                                              # Defines whether the bounds of the terrain should be flat.
