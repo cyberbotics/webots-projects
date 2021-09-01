@@ -1,3 +1,6 @@
+
+
+
 # Forest Firefighters
 
 This simulation is current work in progress.
@@ -10,3 +13,7 @@ They will also be able to improve the models of the robot and even design new on
 This video shows a wildfire propagating into one tree until the tree is completely burnt:
 
 https://user-images.githubusercontent.com/1264964/130241653-c0fd0966-1ce2-41d1-aeae-452a187b95be.mp4
+
+This video shows a Mavic Pro 2 that fight against a wildfire:
+
+https://user-images.githubusercontent.com/12995815/131648261-67f3d973-30f2-4d91-a550-ccf24815a8ec.mp4
