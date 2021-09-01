@@ -104,7 +104,7 @@ class Wind():
 
 class Fire(Supervisor):
     flame_cycle = 13        # there are 13 images in the flame animation
-    flame_peak = 17         # after 30 flame cycles, the fire starts to decrease
+    flame_peak = 17         # after 13 flame cycles, the fire starts to decrease
     max_propagation = 8     # the maximum distance that the fire can propagate in meter
     max_extinction = 4      # the maximum distance from a tree where water can stop its fire in meter
     fire_duration = 10
