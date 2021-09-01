@@ -33,6 +33,14 @@ class Tree:
         self.size = node.getField('size').getSFFloat()
         self.robustness = random.uniform(self.robustness_variation, self.robustness_variation)
 
+    def stopFire(self):
+        fire_translation_field = self.fire.getField('translation')
+        fire_translation = fire_translation_field.getSFVec3f()
+        t = [fire_translation[0], fire_translation[1], fire_translation[2]]
+        t[1] = 10000000
+        fire_translation_field.setSFVec3f(t)
+        self.fire = None
+
     def distance(self, coordinates):
         dx = self.translation[0] - coordinates[0]
         dy = self.translation[1] - coordinates[1]
@@ -99,14 +107,16 @@ class Wind():
 class Fire(Supervisor):
     flame_cycle = 13  # there are 13 images in the flame animation
     flame_peak = 17   # after 17 flame cycles, the fire starts to decrease
-    max_propagation = 20 # the maximum distance that the fire can propagate in meter
-    max_extinction = 5 # the maximum distance from a tree where water can stop its fire in meter
+    max_propagation = 10 # the maximum distance that the fire can propagate in meter
+    max_extinction = 4 # the maximum distance from a tree where water can stop its fire in meter
+    fire_duration = 10
 
     def __init__(self):
         super(Fire, self).__init__()
 
         self.time_step = int(self.getBasicTimeStep())
-
+        self.fire_clock = 0
+        
         self.wind = Wind()
 
         root = self.getRoot()
@@ -157,19 +167,19 @@ class Fire(Supervisor):
         tree.fire_translation = tree.fire_translation_field.getSFVec3f()
 
     def burn(self, tree):
-        tree.fire_count += 1
-        if tree.fire_count % self.flame_cycle == 0:
-            tree.fire_scale *= 1.2 if tree.fire_count < self.flame_peak * self.flame_cycle else 0.8
-            if tree.fire_count == self.flame_peak * self.flame_cycle:
-                tree.node.getField('burnt').setSFBool(True)
-            tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
-            if tree.fire_scale < tree.size:
-                # tree.fire.remove()  # crashes Webots
-                tree.fire = None
-        t = [tree.fire_translation[0], tree.fire_translation[1], tree.fire_translation[2]]
-        t[1] -= 100000 * tree.fire_scale * (tree.fire_count % 13)
-        tree.fire_translation_field.setSFVec3f(t)
-        self.propagate(tree)
+        if self.update_fire:
+            tree.fire_count += 1
+            if tree.fire_count % self.flame_cycle == 0:
+                tree.fire_scale *= 1.2 if tree.fire_count < self.flame_peak * self.flame_cycle else 0.8
+                if tree.fire_count == self.flame_peak * self.flame_cycle:
+                    tree.node.getField('burnt').setSFBool(True)
+                tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
+                if tree.fire_scale < tree.size:
+                    tree.stopFire()
+            t = [tree.fire_translation[0], tree.fire_translation[1], tree.fire_translation[2]]
+            t[1] -= 100000 * tree.fire_scale * (tree.fire_count % 13)
+            tree.fire_translation_field.setSFVec3f(t)
+            self.propagate(tree)
 
     def propagate(self, tree):  # propagate fire to neighbouring trees
         fire_peak = self.flame_peak * self.flame_cycle
@@ -189,13 +199,19 @@ class Fire(Supervisor):
                 water_position = water.getField('translation').getSFVec3f()
                 if tree.distance(water_position) < self.max_extinction:
                     print("Good job")
-                    tree.fire.remove()  # crashes Webots
-                    tree.fire = None
+                    tree.stopFire()
 
     def run(self):
         while True:
-            if self.step(self.time_step) == -1:
+            step = self.step(self.time_step)
+            if step == -1:
                 break
+            if self.fire_clock == self.fire_duration:
+                self.update_fire = True
+                self.fire_clock = 0
+            else:
+                self.update_fire = False
+                self.fire_clock += 1
 
             message = self.wwiReceiveText()
             if message:
