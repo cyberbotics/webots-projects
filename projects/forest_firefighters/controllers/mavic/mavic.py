@@ -36,28 +36,26 @@ class Mavic (Robot):
         self.gyro.enable(self.timeStep)
 
 
-        self.front_left_motor = self.getDevice("front left propeller");
-        self.front_right_motor = self.getDevice("front right propeller");
-        self.rear_left_motor = self.getDevice("rear left propeller");
-        self.rear_right_motor = self.getDevice("rear right propeller");
+        self.front_left_motor = self.getDevice("front left propeller")
+        self.front_right_motor = self.getDevice("front right propeller")
+        self.rear_left_motor = self.getDevice("rear left propeller")
+        self.rear_right_motor = self.getDevice("rear right propeller")
         motors = {self.front_left_motor, self.front_right_motor, self.rear_left_motor, self.rear_right_motor};
         for motor in motors: 
             motor.setPosition(float('inf'))
             motor.setVelocity(1)
 
         # Display manual control message.
-        print("You can control the drone with your computer keyboard:");
-        print("- 'up': move forward.");
-        print("- 'down': move backward.");
-        print("- 'right': turn right.");
-        print("- 'left': turn left.");
-        print("- 'shift + up': increase the target altitude.");
-        print("- 'shift + down': decrease the target altitude.");
-        print("- 'shift + right': strafe right.");
-        print("- 'shift + left': strafe left.");
+        print("You can control the drone with your computer keyboard:")
+        print("- 'D': drop water")
+        print("- 'up': move forward.")
+        print("- 'down': move backward.")
+        print("- 'right': turn right.")
+        print("- 'left': turn left.")
+        print("- 'shift + up': increase the target altitude.")
+        print("- 'shift + down': decrease the target altitude.")
 
     def run(self):
-
         while self.step(self.timeStep) != -1:
             roll_ref = 0
             pitch_ref = 0
@@ -82,6 +80,7 @@ class Mavic (Robot):
             else:
                 self.setCustomData(str(0))
 
+            # Movement
             if key == Keyboard.LEFT:
                 yaw_disturbance = 1.3  
             elif key == Keyboard.RIGHT:

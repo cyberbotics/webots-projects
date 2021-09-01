@@ -56,7 +56,6 @@ class Robot():
 
     def dropWater(self, children, quantity):
         position = self.node.getField('translation').getSFVec3f()
-
         radius = min(0.3, 0.01 * quantity)
         water = f'Water {{ translation {position[0]} {position[1]} {position[2]} ' \
                          f'radius {radius} ' \
@@ -70,7 +69,6 @@ class Robot():
             if altitude < 0:
                 self.waterBalls.remove(waterBall)
                 waterBall.remove()
-
 
 class Wind():
     intensity_evolve = 0.01
@@ -105,10 +103,10 @@ class Wind():
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 class Fire(Supervisor):
-    flame_cycle = 13  # there are 13 images in the flame animation
-    flame_peak = 17   # after 17 flame cycles, the fire starts to decrease
-    max_propagation = 10 # the maximum distance that the fire can propagate in meter
-    max_extinction = 4 # the maximum distance from a tree where water can stop its fire in meter
+    flame_cycle = 13        # there are 13 images in the flame animation
+    flame_peak = 17         # after 30 flame cycles, the fire starts to decrease
+    max_propagation = 8     # the maximum distance that the fire can propagate in meter
+    max_extinction = 4      # the maximum distance from a tree where water can stop its fire in meter
     fire_duration = 10
 
     def __init__(self):
@@ -206,6 +204,8 @@ class Fire(Supervisor):
             step = self.step(self.time_step)
             if step == -1:
                 break
+
+            # update the fire_clock
             if self.fire_clock == self.fire_duration:
                 self.update_fire = True
                 self.fire_clock = 0
