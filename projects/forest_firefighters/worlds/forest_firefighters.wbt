@@ -13,8 +13,8 @@ WorldInfo {
   }
 }
 Viewpoint {
-  orientation 0.7192951797355136 -0.4719228313638064 -0.5098071063125968 1.5779962543394248
-  position 8.035143709676946 10.871573567668847 17.263513847637412
+  orientation -0.7182752884467951 0.4644432447966677 0.5180473746380885 4.491077132993059
+  position -3.747126680800066 -0.13287356049084137 19.12926223890851
   near 1
 }
 TexturedBackground {
@@ -29,28 +29,33 @@ Robot {
   window "fire"
 }
 UnevenForest {
-  name "uneven forest(1)"
-  xDimension 100
-  yDimension 100
+  size 30 30 30
+  xDimension 20
+  yDimension 20
+  density 0.03
+  maxTreeSize 1
+  minTreeSize 0.3
   appearance Grass {
     colorOverride 0.756863 0.490196 0.0666667
     type "prickly"
     textureTransform TextureTransform {
-      scale 50 50
+      scale 20 20
     }
   }
-  perlinNOctaves 5
+  perlinNOctaves 4
 }
 SquareManhole {
-  translation 9.42 11.97 16.75
+  translation 4.43 4.08 16.66
   rotation 1 0 0 1.57079633
 }
 Mavic2Pro {
-  translation 9.42 12.02 16.87
+  translation 4.36 4.12 16.79
   rotation 0 0 1 0
   controller "mavic"
+  customData "0"
 }
 Spot {
-  translation 8.06 6.974 16.74
+  translation 5.69 3.594 17.13
   rotation 1 0 0 1.5708
+  controller "spot"
 }
