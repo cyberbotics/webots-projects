@@ -206,7 +206,7 @@ class Fire(Supervisor):
             propagation_radius = self.max_propagation * fire_strength
             distance =  self.wind.correctedDistance(tree, t, propagation_radius)
 
-            if distance + t.robustness < propagation_radius * tree.size:
+            if distance + t.robustness < propagation_radius * math.sqrt(tree.size):
                 self.ignite(t)
 
     def checkExtinction(self, tree):  # check and extinct the fire if there is water close enough
