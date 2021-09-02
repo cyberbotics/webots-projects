@@ -105,7 +105,7 @@ class Wind():
 class Fire(Supervisor):
     flame_cycle = 13        # there are 13 images in the flame animation
     flame_peak = 17         # after 13 flame cycles, the fire starts to decrease
-    max_propagation = 8     # the maximum distance that the fire can propagate in meter
+    max_propagation = 10     # the maximum distance that the fire can propagate in meter
     max_extinction = 4      # the maximum distance from a tree where water can stop its fire in meter
     fire_duration = 10
 
@@ -188,7 +188,7 @@ class Fire(Supervisor):
             propagation_radius = self.max_propagation * fire_strength
             distance =  self.wind.correctedDistance(tree, t, propagation_radius)
 
-            if distance + t.robustness < propagation_radius:
+            if distance + t.robustness < propagation_radius * tree.size:
                 self.ignite(t)
 
     def checkExtinction(self, tree):  # check and extinct the fire if there is water close enough
