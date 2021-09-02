@@ -2,46 +2,68 @@ import math
 from controller import Robot, Keyboard
 
 class Spot (Robot):
-    # Constants, empirically found.
-    K_VERTICAL_THRUST = 68.5  # with this thrust, the drone lifts.
-    K_VERTICAL_OFFSET = 0.6   # Vertical offset where the robot actually targets to stabilize itself.
-    K_VERTICAL_P = 3.0        # P constant of the vertical PID.
-    K_ROLL_P = 50.0           # P constant of the roll PID.
-    K_PITCH_P = 30.0;         # P constant of the pitch PID.
-
-    target_altitude = 20
+    NUMBER_OF_LEDS = 8
+    NUMBER_OF_JOINTS = 12
+    NUMBER_OF_CAMERAS = 5
 
     def __init__(self):
         Robot.__init__(self)
 
-        self.timeStep = int(self.getBasicTimeStep())
+        self.time_step = int(self.getBasicTimeStep())
 
-        motor_list = {  
+        motor_list = [  
             "front left shoulder abduction motor",  "front left shoulder rotation motor",  "front left elbow motor",
             "front right shoulder abduction motor", "front right shoulder rotation motor", "front right elbow motor",
             "rear left shoulder abduction motor",   "rear left shoulder rotation motor",   "rear left elbow motor",
             "rear right shoulder abduction motor",  "rear right shoulder rotation motor",  "rear right elbow motor"
-        }
-        self.motors = dict()
+        ]
+        self.motors = []
         for motor_name in motor_list:
             motor = self.getDevice(motor_name)
-            self.motors[motor_name] = motor
+            self.motors.append(motor)
+
+    def movementDecomposition(self, target, duration):
+        n_steps_to_achieve_target = int(duration * 1000 / self.time_step)
+        step_difference = []
+        current_position = []
+
+        for i in range(self.NUMBER_OF_JOINTS):
+            current_position.append(self.motors[i].getTargetPosition())
+            step_difference.append((target[i] - current_position[i]) / n_steps_to_achieve_target)
+
+        for _ in range(n_steps_to_achieve_target):
+            for j in range(self.NUMBER_OF_JOINTS):
+                if self.step(self.time_step) != -1:
+                    current_position[j] += step_difference[j]
+                    self.motors[j].setPosition(current_position[j])
+
+    def lieDown(self, duration):
+        motors_target_pos = [   -0.40, -0.99, 1.59, # Front left leg
+                                0.40,  -0.99, 1.59, # Front right leg
+                                -0.40, -0.99, 1.59, # Rear left leg
+                                0.40,  -0.99, 1.59] # Rear right
+        self.movementDecomposition(motors_target_pos, duration)
+
+    def standUp(self, duration):
+        motors_target_pos = [   -0.1, 0, 0, # Front left leg
+                                0.1,  0, 0, # Front right leg
+                                -0.1, 0, 0, # Rear left leg
+                                0.1,  0, 0] # Rear right
+        self.movementDecomposition(motors_target_pos, duration)
+
+    def sitDown(self, duration):
+        motors_target_pos = [   -0.20, -0.40, -0.19, # Front left leg
+                                0.20,  -0.40, -0.19, # Front right leg
+                                -0.40, -0.90, 1.18, # Rear left leg
+                                0.40,  -0.90, 1.18] # Rear right
+        self.movementDecomposition(motors_target_pos, duration)
 
     def run(self):
-        while self.step(self.timeStep) != -1:
+        while True:
+            self.lieDown(1)
+            self.standUp(1)
+            self.sitDown(1)
 
-            # Move the left front leg (basic example)
-            time = int(self.getTime())
-            leg = self.motors["front left shoulder rotation motor"]
-            if time % 2 == 0:
-                leg.setPosition(1)
-            else:
-                leg.setPosition(0)
 
 robot = Spot()
 robot.run()
-
-
-
-
-
