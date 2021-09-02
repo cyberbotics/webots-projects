@@ -22,6 +22,15 @@ import random
 
 from controller import Supervisor
 
+def rotate(matrix, vector):
+    result = []
+    for i in range(3):
+        r = 0
+        for j in range(3):
+            r += matrix[3 * i + j] * vector[j]
+        result.append(r)
+    return result
+
 class Tree:
     robustness_variation = 2
 
@@ -51,6 +60,7 @@ class Robot():
     def __init__(self, node):
         self.node = node
         self.name = node.getField('name').getSFString()
+        self.type = node.getTypeName()
         self.droppingWater = False
         self.waterBalls = []
 
@@ -61,7 +71,15 @@ class Robot():
                          f'radius {radius} ' \
                          f'name "water {len(self.waterBalls)} {self.name}" }}'
         children.importMFNodeFromString(-1, water)
-        self.waterBalls.append(children.getMFNode(-1))
+        waterNode = children.getMFNode(-1)
+        self.waterBalls.append(waterNode)
+        
+        # If this is a "Spot" robot, the water it throw will have an initial velocity
+        if self.type == "Spot":
+            rotationMatrix = self.node.getOrientation()
+            orientation = rotate(rotationMatrix, [0, 0, -1])
+            velocity = [i * 10 for i in orientation] + [0, 0, 0]
+            waterNode.setVelocity(velocity)
 
     def cleanWater(self):
         for waterBall in self.waterBalls:

@@ -11,6 +11,12 @@ class Spot (Robot):
 
         self.time_step = int(self.getBasicTimeStep())
 
+        # keyboard
+        self.keyboard = self.getKeyboard()
+        self.keyboard.enable(10 * self.time_step)
+
+        self.water_to_drop = 0
+
         motor_list = [  
             "front left shoulder abduction motor",  "front left shoulder rotation motor",  "front left elbow motor",
             "front right shoulder abduction motor", "front right shoulder rotation motor", "front right elbow motor",
@@ -21,6 +27,21 @@ class Spot (Robot):
         for motor_name in motor_list:
             motor = self.getDevice(motor_name)
             self.motors.append(motor)
+
+    def robotStep(self):
+        if self.step(self.time_step) != -1:
+
+            key = self.keyboard.getKey()
+            
+            # Throw the water from the robot
+            if key == ord('D'):
+                self.water_to_drop += 1
+            elif self.water_to_drop > 0:
+                self.setCustomData(str(self.water_to_drop))
+                self.water_to_drop = 0
+            else:
+                self.setCustomData(str(0))
+
 
     def movementDecomposition(self, target, duration):
         n_steps_to_achieve_target = int(duration * 1000 / self.time_step)
@@ -33,9 +54,9 @@ class Spot (Robot):
 
         for _ in range(n_steps_to_achieve_target):
             for j in range(self.NUMBER_OF_JOINTS):
-                if self.step(self.time_step) != -1:
-                    current_position[j] += step_difference[j]
-                    self.motors[j].setPosition(current_position[j])
+                current_position[j] += step_difference[j]
+                self.motors[j].setPosition(current_position[j])
+                self.robotStep()
 
     def lieDown(self, duration):
         motors_target_pos = [   -0.40, -0.99, 1.59, # Front left leg
