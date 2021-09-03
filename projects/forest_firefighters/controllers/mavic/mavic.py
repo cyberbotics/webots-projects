@@ -1,8 +1,9 @@
-import math
 from controller import Robot, Keyboard
+
 
 def clamp(value, value_min, value_max):
     return min(max(value, value_min), value_max)
+
 
 class Mavic (Robot):
     # Constants, empirically found.
@@ -10,7 +11,7 @@ class Mavic (Robot):
     K_VERTICAL_OFFSET = 0.6   # Vertical offset where the robot actually targets to stabilize itself.
     K_VERTICAL_P = 3.0        # P constant of the vertical PID.
     K_ROLL_P = 50.0           # P constant of the roll PID.
-    K_PITCH_P = 30.0;         # P constant of the pitch PID.
+    K_PITCH_P = 30.0          # P constant of the pitch PID.
 
     target_altitude = 20
 
@@ -35,13 +36,12 @@ class Mavic (Robot):
         self.gyro = self.getDevice("gyro")
         self.gyro.enable(self.timeStep)
 
-
         self.front_left_motor = self.getDevice("front left propeller")
         self.front_right_motor = self.getDevice("front right propeller")
         self.rear_left_motor = self.getDevice("rear left propeller")
         self.rear_right_motor = self.getDevice("rear right propeller")
-        motors = {self.front_left_motor, self.front_right_motor, self.rear_left_motor, self.rear_right_motor};
-        for motor in motors: 
+        motors = [self.front_left_motor, self.front_right_motor, self.rear_left_motor, self.rear_right_motor]
+        for motor in motors:
             motor.setPosition(float('inf'))
             motor.setVelocity(1)
 
@@ -57,9 +57,6 @@ class Mavic (Robot):
 
     def run(self):
         while self.step(self.timeStep) != -1:
-            roll_ref = 0
-            pitch_ref = 0
-
             # Read sensors
             roll, pitch, _ = self.imu.getRollPitchYaw()
             _, _, altitude = self.gps.getValues()
@@ -82,9 +79,9 @@ class Mavic (Robot):
 
             # Movement
             if key == Keyboard.LEFT:
-                yaw_disturbance = 1.3  
+                yaw_disturbance = 1.3
             elif key == Keyboard.RIGHT:
-                yaw_disturbance = -1.3  
+                yaw_disturbance = -1.3
             elif key == Keyboard.UP:
                 pitch_disturbance = -2
             elif key == Keyboard.DOWN:
@@ -112,10 +109,6 @@ class Mavic (Robot):
             self.rear_left_motor.setVelocity(-rear_left_motor_input)
             self.rear_right_motor.setVelocity(rear_right_motor_input)
 
+
 robot = Mavic()
 robot.run()
-
-
-
-
-

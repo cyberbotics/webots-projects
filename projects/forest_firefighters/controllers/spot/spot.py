@@ -1,5 +1,5 @@
-import math
-from controller import Robot, Keyboard
+from controller import Robot
+
 
 class Spot (Robot):
     NUMBER_OF_LEDS = 8
@@ -17,7 +17,7 @@ class Spot (Robot):
 
         self.water_to_drop = 0
 
-        motor_list = [  
+        motor_list = [
             "front left shoulder abduction motor",  "front left shoulder rotation motor",  "front left elbow motor",
             "front right shoulder abduction motor", "front right shoulder rotation motor", "front right elbow motor",
             "rear left shoulder abduction motor",   "rear left shoulder rotation motor",   "rear left elbow motor",
@@ -32,8 +32,8 @@ class Spot (Robot):
         if self.step(self.time_step) != -1:
 
             key = self.keyboard.getKey()
-            
-            # Throw the water from the robot
+
+            # throw the water from the robot
             if key == ord('D'):
                 self.water_to_drop += 1
             elif self.water_to_drop > 0:
@@ -42,7 +42,6 @@ class Spot (Robot):
             else:
                 self.setCustomData(str(0))
 
-
     def movementDecomposition(self, target, duration):
         n_steps_to_achieve_target = int(duration * 1000 / self.time_step)
         step_difference = []
@@ -50,7 +49,8 @@ class Spot (Robot):
 
         for i in range(self.NUMBER_OF_JOINTS):
             current_position.append(self.motors[i].getTargetPosition())
-            step_difference.append((target[i] - current_position[i]) / n_steps_to_achieve_target)
+            step_difference.append(
+                (target[i] - current_position[i]) / n_steps_to_achieve_target)
 
         for _ in range(n_steps_to_achieve_target):
             for j in range(self.NUMBER_OF_JOINTS):
@@ -59,24 +59,24 @@ class Spot (Robot):
                 self.robotStep()
 
     def lieDown(self, duration):
-        motors_target_pos = [   -0.40, -0.99, 1.59, # Front left leg
-                                0.40,  -0.99, 1.59, # Front right leg
-                                -0.40, -0.99, 1.59, # Rear left leg
-                                0.40,  -0.99, 1.59] # Rear right
+        motors_target_pos = [-0.40, -0.99, 1.59,  # Front left leg
+                             0.40,  -0.99, 1.59,  # Front right leg
+                             -0.40, -0.99, 1.59,  # Rear left leg
+                             0.40,  -0.99, 1.59]  # Rear right
         self.movementDecomposition(motors_target_pos, duration)
 
     def standUp(self, duration):
-        motors_target_pos = [   -0.1, 0, 0, # Front left leg
-                                0.1,  0, 0, # Front right leg
-                                -0.1, 0, 0, # Rear left leg
-                                0.1,  0, 0] # Rear right
+        motors_target_pos = [-0.1, 0, 0,  # Front left leg
+                             0.1,  0, 0,  # Front right leg
+                             -0.1, 0, 0,  # Rear left leg
+                             0.1,  0, 0]  # Rear right
         self.movementDecomposition(motors_target_pos, duration)
 
     def sitDown(self, duration):
-        motors_target_pos = [   -0.20, -0.40, -0.19, # Front left leg
-                                0.20,  -0.40, -0.19, # Front right leg
-                                -0.40, -0.90, 1.18, # Rear left leg
-                                0.40,  -0.90, 1.18] # Rear right
+        motors_target_pos = [-0.20, -0.40, -0.19,  # Front left leg
+                             0.20,  -0.40, -0.19,  # Front right leg
+                             -0.40, -0.90, 1.18,   # Rear left leg
+                             0.40,  -0.90, 1.18]   # Rear right
         self.movementDecomposition(motors_target_pos, duration)
 
     def run(self):
