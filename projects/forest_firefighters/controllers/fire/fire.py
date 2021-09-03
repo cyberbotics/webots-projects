@@ -222,10 +222,11 @@ class Fire(Supervisor):
             for water in robot.waterBalls:
                 water_position = water.getField('translation').getSFVec3f()
                 water_radius = water.getField('radius').getSFFloat()
-                fire_size = tree.size * tree.fire_scale
-                extinction_radius = 20 * self.MAX_EXTINCTION * water_radius / (fire_size * robot.MAX_WATER_RADIUS)
-                if tree.distance(water_position) < extinction_radius:
-                    tree.stopFire()
+                water_extinction_radius = self.MAX_EXTINCTION * water_radius / robot.MAX_WATER_RADIUS
+                if tree.distance(water_position) < water_extinction_radius:
+                    fire_size = tree.size * tree.fire_scale / 20
+                    if water_radius / robot.MAX_WATER_RADIUS > fire_size:
+                        tree.stopFire()
 
     def run(self):
         while True:
