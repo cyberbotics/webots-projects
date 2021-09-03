@@ -2,7 +2,7 @@
 # license: Copyright Cyberbotics Ltd. Licensed for use only with Webots.
 # license url: https://cyberbotics.com/webots_assets_license
 # tags: nonDeterministic
-# Randomly generated uneven terrain based on Perlin noise.
+# Randomly generated uneven forest based on Perlin noise.
 # template language: javascript
 
 PROTO UnevenForest [
@@ -14,8 +14,8 @@ PROTO UnevenForest [
   field SFInt32    yDimension     15                                                                 # Defines the number of points in the grid height array in the y direction.
   field SFFloat    density        0.02                                                               # Defines the density of trees to be generated (in trees per meter square).
   field SFFloat    margin         5                                                                  # Defines a margin without trees on each edge of the terrain.
-  field SFFloat    maxTreeSize    2                                                                  # Defines the maximum size of the trees.
-  field SFFloat    minTreeSize    1                                                                  # Defines the minimum size of the trees.                                                              
+  field SFFloat    maxTreeSize    10                                                                 # Defines the maximum size of the trees in meter.
+  field SFFloat    minTreeSize    5                                                                  # Defines the minimum size of the trees in meter.                                                              
   field SFNode     appearance     Grass { textureTransform TextureTransform { scale 20 20 } }        # Defines the appearance of the terrain.
   field SFInt32    randomSeed     1                                                                  # Defines the seed of the random number generator. A value smaller or equal to 0 sets a random seed.
   field SFBool     flatCenter     FALSE                                                              # Defines whether the center of the terrain should be flat.

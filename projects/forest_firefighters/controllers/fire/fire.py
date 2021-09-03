@@ -41,7 +41,7 @@ class Tree:
         self.fire = None
         self.fire_count = 0
         self.translation = node.getField('translation').getSFVec3f()
-        self.size = node.getField('size').getSFFloat()
+        self.scale = node.getField('size').getSFFloat() / 10
         self.robustness = random.uniform(self.ROBUSTNESS_VARIATION, self.ROBUSTNESS_VARIATION)
 
     def stopFire(self):
@@ -181,7 +181,7 @@ class Fire(Supervisor):
     def ignite(self, tree):
         if tree.fire_count > 1:  # already burnt
             return
-        tree.fire_scale = tree.size
+        tree.fire_scale = tree.scale
         fire = f'Fire {{ translation {tree.translation[0]} {tree.translation[1]} {tree.translation[2]} ' \
                f'scale {tree.fire_scale} {tree.fire_scale} {tree.fire_scale} }}'
         self.children.importMFNodeFromString(-1, fire)
@@ -198,7 +198,7 @@ class Fire(Supervisor):
                 if tree.fire_count == self.FLAME_PEAK * self.FLAME_CYCLE:
                     tree.node.getField('burnt').setSFBool(True)
                 tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
-                if tree.fire_scale < tree.size:
+                if tree.fire_scale < tree.scale:
                     tree.stopFire()
             t = [tree.fire_translation[0], tree.fire_translation[1], tree.fire_translation[2]]
             t[1] -= 100000 * tree.fire_scale * (tree.fire_count % 13)
@@ -214,7 +214,7 @@ class Fire(Supervisor):
             propagation_radius = self.MAX_PROPAGATION * fire_strength
             distance = self.wind.correctedDistance(tree, t, propagation_radius)
 
-            if distance + t.robustness < propagation_radius * math.sqrt(tree.size):
+            if distance + t.robustness < propagation_radius * math.sqrt(tree.scale):
                 self.ignite(t)
 
     def checkExtinction(self, tree):  # check and extinct the fire if there is water close enough
@@ -224,7 +224,7 @@ class Fire(Supervisor):
                 water_radius = water.getField('radius').getSFFloat()
                 water_extinction_radius = self.MAX_EXTINCTION * water_radius / robot.MAX_WATER_RADIUS
                 if tree.distance(water_position) < water_extinction_radius:
-                    fire_size = tree.size * tree.fire_scale / 20
+                    fire_size = tree.scale * tree.fire_scale / 20
                     if water_radius / robot.MAX_WATER_RADIUS > fire_size:
                         tree.stopFire()
 

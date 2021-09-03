@@ -7,7 +7,7 @@
 PROTO Sassafras [
   field SFVec3f    translation           0 0 0
   field SFRotation rotation              0 1 0 0
-  field SFFloat    size                  1
+  field SFFloat    size                  10                # Defines the size of the tree in meter.
   field SFString   name                  "sassafras tree"
   field SFBool     burnt                 FALSE             # Defines whether the tree is burnt (after a wildfire).
   field SFBool     enableBoundingObject  TRUE              # Defines whether the tree should have a bounding object.
@@ -19,8 +19,8 @@ PROTO Sassafras [
     rotation IS rotation
     name IS name
     model "sassafras tree"
-    %< let size = fields.size.value; >%
-    scale %<= size >% %<= size >% %<= size >%
+    %< let scale = fields.size.value / 10; >%
+    scale %<= scale >% %<= scale >% %<= scale >%
     recognitionColors [
       0 0.16470588235294117 0
       0.30196078431372547 0.2196078431372549 0.12156862745098039
