@@ -61,3 +61,6 @@ This video shows a wildfire propagating into one tree until the tree is complete
 https://user-images.githubusercontent.com/12995815/131981332-7b0c6105-5910-4962-8e67-b953e10be9d6.mp4
 
 This video shows a Mavic Pro 2 that fights against a wildfire (speed x2):
+
+https://user-images.githubusercontent.com/12995815/131981332-7b0c6105-5910-4962-8e67-b953e10be9d6.mp4
+
