@@ -34,7 +34,7 @@ def rotate(matrix, vector):
 
 
 class Tree:
-    robustness_variation = 2
+    ROBUSTNESS_VARIATION = 2
 
     def __init__(self, node):
         self.node = node
@@ -42,7 +42,7 @@ class Tree:
         self.fire_count = 0
         self.translation = node.getField('translation').getSFVec3f()
         self.size = node.getField('size').getSFFloat()
-        self.robustness = random.uniform(self.robustness_variation, self.robustness_variation)
+        self.robustness = random.uniform(self.ROBUSTNESS_VARIATION, self.ROBUSTNESS_VARIATION)
 
     def stopFire(self):
         if self.fire:
@@ -61,7 +61,7 @@ class Tree:
 
 
 class Robot():
-    max_water_radius = 0.3
+    MAX_WATER_RADIUS = 0.3
 
     def __init__(self, node):
         self.node = node
@@ -72,7 +72,7 @@ class Robot():
 
     def dropWater(self, children, quantity):
         position = self.node.getField('translation').getSFVec3f()
-        radius = min(self.max_water_radius, 0.01 * quantity)
+        radius = min(self.MAX_WATER_RADIUS, 0.01 * quantity)
         water = f'Water {{ translation {position[0]} {position[1]} {position[2]} ' \
                 f'radius {radius} ' \
                 f'name "water {len(self.waterBalls)} {self.name}" }}'
@@ -96,24 +96,24 @@ class Robot():
 
 
 class Wind():
-    intensity_evolve = 0.01
-    angle_evolve = 0.005
-    random_evolution = True
+    INTENSITY_EVOLVE = 0.01
+    ANGLE_EVOLVE = 0.005
+    RANDOM_EVOLUTION = True
 
     def __init__(self):
         self.intensity = random.random()
         self.angle = random.uniform(0, 2 * math.pi)
 
     def evolve(self):
-        if self.random_evolution:
-            self.intensity = max(0, min(1, self.intensity + self.intensity_evolve * random.uniform(-1, 1)))
-            self.angle = self.angle + self.angle_evolve * random.uniform(-2 * math.pi, 2 * math.pi) % (2 * math.pi)
+        if self.RANDOM_EVOLUTION:
+            self.intensity = max(0, min(1, self.intensity + self.INTENSITY_EVOLVE * random.uniform(-1, 1)))
+            self.angle = self.angle + self.ANGLE_EVOLVE * random.uniform(-2 * math.pi, 2 * math.pi) % (2 * math.pi)
 
     def update(self, message):   # update the wind according to the message
         if message == "stop":
-            self.random_evolution = False
+            self.RANDOM_EVOLUTION = False
         elif message == "start":
-            self.random_evolution = True
+            self.RANDOM_EVOLUTION = True
         else:
             wind = json.loads(message)
             self.angle = wind["angle"]
@@ -129,11 +129,11 @@ class Wind():
 
 
 class Fire(Supervisor):
-    flame_cycle = 13        # there are 13 images in the flame animation
-    flame_peak = 17         # after 13 flame cycles, the fire starts to decrease
-    max_propagation = 10    # the maximum distance that the fire can propagate in meter
-    max_extinction = 4      # the maximum distance from a tree where water can stop its fire in meter
-    fire_duration = 10
+    FLAME_CYCLE = 13        # there are 13 images in the flame animation
+    FLAME_PEAK = 17         # after 13 flame cycles, the fire starts to decrease
+    MAX_PROPAGATION = 10    # the maximum distance that the fire can propagate in meter
+    MAX_EXTINCTION = 4      # the maximum distance from a tree where water can stop its fire in meter
+    FIRE_DURATION = 10
 
     def __init__(self):
         super(Fire, self).__init__()
@@ -193,9 +193,9 @@ class Fire(Supervisor):
     def burn(self, tree):
         if self.update_fire:
             tree.fire_count += 1
-            if tree.fire_count % self.flame_cycle == 0:
-                tree.fire_scale *= 1.2 if tree.fire_count < self.flame_peak * self.flame_cycle else 0.8
-                if tree.fire_count == self.flame_peak * self.flame_cycle:
+            if tree.fire_count % self.FLAME_CYCLE == 0:
+                tree.fire_scale *= 1.2 if tree.fire_count < self.FLAME_PEAK * self.FLAME_CYCLE else 0.8
+                if tree.fire_count == self.FLAME_PEAK * self.FLAME_CYCLE:
                     tree.node.getField('burnt').setSFBool(True)
                 tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
                 if tree.fire_scale < tree.size:
@@ -206,12 +206,12 @@ class Fire(Supervisor):
             self.propagate(tree)
 
     def propagate(self, tree):  # propagate fire to neighbouring trees
-        fire_peak = self.flame_peak * self.flame_cycle
+        fire_peak = self.FLAME_PEAK * self.FLAME_CYCLE
         fire_strength = (min(tree.fire_count, 2 * fire_peak - tree.fire_count) / fire_peak) ** 2
         for t in self.trees:
             if t == tree:
                 continue
-            propagation_radius = self.max_propagation * fire_strength
+            propagation_radius = self.MAX_PROPAGATION * fire_strength
             distance = self.wind.correctedDistance(tree, t, propagation_radius)
 
             if distance + t.robustness < propagation_radius * math.sqrt(tree.size):
@@ -223,7 +223,7 @@ class Fire(Supervisor):
                 water_position = water.getField('translation').getSFVec3f()
                 water_radius = water.getField('radius').getSFFloat()
                 fire_size = tree.size * tree.fire_scale
-                extinction_radius = 20 * self.max_extinction * water_radius / (fire_size * robot.max_water_radius)
+                extinction_radius = 20 * self.MAX_EXTINCTION * water_radius / (fire_size * robot.MAX_WATER_RADIUS)
                 if tree.distance(water_position) < extinction_radius:
                     tree.stopFire()
 
@@ -234,7 +234,7 @@ class Fire(Supervisor):
                 break
 
             # update the fire_clock
-            if self.fire_clock == self.fire_duration:
+            if self.fire_clock == self.FIRE_DURATION:
                 self.update_fire = True
                 self.fire_clock = 0
             else:
