@@ -19,7 +19,7 @@ Half burned forest using the forest generator:
 The fire starts randomly at one of the trees of the forest.
 It propagates randomly and according to the wind to other trees close to it.
 The fire of a tree stops naturally once the tree is completely burned.
-If some water dropped by a robot goes sufficiently close to a tree on fire and if the fire is not too big compare to the amount of water dropped, it extinguishes the fire instantly.
+If some water dropped by a robot goes sufficiently close to a tree on fire and if the fire is not too big compared to the amount of water dropped, it extinguishes the fire instantly.
 The fire is run by a supervisor which can be found in [controllers/fire/fire.py](controllers/fire/fire.py).
 Some fire parameters can be changed in this file: 
 
