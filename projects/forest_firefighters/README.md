@@ -19,23 +19,23 @@ Half burned forest using the forest generator:
 The fire starts randomly at one of the trees of the forest.
 It propagates randomly and according to the wind to other trees close to it.
 The fire of a tree stops naturally once the tree is completely burned.
-If some water dropped by a robot goes sufficiently close to a tree on fire, it extinguishes the fire instantly.
+If some water dropped by a robot goes sufficiently close to a tree on fire and if the fire is not too big compare to the amount of water dropped, it extinguishes the fire instantly.
 The fire is run by a supervisor which can be found in [controllers/fire/fire.py](controllers/fire/fire.py).
 Some fire parameters can be changed in this file: 
 
-- `Fire.max_propagation`: the maximum distance that the fire can propagate in meter.
+- `Fire.MAX_PROPAGATION`: the maximum distance that the fire can propagate in meter.
 
-- `Fire.max_extinction`: the maximum distance from which water can extinguish the fire.
+- `Fire.MAX_EXTINCTION`: the maximum distance from which water can extinguish the fire.
   
-- `Fire.fire_duration`: the duration of a fire to consume a tree completely.
+- `Fire.FIRE_DURATION`: the duration of a fire to consume a tree completely.
   
-- `Wind.intensity_evolve`: the speed at which the intensity of the wind evolve.
+- `Wind.INTENSITY_EVOLVE`: the speed at which the intensity of the wind evolve.
    
-- `Wind.angle_evolve`: the speed at which the angle of the wind evolve.
+- `Wind.ANGLE_EVOLVE`: the speed at which the angle of the wind evolve.
   
-- `Wind.random_evolution`: true if there the wind evolves randomly, false otherwise.
+- `Wind.RANDOM_EVOLUTION`: true if there the wind evolves randomly, false otherwise.
    
-- `Tree.robustness_variation`: the variation in the robustness of the trees (if a tree is more robust, it is less likely to burn).
+- `Tree.ROBUSTNESS_VARIATION`: the variation in the robustness of the trees (if a tree is more robust, it is less likely to burn).
 
 ## Wind Window
 The Wind window allows the user to modify the intensity and the direction of the wind during a simulation.
@@ -52,7 +52,7 @@ The keyboard can be used to move the robot and drop water on the forest fire.
 
 
 ## Spot controller  
-The Spot controller is a basic controller that just moves one leg of the robot.
+The Spot controller is a basic controller that just moves the legs of the robot. The keyboard can also be used to throw water on the forest fire 
 
 
 ## Demo videos
