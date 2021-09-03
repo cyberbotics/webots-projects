@@ -45,12 +45,13 @@ class Tree:
         self.robustness = random.uniform(self.robustness_variation, self.robustness_variation)
 
     def stopFire(self):
-        fire_translation_field = self.fire.getField('translation')
-        fire_translation = fire_translation_field.getSFVec3f()
-        t = [fire_translation[0], fire_translation[1], fire_translation[2]]
-        t[1] = 10000000
-        fire_translation_field.setSFVec3f(t)
-        self.fire = None
+        if self.fire:
+            fire_translation_field = self.fire.getField('translation')
+            fire_translation = fire_translation_field.getSFVec3f()
+            t = [fire_translation[0], fire_translation[1], fire_translation[2]]
+            t[1] = 10000000
+            fire_translation_field.setSFVec3f(t)
+            self.fire = None
 
     def distance(self, coordinates):
         dx = self.translation[0] - coordinates[0]
@@ -60,6 +61,8 @@ class Tree:
 
 
 class Robot():
+    max_water_radius = 0.3
+
     def __init__(self, node):
         self.node = node
         self.name = node.getField('name').getSFString()
@@ -69,7 +72,7 @@ class Robot():
 
     def dropWater(self, children, quantity):
         position = self.node.getField('translation').getSFVec3f()
-        radius = min(0.3, 0.01 * quantity)
+        radius = min(self.max_water_radius, 0.01 * quantity)
         water = f'Water {{ translation {position[0]} {position[1]} {position[2]} ' \
                 f'radius {radius} ' \
                 f'name "water {len(self.waterBalls)} {self.name}" }}'
@@ -77,7 +80,7 @@ class Robot():
         waterNode = children.getMFNode(-1)
         self.waterBalls.append(waterNode)
 
-        # If this is a "Spot" robot, the water it throw will have an initial velocity
+        # if this is a "Spot" robot, the water it throws will have an initial velocity
         if self.type == "Spot":
             rotationMatrix = self.node.getOrientation()
             orientation = rotate(rotationMatrix, [0, 0, -1])
@@ -106,7 +109,7 @@ class Wind():
             self.intensity = max(0, min(1, self.intensity + self.intensity_evolve * random.uniform(-1, 1)))
             self.angle = self.angle + self.angle_evolve * random.uniform(-2 * math.pi, 2 * math.pi) % (2 * math.pi)
 
-    def update(self, message):  # update the wind according to the message
+    def update(self, message):   # update the wind according to the message
         if message == "stop":
             self.random_evolution = False
         elif message == "start":
@@ -218,8 +221,10 @@ class Fire(Supervisor):
         for robot in self.robots:
             for water in robot.waterBalls:
                 water_position = water.getField('translation').getSFVec3f()
-                if tree.distance(water_position) < self.max_extinction:
-                    print("Good job")
+                water_radius = water.getField('radius').getSFFloat()
+                fire_size = tree.size * tree.fire_scale
+                extinction_radius = 20 * self.max_extinction * water_radius / (fire_size * robot.max_water_radius)
+                if tree.distance(water_position) < extinction_radius:
                     tree.stopFire()
 
     def run(self):
