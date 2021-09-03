@@ -22,6 +22,7 @@ import random
 
 from controller import Supervisor
 
+
 def rotate(matrix, vector):
     result = []
     for i in range(3):
@@ -30,6 +31,7 @@ def rotate(matrix, vector):
             r += matrix[3 * i + j] * vector[j]
         result.append(r)
     return result
+
 
 class Tree:
     robustness_variation = 2
@@ -56,6 +58,7 @@ class Tree:
         dz = self.translation[2] - coordinates[2]
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
+
 class Robot():
     def __init__(self, node):
         self.node = node
@@ -68,12 +71,12 @@ class Robot():
         position = self.node.getField('translation').getSFVec3f()
         radius = min(0.3, 0.01 * quantity)
         water = f'Water {{ translation {position[0]} {position[1]} {position[2]} ' \
-                         f'radius {radius} ' \
-                         f'name "water {len(self.waterBalls)} {self.name}" }}'
+                f'radius {radius} ' \
+                f'name "water {len(self.waterBalls)} {self.name}" }}'
         children.importMFNodeFromString(-1, water)
         waterNode = children.getMFNode(-1)
         self.waterBalls.append(waterNode)
-        
+
         # If this is a "Spot" robot, the water it throw will have an initial velocity
         if self.type == "Spot":
             rotationMatrix = self.node.getOrientation()
@@ -88,6 +91,7 @@ class Robot():
                 self.waterBalls.remove(waterBall)
                 waterBall.remove()
 
+
 class Wind():
     intensity_evolve = 0.01
     angle_evolve = 0.005
@@ -100,9 +104,9 @@ class Wind():
     def evolve(self):
         if self.random_evolution:
             self.intensity = max(0, min(1, self.intensity + self.intensity_evolve * random.uniform(-1, 1)))
-            self.angle = self.angle + self.angle_evolve * random.uniform(-2 * math.pi, 2 * math.pi) % (2 * math.pi) 
+            self.angle = self.angle + self.angle_evolve * random.uniform(-2 * math.pi, 2 * math.pi) % (2 * math.pi)
 
-    def update(self, message): # update the wind according to the message
+    def update(self, message):  # update the wind according to the message
         if message == "stop":
             self.random_evolution = False
         elif message == "start":
@@ -112,7 +116,7 @@ class Wind():
             self.angle = wind["angle"]
             self.intensity = wind["intensity"]
 
-    def correctedDistance(self, tree1, tree2, propagation_radius): # distance between two trees considering the wind
+    def correctedDistance(self, tree1, tree2, propagation_radius):  # distance between two trees considering the wind
         x_wind = self.intensity * math.cos(self.angle)
         y_wind = self.intensity * math.sin(self.angle)
         dx = tree1.translation[0] + propagation_radius * x_wind - tree2.translation[0]
@@ -120,10 +124,11 @@ class Wind():
         dz = tree1.translation[2] - tree2.translation[2]
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
+
 class Fire(Supervisor):
     flame_cycle = 13        # there are 13 images in the flame animation
     flame_peak = 17         # after 13 flame cycles, the fire starts to decrease
-    max_propagation = 10     # the maximum distance that the fire can propagate in meter
+    max_propagation = 10    # the maximum distance that the fire can propagate in meter
     max_extinction = 4      # the maximum distance from a tree where water can stop its fire in meter
     fire_duration = 10
 
@@ -132,7 +137,7 @@ class Fire(Supervisor):
 
         self.time_step = int(self.getBasicTimeStep())
         self.fire_clock = 0
-        
+
         self.wind = Wind()
 
         root = self.getRoot()
@@ -149,7 +154,7 @@ class Fire(Supervisor):
             # Add all the Sassafras trees from the forest to the list of trees
             child_name = child.getField('name')
             if child_name is not None:
-                if child_name.getSFString()  == 'uneven forest':
+                if child_name.getSFString() == 'uneven forest':
                     forest_children = child.getField('children')
                     if forest_children is not None:
                         m = forest_children.getCount()
@@ -199,12 +204,12 @@ class Fire(Supervisor):
 
     def propagate(self, tree):  # propagate fire to neighbouring trees
         fire_peak = self.flame_peak * self.flame_cycle
-        fire_strength = (min(tree.fire_count, 2 * fire_peak - tree.fire_count)  / fire_peak) ** 2
+        fire_strength = (min(tree.fire_count, 2 * fire_peak - tree.fire_count) / fire_peak) ** 2
         for t in self.trees:
             if t == tree:
                 continue
             propagation_radius = self.max_propagation * fire_strength
-            distance =  self.wind.correctedDistance(tree, t, propagation_radius)
+            distance = self.wind.correctedDistance(tree, t, propagation_radius)
 
             if distance + t.robustness < propagation_radius * math.sqrt(tree.size):
                 self.ignite(t)
@@ -251,6 +256,7 @@ class Fire(Supervisor):
                 if tree.fire:
                     self.burn(tree)
                     self.checkExtinction(tree)
+
 
 controller = Fire()
 controller.run()
