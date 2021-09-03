@@ -58,8 +58,7 @@ The Spot controller is a basic controller that just moves the legs of the robot.
 ## Demo videos
 This video shows a wildfire propagating into one tree until the tree is completely burnt:
 
-https://user-images.githubusercontent.com/12995815/131981332-7b0c6105-5910-4962-8e67-b953e10be9d6.mp4
-
+https://user-images.githubusercontent.com/1264964/130241653-c0fd0966-1ce2-41d1-aeae-452a187b95be.mp4
 This video shows a Mavic Pro 2 that fights against a wildfire (speed x2):
 
 https://user-images.githubusercontent.com/12995815/131981332-7b0c6105-5910-4962-8e67-b953e10be9d6.mp4
