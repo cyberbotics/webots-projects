@@ -1,0 +1,32 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color:rgb(190, 190, 190);
+}
+
+h2, p {
+  margin: 20px;
+}
+
+canvas {
+  padding-right: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+#input-check {
+  display: inline-block;
+  margin-left: 20px;
+  padding: 7px;
+  background: #DC143C;
+  color: black;
+  font-weight: bold;
+  border-radius: 3px;
+}
+#input-check.checked {
+  background: #4CAF50;
+  color: #F6F6F6;
+}
+#input-check input {
+  display: none;
+}

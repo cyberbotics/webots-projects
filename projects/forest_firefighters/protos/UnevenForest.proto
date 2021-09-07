@@ -1,0 +1,219 @@
+#VRML_SIM R2021b utf8
+# license: Copyright Cyberbotics Ltd. Licensed for use only with Webots.
+# license url: https://cyberbotics.com/webots_assets_license
+# tags: nonDeterministic
+# Randomly generated uneven forest based on Perlin noise.
+# template language: javascript
+
+PROTO UnevenForest [
+  field SFVec3f    translation    0 0 0
+  field SFRotation rotation       0 1 0 0
+  field SFString   name           "uneven forest"
+  field SFVec3f    size           50 50 30                                                           # Defines the size of the terrain.
+  field SFInt32    xDimension     15                                                                 # Defines the number of points in the grid height array in the x direction.
+  field SFInt32    yDimension     15                                                                 # Defines the number of points in the grid height array in the y direction.
+  field SFFloat    density        0.02                                                               # Defines the density of trees to be generated (in trees per meter square).
+  field SFFloat    margin         5                                                                  # Defines a margin without trees on each edge of the terrain.
+  field SFFloat    maxTreeSize    10                                                                 # Defines the maximum size of the trees in meter.
+  field SFFloat    minTreeSize    5                                                                  # Defines the minimum size of the trees in meter.                                                              
+  field SFNode     appearance     Grass { textureTransform TextureTransform { scale 20 20 } }        # Defines the appearance of the terrain.
+  field SFInt32    randomSeed     1                                                                  # Defines the seed of the random number generator. A value smaller or equal to 0 sets a random seed.
+  field SFBool     flatCenter     FALSE                                                              # Defines whether the center of the terrain should be flat.
+  field SFBool     flatBounds     FALSE                                                              # Defines whether the bounds of the terrain should be flat.
+  field SFInt32    perlinNOctaves 3                                                                  # Defines the number of octaves of the perlin noise.
+]
+{
+  %<
+    // reference: https://stackoverflow.com/a/42543313/2210777
+    import * as wbrandom from 'wbrandom.js';
+    import * as wbrotation from 'wbrotation.js';
+
+    if (fields.randomSeed.value <= 0)
+      wbrandom.seed(Date.now());
+    else
+      wbrandom.seed(fields.randomSeed.value);
+
+    function gaussian2d(x, y, amp, cx, cy, sx, sy) {
+      return amp * Math.exp( - ( ( Math.pow(x - cx, 2) / (2.0 * Math.pow(sx, 2)) ) + (Math.pow(y - cy, 2) / (2.0 * Math.pow(sy, 2)) ) ));
+    }
+
+    // create 256 shuffled numbers repeated twice.
+    let perm = [];
+    for (let i = 1; i <= 256; ++i)
+        perm.splice(wbrandom.integer(i) -1, 0, i);
+
+    for (let i = 0; i < 256; ++i)
+      perm.push(perm[i]);
+
+    // generate 256 directions
+    let dirs = [];
+    for (let a = 0; a < 256; ++a)
+      dirs.push([Math.cos(a * 2.0 * Math.PI / 256), Math.sin(a * 2.0 * Math.PI / 256)]);
+
+    function noise (x, y, per, dirs, perm) {
+      function surflet (grid_x, grid_y, dirs, perm) {
+        const dist_x = Math.abs(x - grid_x);
+        const dist_y = Math.abs(y - grid_y);
+        const poly_x = 1 - 6 * Math.pow(dist_x, 5) + 15 * Math.pow(dist_x, 4) - 10 * Math.pow(dist_x, 3);
+        const poly_y = 1 - 6 * Math.pow(dist_y, 5) + 15 * Math.pow(dist_y, 4) - 10 * Math.pow(dist_y, 3);
+        const hashed = perm[(perm[(Math.floor(grid_x) % per)] + Math.floor(grid_y) % per)];
+        const grad = (x - grid_x)  * dirs[hashed-1][0] + (y - grid_y) * dirs[hashed-1][1];
+
+        return poly_x * poly_y * grad;
+      }
+
+      let int_x = Math.floor(x);
+      let int_y = Math.floor(y);
+
+      return surflet(int_x + 0, int_y + 0, dirs, perm) + surflet(int_x + 1, int_y + 0, dirs, perm) + surflet(int_x + 0, int_y + 1, dirs, perm) + surflet(int_x + 1, int_y + 1, dirs, perm);
+    }
+
+    function fBm (x, y, per, octs, dirs, perm) {  // Fractional Brownian motion
+      let val = 0;
+      for (let o = 0; o <= octs - 1; ++o)
+        val = val + (Math.pow(0.5, o) * noise(x * Math.pow(2, o), y * Math.pow(2, o), per * Math.pow(2, o), dirs, perm));
+
+      return val;
+    }
+
+    const perlinSize = 128;
+    let nOctave = fields.perlinNOctaves.value;
+    if (nOctave < 0 || nOctave >= 10) {
+      nOctave = fields.perlinNOctaves.defaultValue;
+      console.error('\'perlinNOctaves\' must be in the range [0, 10[. Value reset to ' + nOctave + '.');
+    }
+
+    let size = fields.size.value;
+
+    let xDimension = fields.xDimension.value;
+    if (xDimension < 2) {
+      xDimension = fields.xDimension.defaultValue;
+      console.error('\'xDimension\' must be bigger than 2. Value reset to ' + xDimension + '.');
+    }
+
+    let yDimension = fields.yDimension.value;
+    if (yDimension < 2) {
+      yDimension = fields.yDimension.defaultValue;
+      console.error('\'yDimension\' must be bigger than 2. Value reset to ' + yDimension + '.');
+    }
+
+    let heights = []
+
+    // compute the height of each point in the elevation grid
+    for (let i = 0; i <= xDimension - 1; ++i) {
+      let heightsLine = []
+      for (let j = 0; j <= yDimension - 1; ++j) {
+        let height = 1.0;
+        const x = i / xDimension;
+        const z = j / yDimension;
+        if (nOctave > 0)
+            height = 0.5 * (1.0 + fBm(x, z, perlinSize, nOctave, dirs, perm));
+
+        if (fields.flatCenter.value)
+            height = height * (1.0 - gaussian2d(x - 0.5, z - 0.5, 1, 0, 0, 0.2, 0.2));
+
+        if (fields.flatBounds.value)
+            height = height * gaussian2d(x - 0.5, z - 0.5, 1, 0, 0, 0.2, 0.2);
+
+        height = height * size.z
+        heightsLine.push(height)
+      }
+      heights.push(heightsLine)
+    }
+
+    let density = fields.density.value;
+    if (density < 0) {
+      density = fields.density.defaultValue;
+      console.error('\'density\' must be greater or equal to 0. Value reset to ' + density + '.');
+    }
+
+    let margin = fields.margin.value;
+    if (margin < 0) {
+      density = fields.density.defaultValue;
+      console.error('\'margin\' must be greater or equal to 0. Value reset to ' + margin + '.');
+    }
+
+    let numberOfTree = Math.round(fields.size.value.x *  fields.size.value.y * density);
+    let maxTreeSize = fields.maxTreeSize.value;
+    let minTreeSize = fields.minTreeSize.value;
+    let trees = [];
+
+    // generate the list of trees
+    for (let i = 0; i < numberOfTree; ++i) {
+      let xTree = wbrandom.real(margin, size.x - margin);
+      let yTree = wbrandom.real(margin, size.y - margin);
+      let treeSize = wbrandom.real(minTreeSize, maxTreeSize);
+
+      // compute the exact z translation needed
+      let xIndex = xTree / size.x * (xDimension - 1);
+      let yIndex = yTree / size.y * (yDimension - 1);
+
+      let x1 = Math.floor(xIndex);
+      let y1 = Math.floor(yIndex);
+      let x2 = Math.ceil(xIndex);
+      let y2 = Math.ceil(yIndex);
+
+      let dx1 = xIndex - x1;
+      let dy1 = yIndex - y1;
+      let dx2 = x2 - xIndex;
+      let dy2 = y2 - yIndex;
+
+      let h11 = heights[x1][y1];
+      let h12 = heights[x1][y2];
+      let h21 = heights[x2][y1];
+      let h22 = heights[x2][y2];
+
+      let h1 = h11 * (1 - dy1) + h12 * (1 - dy2);
+      let h2 = h21 * (1 - dy1) + h22 * (1 - dy2);
+      let h = h1 * (1 - dx1) + h2 * (1 - dx2);
+
+      trees.push({x: xTree, y: yTree, z: h, angle: wbrandom.real(2 * Math.PI), size: treeSize});
+    }
+  >%
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    children [
+      DEF UNEVEN_TERRAIN_ELEVATION_GRID Transform {
+        translation 0 0 0
+        rotation 0.5773509358554485 0.5773489358556708 0.5773509358554485 2.0944
+        children [
+          Shape {
+            appearance IS appearance
+            geometry ElevationGrid {
+              %< if (xDimension > 2 && yDimension > 2) { >%
+                xDimension IS yDimension
+                xSpacing %<= size.y / (yDimension - 1) >%
+                zDimension IS xDimension
+                zSpacing %<= size.x / (xDimension - 1) >%
+
+                height [
+                  %< for (let i = 0; i <= heights.length - 1; ++i) { >%
+                    %< for (let j = 0; j <= heights[0].length - 1; ++j) { >%
+                      %<= heights[i][j] >%
+                    %< } >%
+                  %< } >%
+                ]
+              %< } >%
+            }
+          }
+        ]
+      }
+      %< for (let i = 0; i < numberOfTree; ++i) { >%
+        Sassafras {
+          translation %<= trees[i].x >% %<= trees[i].y >% %<= trees[i].z>%
+          %<
+            const rA = {x: 0, y: 0, z: 1, a: trees[i].angle}
+            const rB = {x: 1, y: 0, z: 0, a: Math.PI / 2}
+            const rotation = wbrotation.combine(rA, rB);
+          >%
+          rotation %<= rotation.x >% %<= rotation.y >% %<= rotation.z >% %<= rotation.a >%
+          size %<= trees[i].size >%
+          name %<= `"Sassafras ${i}"` >%
+        }
+      %< } >%
+    ]
+    name IS name
+    boundingObject USE UNEVEN_TERRAIN_ELEVATION_GRID
+  }
+}
