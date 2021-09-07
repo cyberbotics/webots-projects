@@ -5,9 +5,9 @@ This repo contains some additional Webots projects (PROTO files, controllers, si
 
 ## Projects
 
-* [Forest firefighters](forest_firefighters).
-* [NVIDIA JetBot collision avoidance with neural networks](nvidia-jetbot-collision-avoidance).
-* [SeRoNet box spawner using a REST API in an industrial environment](seronet-spawner).
+* [Forest firefighters](projects/forest_firefighters).
+* [NVIDIA JetBot collision avoidance with neural networks](projects/nvidia-jetbot-collision-avoidance).
+* [SeRoNet box spawner using a REST API in an industrial environment](projects/seronet-spawner).
 
 ## Prerequisites
 
