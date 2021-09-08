@@ -24,7 +24,7 @@ In order to contribute to this simulation by developing your own robot models an
 1. download and install [Webots](https://cyberbotics.com) on your computer.
 2. install [python 3.8](https://www.python.org/downloads/) on your computer if not already installed.
 3. follow the [Webots Tutorials](https://cyberbotics.com/doc/guide/tutorials) to get familiar with the software.
-4. [clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository) this repository on your computer.
+4. [clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository) this repository on your computer: `git clone https://github.com/cyberbotics/webots-projects.git` or download it from [here](https://github.com/cyberbotics/webots-projects/archive/refs/heads/master.zip) and unzip it.
 5. run the simulation by opening the [forest_firefighter.wbt](worlds/forest_firefighter.wbt) world file in Webots.
 6. edit the robot controllers to change their behavior.
 7. create new robot models (or improve existing ones) and use them in the simulation.
