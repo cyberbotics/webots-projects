@@ -13,8 +13,8 @@ WorldInfo {
   }
 }
 Viewpoint {
-  orientation 0.6958335631799735 -0.519733413841037 -0.4956741176311339 1.6301694181570054
-  position -6.956694285953386 0.3910557159483803 20.733700326084204
+  orientation 0 1 0 0
+  position 13.858240160041504 13.063070080733592 112.5954873152158
   near 1
 }
 TexturedBackground {
@@ -223,17 +223,87 @@ SquareManhole {
   translation 4.43 4.08 16.66
   rotation 1 0 0 1.57079633
 }
+SquareManhole {
+  translation 5.61 4.08 16.68
+  rotation 1 0 0 1.57079633
+  name "manhole(3)"
+}
+SquareManhole {
+  translation 4.45 2.94 16.92
+  rotation 1 0 0 1.57079633
+  name "manhole(1)"
+}
+SquareManhole {
+  translation 5.64 2.93 16.98
+  rotation 1 0 0 1.57079633
+  name "manhole(2)"
+}
 Mavic2Pro {
   translation 4.36 4.12 16.79
   rotation 0 0 1 0
-  controller "mavic"
+  controller "autonomous_mavic_v4"
+  controllerArgs [
+    "--target_altitude=42"
+    "--patrol_coord=11 11, 21 11, 21 21, 11 21"
+  ]
   customData "0"
+  cameraSlot [
+    Camera {
+      width 200
+      height 200
+    }
+  ]
 }
-Spot {
-  translation 6.52 3.254 17.12
-  rotation 1 0 0 1.5708
-  controller "spot"
+Mavic2Pro {
+  translation 4.46 2.84 17.04
+  rotation 0 0 1 0
+  name "Mavic 2 PRO(2)"
+  controller ""
+  controllerArgs [
+    "--target_altitude=43"
+    "--patrol_coord=11 21, 11 11, 21 11, 21 21"
+  ]
   customData "0"
+  cameraSlot [
+    Camera {
+      width 200
+      height 200
+    }
+  ]
+}
+Mavic2Pro {
+  translation 5.58 2.84 17.08
+  rotation 0 0 1 0
+  name "Mavic 2 PRO(3)"
+  controller ""
+  controllerArgs [
+    "--target_altitude=44"
+    "--patrol_coord=21 21, 11 21, 11 11, 21 11"
+  ]
+  customData "0"
+  cameraSlot [
+    Camera {
+      width 200
+      height 200
+    }
+  ]
+}
+Mavic2Pro {
+  translation 5.6 4.12 16.78
+  rotation 0 0 1 0
+  name "Mavic 2 PRO(1)"
+  controller ""
+  controllerArgs [
+    "--target_altitude=45"
+    "--patrol_coord=21 11, 21 21, 11 21, 11 11"
+  ]
+  customData "0"
+  cameraSlot [
+    Camera {
+      width 200
+      height 200
+    }
+  ]
 }
 Fire {
   translation 10.321796257602944 18.484918682868404 21.543304787283642

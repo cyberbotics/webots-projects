@@ -5,14 +5,8 @@ sceneTreePerspectives: 000000ff0000000100000002000000c0000000fc01000000060100000
 maximizedDockId: -1
 centralWidgetVisible: 1
 projectionMode: PERSPECTIVE
+renderingMode: PLAIN
 orthographicViewHeight: 24.5163
 textFiles: -1
-robotWindow: robot
-globalOptionalRendering: CoordinateSystem
+globalOptionalRendering: CoordinateSystem::RadarFrustums::CameraFrustums::ContactPoints
 consoles: Console:All:All
-renderingDevicePerspectives: Mavic 2 PRO:camera;1;0.6625;0;0
-renderingDevicePerspectives: Spot:left flank camera;0;0.790741;0;0
-renderingDevicePerspectives: Spot:left head camera;0;0.790741;0;0
-renderingDevicePerspectives: Spot:rear camera;0;0.790741;0;0
-renderingDevicePerspectives: Spot:right flank camera;0;0.790741;0;0
-renderingDevicePerspectives: Spot:right head camera;0;0.790741;0;0
