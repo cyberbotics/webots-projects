@@ -245,12 +245,12 @@ class Fire(Supervisor):
                         tree.stopFire()
 
     def run(self):
-        flag_start_sim = False
+        start_fire_now = False
         while True:
             step = self.step(self.time_step)
             if step == -1:
                 break
-            if flag_start_sim:
+            if start_fire_now:
                 # update the fire_clock
                 if self.fire_clock == self.FIRE_DURATION:
                     self.update_fire = True
@@ -281,8 +281,8 @@ class Fire(Supervisor):
                         self.checkExtinction(tree)
             else:
                 for robot in self.robots:
-                    if not flag_start_sim and robot.name == "Mavic 2 PRO" and robot.altitude() > 40:
-                            flag_start_sim = True
+                    if not start_fire_now and robot.name == "Mavic 2 PRO" and robot.altitude() > 40:
+                            start_fire_now = True
 
 controller = Fire()
 controller.run()
