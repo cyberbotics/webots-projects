@@ -1,6 +1,6 @@
 from controller import Robot
 import sys, random, optparse
-import transforms3d
+#import transform3d
 try:
     import numpy as np
     from numpy import NaN, nan
@@ -118,10 +118,14 @@ class Mavic (Robot):
                 self.target_pos[0:2] = local_coord[self.target_index]
                 if verbose_target: print("Target reached! New target: ", self.target_pos[0:2])
         
+        #this will be in ]-pi;pi]
         self.target_pos[2] = np.arctan2(self.target_pos[1] - self.curr_pos[1], self.target_pos[0] - self.curr_pos[0])
+        #this is now in ]-2pi;2pi[
         angle_left = self.target_pos[2] - self.curr_pos[5]
-        if abs(angle_left) >= np.pi:
-            angle_left = (angle_left + 2*np.pi) % 2*np.pi
+        #Normalize turn angle to ]-pi;pi]
+        angle_left = (angle_left + 2*np.pi) % (2*np.pi)
+        if (angle_left > np.pi):
+            angle_left -= 2*np.pi
 
         #turn the robot to the left or to the right according the value and the sign of angle_left
         yaw_disturbance = self.MAX_YAW_DISTURBANCE*angle_left/(2*np.pi)

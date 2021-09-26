@@ -77,3 +77,8 @@ The keyboard can be used to move the robot and drop water on the forest fire.
 
 ## Spot Demo Controller
 The Spot controller is a basic controller that just moves the legs of the robot. The keyboard can also be used to throw water on the forest fire 
+
+## Autonomous mavic
+
+pip install opencv-python
+pip3 install transform3d
