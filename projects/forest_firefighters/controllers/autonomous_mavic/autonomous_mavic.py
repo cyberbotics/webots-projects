@@ -1,6 +1,5 @@
 from controller import Robot
 import sys, random, optparse
-#import transform3d
 try:
     import numpy as np
     from numpy import NaN, nan
@@ -32,7 +31,7 @@ class Mavic (Robot):
         Robot.__init__(self)
 
         self.timeStep = int(self.getBasicTimeStep())
-
+        
         self.water_to_drop = 0
         
         # Get and enable devices.
@@ -60,8 +59,8 @@ class Mavic (Robot):
         self.target_pos = [0,0,0]
         self.target_index = 0
 
-        self.fire_pos = [0,0]
-        self.FireDetectionStatus = False
+        self.world_fire_pos = [0,0]
+        self.img_coord_fire = []
         self.WaterDropStatus = False
         
 
@@ -106,13 +105,6 @@ class Mavic (Robot):
 
         if all([abs(x1 - x2) < self.target_precison for (x1, x2) in zip(self.target_pos, self.curr_pos[0:2])]): #if the robot is at the position with a precision of target_precison
 
-            if self.FireDetectionStatus:
-                if self.fire_pos == [0,0]:             
-                    self.water_to_drop = 25
-                    if verbose_target: print("Water dropped on fire target: {} at position {}".format(self.target_pos[0:2], self.curr_pos[0:2]))
-                    self.FireDetectionStatus = False 
-                
-            else:
                 self.target_index += 1
                 if self.target_index > len(local_coord)-1: self.target_index=0
                 self.target_pos[0:2] = local_coord[self.target_index]
@@ -136,82 +128,36 @@ class Mavic (Robot):
             print("remaning angle: {:.4f}, remaning distance: {:.4f}".format(angle_left, distance_left))
         return yaw_disturbance, pitch_disturbance
 
-    def NaiveApproach(self,coord_fire):
+    def NaiveApproach(self, verbose=True):
         """
         Naive approch to move the robot above the fire. Closed loop to move the robot towards to the fire by step until to be above it.
         Parameters: 
-            coord_fire (list): x,y image coordinates of the fire
-        Returns:
-            X,Y (float): X,Y position target 
-        """
-
-        resolutionX, resolutionY = self.camera.getWidth(), self.camera.getHeight()
-        X, Y = self.curr_pos[0:2]
-        x_img = coord_fire[0] 
-        y_img = coord_fire[1]
-        yaw = self.curr_pos[5]
-        
-        self.fire_pos = [0,0]
-        if abs(x_img-resolutionX/2) > 40:
-            self.fire_pos[0] = np.sign(x_img-resolutionX/2)
-        if abs(y_img-resolutionY/2) > 40:
-            self.fire_pos[1] = np.sign(y_img-resolutionY/2)
-
-        self.fire_pos[1] *= -np.sign(yaw)
-        if not (-np.pi/2 < yaw < np.pi/2): self.fire_pos[0] *= -1
-
-        X += self.fire_pos[0]*abs(x_img-resolutionX/2)/50
-        Y += self.fire_pos[1]*abs(y_img-resolutionY/2)/50
-
-        return X,Y
-
-    def ComputeMonoplotting(self, coord_fire, verbose=True):
-        """
-        /!\ Still need to be fixed
-        Compute the world coordinates from the image coordinates of the fire.
-        Monoplotting based on https://stackoverflow.com/questions/68195056/finding-the-real-world-coordinates-of-an-object-from-a-camera
-        and http://sar.kangwon.ac.kr/etc/rs_note/rsnote/cp9/cp9-6.htm
-        Parameters: 
-            coord_fire (list): x,y image coordinates of the fire
             verbose (bool): whether to print status messages or not
         Returns:
-            X,Y (float): X,Y position target 
+            yaw_disturbance (float): yaw disturbance (negative value to go on the right)
+            pitch_disturbance (float): pitch disturbance (negative value to go forward)
         """
-        resolution = self.camera.getWidth(), self.camera.getHeight()
-        roll, pitch, yaw = self.curr_pos[3:6]
+        resolutionX, resolutionY = self.camera.getWidth(), self.camera.getHeight()
+        x_img, y_img = self.img_coord_fire
+        yaw = (self.curr_pos[5] + 2*np.pi) % (2*np.pi)
+        self.world_fire_pos = [0,0]
 
-        Z_obj = 32
+        if abs(x_img-resolutionX/2) > 20:
+            self.world_fire_pos[0] = np.sign(x_img-resolutionX/2)
+        if abs(y_img-resolutionY/2) > 20:
+            self.world_fire_pos[1] = np.sign(y_img-resolutionY/2)
+        self.world_fire_pos[1] *= np.sign(yaw)
+        self.world_fire_pos[0] *= -np.sign(yaw)
 
-        #intrinsic properties of the camera
-        cx, cy, cz = self.curr_pos[0:3] #principal point in the image ~= real world coordinates of the camera
+        yaw_disturbance = self.world_fire_pos[0]*clamp(abs(x_img-resolutionX/2),0,self.MAX_YAW_DISTURBANCE)
+        pitch_disturbance = self.world_fire_pos[1]*clamp(abs(y_img-resolutionY/2),0,abs(self.MAX_PITCH_DISTURBANCE))
 
-        fieldOfView = self.camera.getFov() #0.78398rad FOV = 2*arctan(x/2f)
-        f = resolution[0]/(2*np.tan(fieldOfView*0.5))
+        if self.world_fire_pos == [0,0]:             
+            self.water_to_drop = 15
+            if verbose: print("Water dropped on fire target: {} at position {}".format(self.target_pos[0:2], self.curr_pos[0:2]))
+            self.img_coord_fire = []
 
-        #diag_img = np.sqrt(resolution[0]**2 + resolution[1]**2) #diagonal of the film or sensor in pixel
-        #fd = diag_img/(2*np.tan(fieldOfView/2)) #f = focal length
-
-        x_img = coord_fire[0]
-        y_img = coord_fire[1]
-
-        #3. Rotation matrix along X,Y,Z axis
-        R = transforms3d.euler.euler2mat(roll, pitch, yaw)
-        if verbose: print("rotational matrix: ", R)
-
-        #4. Inversed colinearity equation
-        xc = (Z_obj-cz)*(R[0,0]*x_img + R[0,1]*y_img - R[0,2]*f)
-        yc = (Z_obj-cz)*(R[1,0]*x_img + R[1,1]*y_img - R[1,2]*f)
-        zc = (R[2,0]*x_img + R[2,1]*y_img - R[2,2]*f)
-        if verbose: print("colinearity equation",xc,yc,zc)
-
-        X = xc/zc
-        Y = yc/zc
-        if verbose: print("coord distance from the robot to the fire: {:.2f},{:.2f}".format(X,Y))
-
-        X += cx
-        Y += cy
-
-        return X, Y
+        return yaw_disturbance, pitch_disturbance
 
     def FireDetection(self, verbose=True):
         """
@@ -250,9 +196,8 @@ class Mavic (Robot):
                         radius_max = radius[i]
                         if verbose: print("fire detected, coordinates {}".format(centers[i]))   
 
-            if verbose:
+            if verbose: # Draw polygonal contour + circles and save the image
                 drawing = img.copy()
-                # Draw polygonal contour + circles
                 for i in range(len(contours)):
                     color = (random.randint(0,256), random.randint(0,256), random.randint(0,256))
                     cv2.drawContours(drawing, contours_poly, i, color)
@@ -303,17 +248,16 @@ class Mavic (Robot):
 
             if altitude > target_altitude - 1:
                 # Motion
-                if self.getTime() - t1 > 0.1:
-                    yaw_disturbance, pitch_disturbance = self.move_to_target(waypoints)
+                if self.getTime() - t1 > 0.1:   
+                    if self.img_coord_fire:
+                        yaw_disturbance, pitch_disturbance = self.NaiveApproach()
+                    else:
+                        yaw_disturbance, pitch_disturbance = self.move_to_target(waypoints)
                     t1=self.getTime()
-                # fire detection, and go above the fire
+                # fire detection
                 if self.getTime() - t > 1:      
                     if not self.WaterDropStatus:
-                        coord_fire = self.FireDetection()
-                        if coord_fire:
-                            self.FireDetectionStatus = True
-                            X,Y= self.NaiveApproach(coord_fire) #self.ComputeMonoplotting(coord_fire)
-                            self.target_pos[0:2] = [X, Y] #update the target position with the ones of the fire
+                        self.img_coord_fire = self.FireDetection()
                     t = self.getTime()
 
                 if not self.WaterDropStatus:

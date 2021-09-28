@@ -13,8 +13,8 @@ WorldInfo {
   }
 }
 Viewpoint {
-  orientation 0 1 0 0
-  position 13.303127909371504 17.490918987601393 107.3505206462098
+  orientation 0.7002637194018985 -0.31692756165715735 -0.6396777657160423 1.2315068089349226
+  position -26.89721774022282 -21.962642818207836 62.73100468679769
   near 0.001
 }
 TexturedBackground {
@@ -248,7 +248,7 @@ Mavic2Pro {
   translation 4.46 2.84 17.04
   rotation 0 0 1 0
   name "Mavic 2 PRO(2)"
-  controller ""
+  controller "autonomous_mavic"
   controllerArgs [
     "--target_altitude=43"
     "--patrol_coord=21 21, 11 21, 11 11, 21 11"
