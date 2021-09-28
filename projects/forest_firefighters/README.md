@@ -80,8 +80,8 @@ The Spot controller is a basic controller that just moves the legs of the robot.
 
 ## Autonomous mavic Controller
 
-The autonomous mavic moves between chosen coordinates above a forest in order to patrol and detect a fire. The altitude and world coordinates can be chosen through the controller args. Each time a fire is detected, the drone goes above the fire and drop a quantity of water to stop the fire. The project is using OpenCV to detect the smoke color range, and a naive approach to move above the fire (moves until the fire is in the center of the image). An alternative approach could be to use monoplotting to compute the world coordinates from the image coordinates of the fire. (for example based on http://sar.kangwon.ac.kr/etc/rs_note/rsnote/cp9/cp9-6.htm).
+The autonomous mavic moves between chosen coordinates above a forest in order to patrol and detect a fire. The altitude and world coordinates can be chosen through the controller args. Each time a fire is detected, the drone goes above the fire and drop a quantity of water to stop the fire. The project is using OpenCV to detect the smoke color range, and a naive approach to move above the fire (moves until the fire is in the center of the image). An alternative approach could be to use monoplotting to compute the world coordinates from the image coordinates of the fire. (for example based on [this method ](http://sar.kangwon.ac.kr/etc/rs_note/rsnote/cp9/cp9-6.htm) ).  
 
-It is also possible to add multiple drones to increase chances of detecting a fire. Please note that the fire is starting only when the drone have reached an altitude of 40m.
+It is also possible to add multiple drones to increase chances of detecting a fire. Please note that the fire is starting only when the drone have reached an altitude of 40m.  
 
 To use the project, please install OpenCV `pip install opencv-python`.
