@@ -13,8 +13,8 @@ WorldInfo {
   }
 }
 Viewpoint {
-  orientation 0.7002637194018985 -0.31692756165715735 -0.6396777657160423 1.2315068089349226
-  position -26.89721774022282 -21.962642818207836 62.73100468679769
+  orientation 0.7008575919605982 -0.31666872797624984 -0.6391553430216284 1.2307075381343275
+  position -23.796723460267273 -25.483151873500248 62.73100468679769
   near 0.001
 }
 TexturedBackground {
@@ -227,6 +227,12 @@ SquareManhole {
   translation 4.45 2.94 16.92
   rotation 1 0 0 1.57079633
   name "manhole(1)"
+}
+Spot {
+  translation 6.52 3.254 17.12
+  rotation 1 0 0 1.5708
+  controller "spot"
+  customData "0"
 }
 Mavic2Pro {
   translation 4.36 4.12 16.79
