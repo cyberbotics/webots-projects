@@ -234,7 +234,7 @@ Mavic2Pro {
   controller "autonomous_mavic"
   controllerArgs [
     "--target_altitude=45"
-    "--patrol_coord=11 11, 21 11, 21 21, 11 21"
+    "--patrol_coords=11 11, 21 11, 21 21, 11 21"
   ]
   customData "0"
   cameraSlot [
