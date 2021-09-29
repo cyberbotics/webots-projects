@@ -130,7 +130,7 @@ class Mavic (Robot):
 
     def NaiveApproach(self, verbose=True):
         """
-        Naive approch to move the robot above the fire. Closed loop to move the robot towards to the fire by step until to be above it.
+        Naive approach to move the robot above the fire. Closed loop to move the robot towards to the fire step-by-step until it reaches the fire.
         Parameters: 
             verbose (bool): whether to print status messages or not
         Returns:
