@@ -76,7 +76,7 @@ The keyboard can be used to move the robot and drop water on the forest fire.
 ![mavic](https://user-images.githubusercontent.com/12995815/131667338-302ff820-19ff-4736-8195-b48d1c55a3ad.png)
 
 ## Spot Demo Controller
-The Spot controller is a basic controller that just moves the legs of the robot. The keyboard can also be used to throw water on the forest fire 
+The Spot controller is a basic controller that just moves the legs of the robot. The keyboard can also be used to throw water on the forest fire. 
 
 ## Autonomous Mavic Controller
 
