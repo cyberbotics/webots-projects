@@ -78,7 +78,8 @@ The keyboard can be used to move the robot and drop water on the forest fire.
 ## Spot Demo Controller
 The Spot controller is a basic controller that just moves the legs of the robot. The keyboard can also be used to throw water on the forest fire 
 
-## Autonomous mavic Controller
+## Autonomous Mavic Controller
+
 
 The autonomous mavic moves between chosen coordinates above a forest in order to patrol and detect a fire. The altitude and world coordinates can be chosen through the controller args. Each time a fire is detected, the drone goes above the fire and drop a quantity of water to stop the fire. The project is using OpenCV to detect the smoke color range, and a naive approach to move above the fire (moves until the fire is in the center of the image). An alternative approach could be to use monoplotting to compute the world coordinates from the image coordinates of the fire. (for example based on [this method](http://sar.kangwon.ac.kr/etc/rs_note/rsnote/cp9/cp9-6.htm) ).  
 
