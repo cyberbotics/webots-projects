@@ -88,6 +88,7 @@ The project is using OpenCV to detect the smoke color range, and a naive approac
 An alternative approach could be to use monoplotting to compute the world coordinates from the image coordinates of the fire (for example based on [this method](http://sar.kangwon.ac.kr/etc/rs_note/rsnote/cp9/cp9-6.htm)).  
 
 
-It is also possible to add multiple drones to increase chances of detecting a fire. Please note that the fire is starting only when the drone have reached an altitude of 40m.  
+It is also possible to add multiple drones to increase chances of detecting a fire.
+Please note that the fire is starting only when the drone has reached an altitude of 40m.
 
 To use the project, please install OpenCV `pip install opencv-python`.
