@@ -30,7 +30,7 @@ class Mavic (Robot):
     def __init__(self):
         Robot.__init__(self)
 
-        self.timeStep = int(self.getBasicTimeStep())
+        self.time_step = int(self.getBasicTimeStep())
         
         self.water_to_drop = 0
         
