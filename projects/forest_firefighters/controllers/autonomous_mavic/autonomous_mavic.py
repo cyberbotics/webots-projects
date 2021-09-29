@@ -25,7 +25,7 @@ class Mavic (Robot):
 
     MAX_YAW_DISTURBANCE = 0.4
     MAX_PITCH_DISTURBANCE = -1
-    target_precison = 0.5 #precision between the target position and the robot position in meters
+    target_precision = 0.5  # precision between the target position and the robot position in meters
 
     def __init__(self):
         Robot.__init__(self)
