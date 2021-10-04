@@ -141,7 +141,7 @@ class Fire(Supervisor):
     FLAME_PEAK = 17         # after 13 flame cycles, the fire starts to decrease
     MAX_PROPAGATION = 5    # the maximum distance that the fire can propagate in meter
     MAX_EXTINCTION = 4      # the maximum distance from a tree where water can stop its fire in meter
-    FIRE_DURATION = 80
+    FIRE_DURATION = 50
 
     def __init__(self):
         super(Fire, self).__init__()
@@ -212,14 +212,16 @@ class Fire(Supervisor):
             t[1] -= 100000 * tree.fire_scale * (tree.fire_count % 13)
             tree.fire_translation_field.setSFVec3f(t)
             self.propagate(tree)
-            if tree.fire_count == 2:
+            if tree.fire_count == 1:
                 smoke = f'Smoke {{ translation {tree.translation[0]} {tree.translation[1]} {tree.translation[2]} ' \
-                    f'scale {tree.fire_scale} {tree.fire_scale} {tree.fire_scale} }}'
+                    f'scale {0.01} {0.01} {0.01} }}'
                 self.children.importMFNodeFromString(-1, smoke)
                 tree.smoke = self.children.getMFNode(-1)
-                tree.smoke_translation_field = tree.fire.getField('translation')
-                tree.smoke_scale_field = tree.fire.getField('scale')
-                tree.smoke_translation = tree.fire_translation_field.getSFVec3f()
+                tree.smoke_translation_field = tree.smoke.getField('translation')
+                tree.smoke_scale_field = tree.smoke.getField('scale')
+                tree.smoke_translation = tree.smoke_translation_field.getSFVec3f()
+            if 0 < tree.fire_count < 70:
+                tree.smoke_scale_field.setSFVec3f([tree.fire_count/100, tree.fire_count/100, tree.fire_count/100])
 
     def propagate(self, tree):  # propagate fire to neighbouring trees
         fire_peak = self.FLAME_PEAK * self.FLAME_CYCLE
@@ -243,6 +245,8 @@ class Fire(Supervisor):
                     fire_size = tree.scale * tree.fire_scale / 20
                     if water_radius / robot.MAX_WATER_RADIUS > fire_size:
                         tree.stopFire()
+                        return True
+        return False                    
 
     def run(self):
         start_fire_now = False
@@ -250,6 +254,15 @@ class Fire(Supervisor):
             step = self.step(self.time_step)
             if step == -1:
                 break
+            
+            for robot in self.robots:
+                robot.cleanWater()
+
+                customData = robot.node.getField('customData').getSFString()
+                if customData != "":
+                    quantity_of_water = int(customData)
+                    if quantity_of_water > 0:
+                        robot.dropWater(self.children, quantity_of_water)
             if start_fire_now:
                 # update the fire_clock
                 if self.fire_clock == self.FIRE_DURATION:
@@ -264,23 +277,19 @@ class Fire(Supervisor):
                     self.wind.update(message)
 
                 self.wind.evolve()
+                
                 self.wwiSendText('{"angle":%f, "intensity":%f}' % (self.wind.angle, self.wind.intensity))
 
-                for robot in self.robots:
-                    robot.cleanWater()
-
-                    customData = robot.node.getField('customData').getSFString()
-                    if customData != "":
-                        quantity_of_water = int(customData)
-                        if quantity_of_water > 0:
-                            robot.dropWater(self.children, quantity_of_water)
-
+                extinction = [] 
                 for tree in self.trees:
                     if tree.fire:
                         self.burn(tree)
-                        self.checkExtinction(tree)
+                        extinction.append(self.checkExtinction(tree))
+                
+                if True in extinction:
+                        self.ignite(random.choice(self.trees))
             else:
-                for robot in self.robots:
+                for robot in self.robots: # the simulation starts when the mavic got an altitude > 40
                     if not start_fire_now and robot.name == "Mavic 2 PRO" and robot.altitude() > 40:
                             start_fire_now = True
 

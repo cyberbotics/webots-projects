@@ -29,7 +29,7 @@ class Spot (Robot):
             self.motors.append(motor)
 
         # Display manual control message.
-        print("You throw water with your computer keyboard by pressing 'D'.")
+        print("You can throw water from Spot robot with your computer keyboard by pressing 'D'.")
 
     def robotStep(self):
         if self.step(self.time_step) != -1:
