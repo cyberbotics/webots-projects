@@ -84,7 +84,6 @@ The Spot controller is a basic controller that just moves the legs of the robot.
 
 ## Autonomous Mavic Controller
 
-
 The autonomous Mavic drone moves between chosen coordinates above a forest in order to patrol and detect a fire.
 The altitude and world coordinates can be chosen through the controller args.
 Each time a fire is detected, the drone goes above the fire and drop a quantity of water to stop the fire.
