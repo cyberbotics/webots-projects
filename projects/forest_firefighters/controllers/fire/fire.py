@@ -254,7 +254,14 @@ class Fire(Supervisor):
             step = self.step(self.time_step)
             if step == -1:
                 break
+
+            message = self.wwiReceiveText()
+            if message:
+                self.wind.update(message)
+            self.wind.evolve()
             
+            self.wwiSendText('{"angle":%f, "intensity":%f}' % (self.wind.angle, self.wind.intensity))
+
             for robot in self.robots:
                 robot.cleanWater()
 
@@ -271,14 +278,6 @@ class Fire(Supervisor):
                 else:
                     self.update_fire = False
                     self.fire_clock += 1
-
-                message = self.wwiReceiveText()
-                if message:
-                    self.wind.update(message)
-
-                self.wind.evolve()
-                
-                self.wwiSendText('{"angle":%f, "intensity":%f}' % (self.wind.angle, self.wind.intensity))
 
                 extinction = [] 
                 for tree in self.trees:
