@@ -16,6 +16,10 @@ This video shows a Mavic Pro 2 that fights against a wildfire (speed x2):
 
 https://user-images.githubusercontent.com/12995815/131981332-7b0c6105-5910-4962-8e67-b953e10be9d6.mp4
 
+This video shows two autonomous drones patroling over the forest, detecting and dropping water on wildfires.
+
+https://user-images.githubusercontent.com/48200998/135884718-92a00c63-9f73-4557-96ce-58445ba5eb83.mp4
+
 
 # Creating Your Own Firefighter Robots
 
@@ -80,13 +84,11 @@ The Spot controller is a basic controller that just moves the legs of the robot.
 
 ## Autonomous Mavic Controller
 
-
 The autonomous Mavic drone moves between chosen coordinates above a forest in order to patrol and detect a fire.
 The altitude and world coordinates can be chosen through the controller args.
 Each time a fire is detected, the drone goes above the fire and drop a quantity of water to stop the fire.
 The project is using OpenCV to detect the smoke color range, and a naive approach to move above the fire (moves until the fire is in the center of the image).
 An alternative approach could be to use monoplotting to compute the world coordinates from the image coordinates of the fire (for example based on [this method](http://sar.kangwon.ac.kr/etc/rs_note/rsnote/cp9/cp9-6.htm)).  
-
 
 It is also possible to add multiple drones to increase chances of detecting a fire.
 Please note that the fire is starting only when the drone has reached an altitude of 40m.
