@@ -13,9 +13,9 @@ WorldInfo {
   }
 }
 Viewpoint {
-  orientation 0.6958335631799735 -0.519733413841037 -0.4956741176311339 1.6301694181570054
-  position -6.956694285953386 0.3910557159483803 20.733700326084204
-  near 1
+  orientation 0.567261792493613 -0.4114308185698906 -0.7133994255028825 1.587329358437873
+  position -7.3520103077810575 3.056583670009892 25.98290708040411
+  near 0.001
 }
 TexturedBackground {
 }
@@ -220,22 +220,50 @@ Solid {
   boundingObject USE UNEVEN_TERRAIN_ELEVATION_GRID
 }
 SquareManhole {
-  translation 4.43 4.08 16.66
-  rotation 1 0 0 1.57079633
+  translation 4 4 17.3
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 -2.094395307179586
 }
-Mavic2Pro {
-  translation 4.36 4.12 16.79
-  rotation 0 0 1 0
-  controller "mavic"
-  customData "0"
+SquareManhole {
+  translation 4 3 17.3
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 -2.094395307179586
+  name "manhole(1)"
 }
 Spot {
-  translation 6.52 3.254 17.12
+  translation 6.5 3.254 17.12
   rotation 1 0 0 1.5708
   controller "spot"
   customData "0"
 }
-Fire {
-  translation 10.321796257602944 18.484918682868404 21.543304787283642
-  scale 0.9386034273268835 0.9386034273268835 0.9386034273268835
+Mavic2Pro {
+  translation 4 4 17.4
+  rotation 0 0 1 0
+  controller "autonomous_mavic"
+  controllerArgs [
+    "--target_altitude=45"
+    "--patrol_coords=11 11, 21 11, 21 21, 11 21"
+  ]
+  customData "0"
+  cameraSlot [
+    Camera {
+      width 200
+      height 200
+    }
+  ]
+}
+Mavic2Pro {
+  translation 4 3 17.43
+  rotation 0 0 1 0
+  name "Mavic 2 PRO(2)"
+  controller "autonomous_mavic"
+  controllerArgs [
+    "--target_altitude=43"
+    "--patrol_coord=21 21, 11 21, 11 11, 21 11"
+  ]
+  customData "0"
+  cameraSlot [
+    Camera {
+      width 200
+      height 200
+    }
+  ]
 }

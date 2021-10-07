@@ -22,7 +22,6 @@ import random
 
 from controller import Supervisor
 
-
 def rotate(matrix, vector):
     result = []
     for i in range(3):
@@ -39,6 +38,7 @@ class Tree:
     def __init__(self, node):
         self.node = node
         self.fire = None
+        self.smoke = None
         self.fire_count = 0
         self.translation = node.getField('translation').getSFVec3f()
         self.scale = node.getField('size').getSFFloat() / 10
@@ -52,6 +52,13 @@ class Tree:
             t[1] = 10000000
             fire_translation_field.setSFVec3f(t)
             self.fire = None
+        if self.smoke:
+            smoke_translation_field = self.smoke.getField('translation')
+            smoke_translation = smoke_translation_field.getSFVec3f()
+            t = [smoke_translation[0], smoke_translation[1], smoke_translation[2]]
+            t[1] = 10000000
+            smoke_translation_field.setSFVec3f(t)
+            self.smoke = None
 
     def distance(self, coordinates):
         dx = self.translation[0] - coordinates[0]
@@ -93,7 +100,8 @@ class Robot():
             if altitude < 0:
                 self.waterBalls.remove(waterBall)
                 waterBall.remove()
-
+    def altitude(self):
+        return self.node.getField('translation').getSFVec3f()[2]
 
 class Wind():
     INTENSITY_EVOLVE = 0.01
@@ -131,9 +139,9 @@ class Wind():
 class Fire(Supervisor):
     FLAME_CYCLE = 13        # there are 13 images in the flame animation
     FLAME_PEAK = 17         # after 13 flame cycles, the fire starts to decrease
-    MAX_PROPAGATION = 10    # the maximum distance that the fire can propagate in meter
+    MAX_PROPAGATION = 5    # the maximum distance that the fire can propagate in meter
     MAX_EXTINCTION = 4      # the maximum distance from a tree where water can stop its fire in meter
-    FIRE_DURATION = 10
+    FIRE_DURATION = 50
 
     def __init__(self):
         super(Fire, self).__init__()
@@ -204,6 +212,16 @@ class Fire(Supervisor):
             t[1] -= 100000 * tree.fire_scale * (tree.fire_count % 13)
             tree.fire_translation_field.setSFVec3f(t)
             self.propagate(tree)
+            if tree.fire_count == 1:
+                smoke = f'Smoke {{ translation {tree.translation[0]} {tree.translation[1]} {tree.translation[2]} ' \
+                    f'scale {0.01} {0.01} {0.01} }}'
+                self.children.importMFNodeFromString(-1, smoke)
+                tree.smoke = self.children.getMFNode(-1)
+                tree.smoke_translation_field = tree.smoke.getField('translation')
+                tree.smoke_scale_field = tree.smoke.getField('scale')
+                tree.smoke_translation = tree.smoke_translation_field.getSFVec3f()
+            if 0 < tree.fire_count < 70:
+                tree.smoke_scale_field.setSFVec3f([tree.fire_count/100, tree.fire_count/100, tree.fire_count/100])
 
     def propagate(self, tree):  # propagate fire to neighbouring trees
         fire_peak = self.FLAME_PEAK * self.FLAME_CYCLE
@@ -227,26 +245,21 @@ class Fire(Supervisor):
                     fire_size = tree.scale * tree.fire_scale / 20
                     if water_radius / robot.MAX_WATER_RADIUS > fire_size:
                         tree.stopFire()
+                        return True
+        return False                    
 
     def run(self):
+        start_fire_now = False
         while True:
             step = self.step(self.time_step)
             if step == -1:
                 break
 
-            # update the fire_clock
-            if self.fire_clock == self.FIRE_DURATION:
-                self.update_fire = True
-                self.fire_clock = 0
-            else:
-                self.update_fire = False
-                self.fire_clock += 1
-
             message = self.wwiReceiveText()
             if message:
                 self.wind.update(message)
-
             self.wind.evolve()
+            
             self.wwiSendText('{"angle":%f, "intensity":%f}' % (self.wind.angle, self.wind.intensity))
 
             for robot in self.robots:
@@ -257,12 +270,27 @@ class Fire(Supervisor):
                     quantity_of_water = int(customData)
                     if quantity_of_water > 0:
                         robot.dropWater(self.children, quantity_of_water)
+            if start_fire_now:
+                # update the fire_clock
+                if self.fire_clock == self.FIRE_DURATION:
+                    self.update_fire = True
+                    self.fire_clock = 0
+                else:
+                    self.update_fire = False
+                    self.fire_clock += 1
 
-            for tree in self.trees:
-                if tree.fire:
-                    self.burn(tree)
-                    self.checkExtinction(tree)
-
+                extinction = [] 
+                for tree in self.trees:
+                    if tree.fire:
+                        self.burn(tree)
+                        extinction.append(self.checkExtinction(tree))
+                
+                if True in extinction:
+                        self.ignite(random.choice(self.trees))
+            else:
+                for robot in self.robots: # the simulation starts when the mavic got an altitude > 40
+                    if not start_fire_now and robot.name == "Mavic 2 PRO" and robot.altitude() > 40:
+                            start_fire_now = True
 
 controller = Fire()
 controller.run()

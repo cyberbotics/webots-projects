@@ -29,7 +29,7 @@ class Spot (Robot):
             self.motors.append(motor)
 
         # Display manual control message.
-        print("You throw water with your computer keyboard by pressing 'D'.")
+        print("You can throw water from Spot robot with your computer keyboard by pressing 'D'.")
 
     def robotStep(self):
         if self.step(self.time_step) != -1:
@@ -82,8 +82,8 @@ class Spot (Robot):
                              0.40,  -0.90, 1.18]   # Rear right
         self.movementDecomposition(motors_target_pos, duration)
 
-    def run(self):
-        while True:
+    def run(self):      
+        while self.getTime() < 40:
             self.lieDown(1)
             self.standUp(1)
             self.sitDown(1)

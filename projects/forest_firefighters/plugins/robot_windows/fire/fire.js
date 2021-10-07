@@ -38,7 +38,7 @@ function updateFormMouse(e) {
   let x = e.offsetX - centerOffset;
   let y = e.offsetY - centerOffset;
   let angle = Math.atan2(y, x);
-  let intensity = Math.min(1, Math.sqrt((x / pointerLength)**2 + (y / pointerLength)**2));
+  let intensity = Math.min(1, Math.sqrt(Math.pow(x / pointerLength, 2) + Math.pow(y / pointerLength, 2)));
   drawWindIndicator(angle, intensity);
 
   let message = JSON.stringify({angle: -angle, intensity})
@@ -123,9 +123,9 @@ function drawHand(angle, intensity) {
   ctx.arc(0, -intensity * pointerLength, 5 * axisWidth, 0, 2*Math.PI);
   ctx.fillStyle = 'black';
   ctx.fill();
-  
+
   ctx.rotate(-alpha);
-}  
+}
 
 function toggleStopCheckbox(obj) {
   if (obj.checked) {
