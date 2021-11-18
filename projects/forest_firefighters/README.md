@@ -40,7 +40,7 @@ For steps 6 and 7, please refer to the Webots [User Guide](https://cyberbotics.c
 
 ## Forest Generation
 An efficient and customizable forest can be generated using the proto `protos/UnevenForest.proto`.
-The size of the trees, the dimension and the density of the forest are all parameters of the proto.
+The size of the trees, the dimension and the density of the forest are all parameters of the proto. To do so, you need to delete the current solid `uneven forest`, add the proto `UnevenForest`, change its parameters as you want, Right-Click on the proto and select `Convert Root to Base Node(s)` to make the tree protos accessible for the Supervisor.
 
 Half burned forest using the forest generator:
 ![burned](https://user-images.githubusercontent.com/12995815/131650414-fb5fe445-c74d-4c89-bc05-562f6a304ef3.png)
