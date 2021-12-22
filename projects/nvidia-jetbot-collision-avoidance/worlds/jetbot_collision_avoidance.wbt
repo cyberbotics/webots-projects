@@ -101,7 +101,6 @@ DEF DOOR_WALL Solid {
 }
 Door {
   translation -2.59397 0.927 0.023
-  rotation 0.5767302711947857 0.5767302711947857 0.57858827206847 -5.307179586466759e-06
   size 0.001 1 2.38
   canBeOpen FALSE
   doorThickness 0.02
@@ -159,7 +158,7 @@ DEF WINDOW_WALL Solid {
 }
 DEF BLACKBOARD_WALL Solid {
   translation 0 2 1.2
-  rotation 9.381857096790023e-07 0.7071067811862364 -0.7071067811862364 3.14159
+  rotation 0 0.7071067811862364 -0.7071067811862364 3.14159
   children [
     DEF WALL Shape {
       appearance USE WALL_APPEARANCE
@@ -191,14 +190,14 @@ Window {
 }
 Cabinet {
   translation 2.59145 1.34553 2.77953e-07
-  rotation 5.18222e-07 -1.21379e-06 1 3.14159
+  rotation 0 0 1 3.14159
   columnsWidths [
     0.7, 0.34, 0.17
   ]
 }
 Cabinet {
   translation 2.59145 0.17553 -2.56223e-06
-  rotation 5.18251e-07 -1.21386e-06 1 3.14159
+  rotation 0 0 1 3.14159
   name "cabinet(1)"
   rowsHeights [
     1.44
@@ -226,7 +225,6 @@ Blackboard {
 }
 Clock {
   translation -2.57596 -0.897365 1.96
-  rotation 0.7818459974183446 0.441797998541183 0.4399219985473775 5.09332e-06
 }
 PottedTree {
   translation 2.03144 -1.2296 0
@@ -238,21 +236,20 @@ Desk {
 }
 WoodenChair {
   translation -1.76157 -1.41101 6.48371e-14
-  rotation 1.11393e-06 -1.41156e-07 1 1.8326
+  rotation 0 0 1 1.8326
 }
 WoodenChair {
   translation -0.851899 -1.43187 1.77636e-15
-  rotation 1.08193e-06 1.13519e-07 1 2.61799
+  rotation 0 0 1 2.61799
   name "wooden chair(1)"
 }
 Laptop {
   translation -1.52489 -0.762533 0.72
-  rotation 0 0 1 2.0943972169400804
+  rotation 0 0 1 -2.0943972169400804
   controller ""
 }
 Table {
   translation 0.411788 0.19985 1.24345e-14
-  rotation 0.856057347574785 0.36548995722401445 0.36548995722401445 2.83592235267294e-06
   size 1 1.8 0.61
   feetSize 0.05 0.4
   feetPadding 0.1
