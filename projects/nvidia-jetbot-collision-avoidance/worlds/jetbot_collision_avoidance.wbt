@@ -1,4 +1,4 @@
-#VRML_SIM R2021b utf8
+#VRML_SIM R2022a utf8
 WorldInfo {
   info [
     "JetBot collision avoidance performed using pre-trained PyTorch neural network."
@@ -14,15 +14,14 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation 0.8354587994377837 -0.3317611784738595 -0.43811313025246507 1.472666643359735
-  position 0.13078341062684223 -0.2980874126798468 0.754485847485187
+  orientation -0.14676976029609068 0.26710019544010016 0.9524264397099066 1.0465826079272407
+  position 0.16341894591402323 -0.32726345075631974 0.7956734030961746
 }
 TexturedBackground {
   texture "empty_office"
 }
 CeilingLight {
-  translation 0 0 2.4
-  rotation 1 0 0 1.5707996938995747
+  rotation 1.683552339090272e-06 -1.683552339090272e-06 0.9999999999971658 1.570796326797731
   pointLightRadius 0.1
   castShadows FALSE
 }
@@ -37,8 +36,8 @@ SpotLight {
   castShadows TRUE
 }
 Floor {
-  rotation 1 0 0 1.5707996938995747
-  size 5.2 4
+  rotation 1.683552339090272e-06 -1.683552339090272e-06 0.9999999999971658 1.570796326797731
+  size 4 5.2
   tileSize 1 1
   appearance PBRAppearance {
     baseColorMap ImageTexture {
@@ -52,7 +51,7 @@ Floor {
 }
 DEF CEILING Solid {
   translation 0 0 2.4
-  rotation 1 0 0 -1.5707953071795862
+  rotation -1 0 0 3.141591633975729
   children [
     Shape {
       appearance Roughcast {
@@ -67,7 +66,7 @@ DEF CEILING Solid {
 }
 DEF DOOR_WALL Solid {
   translation -2.6 -0.786 1.2
-  rotation 0 0 1 -1.5708
+  rotation 0.5773489358556708 -0.5773509358554485 0.5773509358554485 -2.094395307179586
   children [
     Shape {
       appearance DEF WALL_APPEARANCE Roughcast {
@@ -87,7 +86,7 @@ DEF DOOR_WALL Solid {
 }
 DEF DOOR_WALL Solid {
   translation -2.6 1.714 1.2
-  rotation 0 0 1 -1.5708
+  rotation 0.5773489358556708 -0.5773509358554485 0.5773509358554485 -2.094395307179586
   children [
     Shape {
       appearance USE WALL_APPEARANCE
@@ -102,8 +101,8 @@ DEF DOOR_WALL Solid {
 }
 Door {
   translation -2.59397 0.927 0.023
-  rotation 0.5773502691896258 0.5773502691896258 0.5773502691896258 2.09439
-  size 1 2.38 0.001
+  rotation 0.5767302711947857 0.5767302711947857 0.57858827206847 -5.307179586466759e-06
+  size 0.001 1 2.38
   canBeOpen FALSE
   doorThickness 0.02
   frameSize 0.05 0.05 0.04
@@ -115,7 +114,7 @@ Door {
 }
 DEF BACK_WALL Solid {
   translation 2.6 0 1.2
-  rotation 0 0 1 1.5708
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 -2.094395307179586
   children [
     DEF WALL Shape {
       appearance USE WALL_APPEARANCE
@@ -130,6 +129,7 @@ DEF BACK_WALL Solid {
 }
 DEF WINDOW_WALL Solid {
   translation 1.6 -2 1.2
+  rotation 1 0 0 -1.5707953071795862
   children [
     DEF WALL Shape {
       appearance USE WALL_APPEARANCE
@@ -144,6 +144,7 @@ DEF WINDOW_WALL Solid {
 }
 DEF WINDOW_WALL Solid {
   translation -2.185 -2 1.2
+  rotation 1 0 0 -1.5707953071795862
   children [
     DEF WALL Shape {
       appearance USE WALL_APPEARANCE
@@ -158,7 +159,7 @@ DEF WINDOW_WALL Solid {
 }
 DEF BLACKBOARD_WALL Solid {
   translation 0 2 1.2
-  rotation 0 0 1 3.14159
+  rotation 9.381857096790023e-07 0.7071067811862364 -0.7071067811862364 3.14159
   children [
     DEF WALL Shape {
       appearance USE WALL_APPEARANCE
@@ -173,31 +174,31 @@ DEF BLACKBOARD_WALL Solid {
 }
 Window {
   translation -1.18 -2.005 0
-  rotation 1 0 0 1.5707996938995747
-  size 1.2 2.4 0.01
+  rotation 1.683552339090272e-06 -1.683552339090272e-06 0.9999999999971658 1.570796326797731
+  size 0.01 1.2 2.4
   windowSillSize 0.1 0.04
   wallAppearance USE WALL_APPEARANCE
   castShadows FALSE
 }
 Window {
   translation 0.02 -2.005 0
-  rotation 1 0 0 1.5707996938995747
+  rotation 1.683552339090272e-06 -1.683552339090272e-06 0.9999999999971658 1.570796326797731
   name "window(1)"
-  size 1.2 2.4 0.01
+  size 0.01 1.2 2.4
   windowSillSize 0.1 0.04
   wallAppearance USE WALL_APPEARANCE
   castShadows FALSE
 }
 Cabinet {
   translation 2.59145 1.34553 2.77953e-07
-  rotation 0.5773509358554486 -0.5773489358556709 -0.5773509358554486 2.094395307179586
+  rotation 5.18222e-07 -1.21379e-06 1 3.14159
   columnsWidths [
     0.7, 0.34, 0.17
   ]
 }
 Cabinet {
   translation 2.59145 0.17553 -2.56223e-06
-  rotation -0.5773509358554485 0.5773489358556708 0.5773509358554485 -2.094395307179586
+  rotation 5.18251e-07 -1.21386e-06 1 3.14159
   name "cabinet(1)"
   rowsHeights [
     1.44
@@ -212,47 +213,47 @@ Cabinet {
 }
 Book {
   translation 2.20088 1.8117 0.5
-  rotation -1 0 0 -5.307179586466759e-06
+  rotation -0.5773492478197279 0.5773492478197279 0.577352311924001 2.094392038294343
 }
 Screwdriver {
   translation 2.20088 1.4517 0.5
-  rotation 0.8628559982596194 0.35740699927911007 -0.35740699927911007 -1.7177753071795863
+  rotation 0.9238799047426803 -0.3826825337159816 1.1714087023556286e-06 3.1415903107405376
 }
 Blackboard {
   translation -0.117255 1.98728 1.25
-  rotation 1 0 0 1.57079
+  rotation 3.1633999999683435e-06 3.1633999999683435e-06 0.9999999999899929 -1.5707953071795862
   castShadows FALSE
 }
 Clock {
   translation -2.57596 -0.897365 1.96
-  rotation 0.5773506025225371 0.5773496025232256 0.5773506025225371 2.0944
+  rotation 0.7818459974183446 0.441797998541183 0.4399219985473775 5.09332e-06
 }
 PottedTree {
   translation 2.03144 -1.2296 0
-  rotation 1 0 0 1.5707996938995747
+  rotation 1.683552339090272e-06 -1.683552339090272e-06 0.9999999999971658 1.570796326797731
 }
 Desk {
   translation -1.71246 -0.75833 -3.64153e-14
-  rotation 2.134600848835888e-07 0.7071052811843439 0.7071082811855368 3.14159
+  rotation 2.9085646145253838e-06 1.3340731387981823e-06 -0.9999999999948803 1.570798505049501
 }
 WoodenChair {
   translation -1.76157 -1.41101 6.48371e-14
-  rotation -0.09269200858898095 0.70406206523945 0.7040630652395428 -2.9567353071795863
+  rotation 1.11393e-06 -1.41156e-07 1 1.8326
 }
 WoodenChair {
   translation -0.851899 -1.43187 1.77636e-15
-  rotation -0.37796500919399895 0.6546530159244348 0.6546540159244592 -2.4188553071795864
+  rotation 1.08193e-06 1.13519e-07 1 2.61799
   name "wooden chair(1)"
 }
 Laptop {
   translation -1.52489 -0.762533 0.72
-  rotation 0.18615701608601462 0.6947450600336179 0.6947480600338772 2.77349
+  rotation 2.328168338094499e-06 1.0774239020101482e-06 -0.9999999999967093 2.0943972169400804
   controller ""
 }
 Table {
   translation 0.411788 0.19985 1.24345e-14
-  rotation -0.5773509358554485 0.5773489358556708 0.5773509358554485 -2.094395307179586
-  size 1.8 0.61 1
+  rotation 0.856057347574785 0.36548995722401445 0.36548995722401445 2.83592235267294e-06
+  size 1 1.8 0.61
   feetSize 0.05 0.4
   feetPadding 0.1
   trayAppearance PBRAppearance {
@@ -277,8 +278,7 @@ DEF JETBOT JetBot {
   controller "jetbot_collision_avoidance"
   supervisor TRUE
   cameraSlot JetBotRaspberryPiCamera {
-    translation 0 0.042 0.0488
-    rotation -0.1628450388833288 -0.1628450388833288 0.9731202323568112 -1.5980453071795866
+    rotation 0 1 0 0.316799
     width 224
     height 224
   }
