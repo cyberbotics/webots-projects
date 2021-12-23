@@ -3,6 +3,10 @@
 This simulation features a small forest wildfire and a few firefighter robots: a couple of drones and legged robots equipped with cameras.
 Users can run the wildfire simulation and program the behavior of the robots to fight the fire.
 They can also improve the models of the robot and even design new ones.
+
+**Warning**: This project works only with Webots R2021b.
+
+
 ![fire](https://user-images.githubusercontent.com/12995815/131650395-876f5ce5-ecdc-4eb7-83bc-a86f94709e32.png)
 Connect at www.forestfirehub.com for more information about this project.
 
