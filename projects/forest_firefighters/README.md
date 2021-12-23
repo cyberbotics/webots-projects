@@ -6,7 +6,6 @@ They can also improve the models of the robot and even design new ones.
 
 **Warning**: This project works only with webots R2021b
 
-
 ![fire](https://user-images.githubusercontent.com/12995815/131650395-876f5ce5-ecdc-4eb7-83bc-a86f94709e32.png)
 Connect at www.forestfirehub.com for more information about this project.
 
