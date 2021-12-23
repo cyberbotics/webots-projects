@@ -9,6 +9,7 @@ They can also improve the models of the robot and even design new ones.
 ![fire](https://user-images.githubusercontent.com/12995815/131650395-876f5ce5-ecdc-4eb7-83bc-a86f94709e32.png)
 Connect at www.forestfirehub.com for more information about this project.
 
+
 # Demo Videos
 This video shows a wildfire propagating into one tree until the tree is completely burnt:
 
