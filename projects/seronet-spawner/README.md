@@ -6,7 +6,7 @@ This project enables to use a REST API to spawn different kind of boxes, such as
 It comes with two worlds: the first is a demo world (`spawner_demo.wbt`) where the different controllers are already implemented.
 The second, `spawner_seronet.wbt`, is meant to be used with the SeRoNet-Tooling-Collection software, so all the controllers (robot, conveyor belts, etc.) are defined as `<extern>` (except the inner controller of the `ConveyorStation`, `box_creator`, which handles the REST API and is independent).
 
-**Warning**: This project works only with webots R2021b
+**Warning**: This project works only with Webots R2021b
 
 ## Configuration
 
