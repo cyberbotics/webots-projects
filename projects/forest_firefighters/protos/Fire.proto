@@ -1,12 +1,15 @@
-#VRML_SIM R2021b utf8
+#VRML_SIM R2023b utf8 
 # license: Creative Commons Attribution 4.0 International License.
 # license url: https://creativecommons.org/licenses/by/4.0/legalcode
 # A fire with flame animation
+
+EXTERNPROTO  "Fire/FlameAppearance.proto"
 
 PROTO Fire [
   field SFVec3f    translation       0 0 0
   field SFRotation rotation          0 0 1 0
   field SFVec3f    scale             1 1 1
+  field MFString   spriteBase       "Fire/textures/fire_00.png"
 ]
 {
   Transform {
@@ -15,7 +18,7 @@ PROTO Fire [
     scale IS scale
     children [
       DEF FLAME Shape {
-        appearance FlameAppearance {}
+        appearance FlameAppearance { url IS spriteBase }
         geometry DEF FLAME_GEOMETRY IndexedFaceSet {
           coord Coordinate {
             point [
@@ -52,86 +55,86 @@ PROTO Fire [
         }
       }
       Transform {
-        translation 0 100000 0
+        translation 0 0 100000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_01.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_01.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 200000 0
+        translation 0 0 200000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_02.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_02.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 300000 0
+        translation 0 0 300000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_03.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_03.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 400000 0
+        translation 0 0 400000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_04.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_04.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 500000 0
+        translation 0 0 500000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_05.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_05.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 600000 0
+        translation 0 0 600000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_06.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_06.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 700000 0
+        translation 0 0 700000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_07.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_07.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 800000 0
+        translation 0 0 800000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_08.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_08.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 900000 0
+        translation 0 0 900000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_09.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_09.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 1000000 0
+        translation 0 0 1000000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_10.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_10.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 1100000 0
+        translation 0 0 1100000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_11.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_11.png" }
           geometry USE FLAME_GEOMETRY
         }
       }
       Transform {
-        translation 0 1200000 0
+        translation 0 0 1200000.0
         children Shape {
-          appearance FlameAppearance { url "textures/fire_12.png" }
+          appearance FlameAppearance { url "Fire/textures/fire_12.png" }
           geometry USE FLAME_GEOMETRY
         }
       }

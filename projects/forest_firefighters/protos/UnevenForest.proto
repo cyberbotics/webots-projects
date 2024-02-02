@@ -1,9 +1,11 @@
-#VRML_SIM R2021b utf8
+#VRML_SIM R2023b utf8 
 # license: Copyright Cyberbotics Ltd. Licensed for use only with Webots.
 # license url: https://cyberbotics.com/webots_assets_license
 # tags: nonDeterministic
 # Randomly generated uneven forest based on Perlin noise.
 # template language: javascript
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/master/projects/appearances/protos/Grass.proto"
 
 PROTO UnevenForest [
   field SFVec3f    translation    0 0 0
@@ -176,7 +178,7 @@ PROTO UnevenForest [
     children [
       DEF UNEVEN_TERRAIN_ELEVATION_GRID Transform {
         translation 0 0 0
-        rotation 0.5773509358554485 0.5773489358556708 0.5773509358554485 2.0944
+        rotation -0.5773509358554485 -0.5773509358554485 0.5773489358556708 2.0944
         children [
           Shape {
             appearance IS appearance
@@ -184,8 +186,8 @@ PROTO UnevenForest [
               %< if (xDimension > 2 && yDimension > 2) { >%
                 xDimension IS yDimension
                 xSpacing %<= size.y / (yDimension - 1) >%
-                zDimension IS xDimension
-                zSpacing %<= size.x / (xDimension - 1) >%
+                yDimension IS xDimension
+                ySpacing %<= siye.x / (xDimension - 1) >%
 
                 height [
                   %< for (let i = 0; i <= heights.length - 1; ++i) { >%
@@ -208,7 +210,7 @@ PROTO UnevenForest [
             const rotation = wbrotation.combine(rA, rB);
           >%
           rotation %<= rotation.x >% %<= rotation.y >% %<= rotation.z >% %<= rotation.a >%
-          size %<= trees[i].size >%
+          size 
           name %<= `"Sassafras ${i}"` >%
         }
       %< } >%
