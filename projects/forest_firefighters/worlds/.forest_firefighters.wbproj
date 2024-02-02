@@ -9,8 +9,8 @@ textFiles: -1
 robotWindow: robot
 globalOptionalRendering: CoordinateSystem
 consoles: Console:All:All
-renderingDevicePerspectives: Mavic 2 PRO(2):camera;1;1;0;0
-renderingDevicePerspectives: Mavic 2 PRO:camera;1;1;0.0217391;0.498986
+renderingDevicePerspectives: Mavic 2 PRO(2):camera;0;1;0;0
+renderingDevicePerspectives: Mavic 2 PRO:camera;0;1;0.0217391;0.498986
 renderingDevicePerspectives: Spot:left flank camera;0;0.24537;0;0
 renderingDevicePerspectives: Spot:left head camera;0;0.24537;0;0
 renderingDevicePerspectives: Spot:rear camera;0;0.24537;0;0

@@ -50,7 +50,6 @@ class Tree:
             fire_translation_field = self.fire.getField('translation')
             fire_translation = fire_translation_field.getSFVec3f()
             t = [fire_translation[0], fire_translation[1], fire_translation[2]]
-            # t[2] = 1000000
             fire_translation_field.setSFVec3f(t)
             self.fire = None
         if self.smoke:
@@ -113,8 +112,8 @@ class Wind():
     def __init__(self):
         self.intensity = random.random()
         self.angle = random.uniform(0, 2 * math.pi)
-        print('Wind angle', self.angle)
-        print('Wind intensity', self.intensity)
+        print('Wind angle:', self.angle)
+        print('Wind intensity:', self.intensity)
 
     def evolve(self):
         if self.RANDOM_EVOLUTION:
@@ -201,6 +200,7 @@ class Fire(Supervisor):
     def ignite(self, tree):
         if tree.fire_count > 1:  # already burnt
             return
+        print('Starting fire in:', tree.translation)
         tree.fire_scale = tree.scale
         fire = f'Fire {{ translation {tree.translation[0]} {tree.translation[1]} {tree.translation[2]} ' \
                f'scale {tree.fire_scale} {tree.fire_scale} {tree.fire_scale} }}'
@@ -285,7 +285,7 @@ class Fire(Supervisor):
 
             message = self.wwiReceiveText()
             if message:
-                print('message', message)
+                print('Message:', message)
                 self.wind.update(message)
             self.wind.evolve()
 
@@ -315,12 +315,10 @@ class Fire(Supervisor):
                         extinction.append(self.checkExtinction(tree))
 
                 if True in extinction:
-                        self.ignite(random.choice(self.trees))
+                    self.ignite(random.choice(self.trees))
             else:
                 for robot in self.robots: # the simulation starts when the mavic got an altitude > 40
                     if not start_fire_now and robot.name == "Mavic 2 PRO" and robot.altitude() > 40:
-                            start_fire_now = True
-                print('waiting altitude', start_fire_now)
-
+                        start_fire_now = True
 controller = Fire()
 controller.run()
