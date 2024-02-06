@@ -41,22 +41,22 @@ class Tree:
         self.smoke = None
         self.fire_count = 0
         self.translation = node.getField('translation').getSFVec3f()
-        self.scale = node.getField('size').getSFFloat() / 10
+        self.scale = node.getField('scale').getSFFloat()
         self.robustness = random.uniform(self.ROBUSTNESS_VARIATION, self.ROBUSTNESS_VARIATION)
+        node.getField('burnt').setSFBool(False)  # Ensure normal tree as initial state
 
     def stopFire(self):
         if self.fire:
             fire_translation_field = self.fire.getField('translation')
             fire_translation = fire_translation_field.getSFVec3f()
             t = [fire_translation[0], fire_translation[1], fire_translation[2]]
-            t[1] = 10000000
             fire_translation_field.setSFVec3f(t)
             self.fire = None
         if self.smoke:
             smoke_translation_field = self.smoke.getField('translation')
             smoke_translation = smoke_translation_field.getSFVec3f()
             t = [smoke_translation[0], smoke_translation[1], smoke_translation[2]]
-            t[1] = 10000000
+            t[2] = 1000000
             smoke_translation_field.setSFVec3f(t)
             self.smoke = None
 
@@ -100,6 +100,7 @@ class Robot():
             if altitude < 0:
                 self.waterBalls.remove(waterBall)
                 waterBall.remove()
+
     def altitude(self):
         return self.node.getField('translation').getSFVec3f()[2]
 
@@ -111,6 +112,8 @@ class Wind():
     def __init__(self):
         self.intensity = random.random()
         self.angle = random.uniform(0, 2 * math.pi)
+        print('Wind angle:', self.angle)
+        print('Wind intensity:', self.intensity)
 
     def evolve(self):
         if self.RANDOM_EVOLUTION:
@@ -131,10 +134,17 @@ class Wind():
         x_wind = self.intensity * math.cos(self.angle)
         y_wind = self.intensity * math.sin(self.angle)
         dx = tree1.translation[0] + propagation_radius * x_wind - tree2.translation[0]
-        dy = tree1.translation[1] + propagation_radius * y_wind - tree2.translation[1]
-        dz = tree1.translation[2] - tree2.translation[2]
+        dy = tree1.translation[1] - tree2.translation[1]
+        dz = tree1.translation[2] + propagation_radius * y_wind - tree2.translation[2]
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
+def fire_shape_url(shape_node):
+    if shape_node.getBaseTypeName() == 'Shape':
+        appr_node = shape_node.getField('appearance').getSFNode()
+        return appr_node.getField('url').getMFString(0)
+    else:
+        print('Node is not an instance of Shape, nothing to return')
+        return None
 
 class Fire(Supervisor):
     FLAME_CYCLE = 13        # there are 13 images in the flame animation
@@ -157,6 +167,7 @@ class Fire(Supervisor):
         self.trees = []
 
         self.robots = []
+        self.fire_sprites = []
 
         n = self.children.getCount()
         for i in range(n):
@@ -189,6 +200,7 @@ class Fire(Supervisor):
     def ignite(self, tree):
         if tree.fire_count > 1:  # already burnt
             return
+        print('Starting fire in:', tree.translation)
         tree.fire_scale = tree.scale
         fire = f'Fire {{ translation {tree.translation[0]} {tree.translation[1]} {tree.translation[2]} ' \
                f'scale {tree.fire_scale} {tree.fire_scale} {tree.fire_scale} }}'
@@ -198,6 +210,19 @@ class Fire(Supervisor):
         tree.fire_scale_field = tree.fire.getField('scale')
         tree.fire_translation = tree.fire_translation_field.getSFVec3f()
 
+        node_child = tree.fire.getProtoField('children').getMFNode(0)
+        if node_child.getBaseTypeName() == 'Shape':
+            appr_node = node_child.getField('appearance').getSFNode()
+            tree.fire_shape_field = appr_node.getField('url')
+
+        if len(self.fire_sprites) == 0:
+            self.fire_sprites.append(fire_shape_url(node_child))
+            for i in range(self.FLAME_CYCLE):
+                node_child = tree.fire.getProtoField('children').getMFNode(i)
+                if node_child.getBaseTypeName() == 'Pose':
+                    txr_node = node_child.getField('children').getMFNode(0)
+                    self.fire_sprites.append(fire_shape_url(txr_node))
+
     def burn(self, tree):
         if self.update_fire:
             tree.fire_count += 1
@@ -206,11 +231,14 @@ class Fire(Supervisor):
                 if tree.fire_count == self.FLAME_PEAK * self.FLAME_CYCLE:
                     tree.node.getField('burnt').setSFBool(True)
                 tree.fire_scale_field.setSFVec3f([tree.fire_scale, tree.fire_scale, tree.fire_scale])
+
                 if tree.fire_scale < tree.scale:
                     tree.stopFire()
             t = [tree.fire_translation[0], tree.fire_translation[1], tree.fire_translation[2]]
-            t[1] -= 100000 * tree.fire_scale * (tree.fire_count % 13)
             tree.fire_translation_field.setSFVec3f(t)
+            if tree.fire:
+                sprite_field = tree.fire.getField('spriteBase')
+                sprite_field.setMFString(0, '../protos/' + self.fire_sprites[tree.fire_count % self.FLAME_CYCLE])
             self.propagate(tree)
             if tree.fire_count == 1:
                 smoke = f'Smoke {{ translation {tree.translation[0]} {tree.translation[1]} {tree.translation[2]} ' \
@@ -246,7 +274,7 @@ class Fire(Supervisor):
                     if water_radius / robot.MAX_WATER_RADIUS > fire_size:
                         tree.stopFire()
                         return True
-        return False                    
+        return False
 
     def run(self):
         start_fire_now = False
@@ -257,9 +285,10 @@ class Fire(Supervisor):
 
             message = self.wwiReceiveText()
             if message:
+                print('Message:', message)
                 self.wind.update(message)
             self.wind.evolve()
-            
+
             self.wwiSendText('{"angle":%f, "intensity":%f}' % (self.wind.angle, self.wind.intensity))
 
             for robot in self.robots:
@@ -279,18 +308,17 @@ class Fire(Supervisor):
                     self.update_fire = False
                     self.fire_clock += 1
 
-                extinction = [] 
+                extinction = []
                 for tree in self.trees:
                     if tree.fire:
                         self.burn(tree)
                         extinction.append(self.checkExtinction(tree))
-                
+
                 if True in extinction:
-                        self.ignite(random.choice(self.trees))
+                    self.ignite(random.choice(self.trees))
             else:
                 for robot in self.robots: # the simulation starts when the mavic got an altitude > 40
                     if not start_fire_now and robot.name == "Mavic 2 PRO" and robot.altitude() > 40:
-                            start_fire_now = True
-
+                        start_fire_now = True
 controller = Fire()
 controller.run()
