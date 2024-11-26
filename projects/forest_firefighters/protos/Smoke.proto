@@ -1,7 +1,9 @@
-#VRML_SIM R2021b utf8
+#VRML_SIM R2023b utf8 
 # license: Creative Commons Attribution 4.0 International License.
 # license url: https://creativecommons.org/licenses/by/4.0/legalcode
 # A smoke of a fire from the top
+
+EXTERNPROTO  "Fire/SmokeAppearance.proto"
 
 PROTO Smoke [
   field SFVec3f    translation       0 0 0

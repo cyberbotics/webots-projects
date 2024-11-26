@@ -78,7 +78,7 @@ function drawDial() {
 
   // x and y axis
   drawAxis('red', Math.PI / 2, 'x')
-  drawAxis('green', 0, 'y')
+  drawAxis('blue', 0, 'z')
 }
 
 function drawAxis(color, angle, letter) {

@@ -1,9 +1,12 @@
-#VRML_SIM R2021b utf8
+#VRML_SIM R2023b utf8 
 # license: Copyright Cyberbotics Ltd. Licensed for use only with Webots.
 # license url: https://cyberbotics.com/webots_assets_license
 # tags: nonDeterministic
 # Randomly generated uneven forest based on Perlin noise.
 # template language: javascript
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/master/projects/appearances/protos/Grass.proto"
+EXTERNPROTO "Sassafras.proto"
 
 PROTO UnevenForest [
   field SFVec3f    translation    0 0 0
@@ -97,7 +100,7 @@ PROTO UnevenForest [
       console.error('\'yDimension\' must be bigger than 2. Value reset to ' + yDimension + '.');
     }
 
-    let heights = []
+    let heights = [];
 
     // compute the height of each point in the elevation grid
     for (let i = 0; i <= xDimension - 1; ++i) {
@@ -105,20 +108,20 @@ PROTO UnevenForest [
       for (let j = 0; j <= yDimension - 1; ++j) {
         let height = 1.0;
         const x = i / xDimension;
-        const z = j / yDimension;
+        const y = j / yDimension;
         if (nOctave > 0)
-            height = 0.5 * (1.0 + fBm(x, z, perlinSize, nOctave, dirs, perm));
+            height = 0.5 * (1.0 + fBm(x, y, perlinSize, nOctave, dirs, perm));
 
         if (fields.flatCenter.value)
-            height = height * (1.0 - gaussian2d(x - 0.5, z - 0.5, 1, 0, 0, 0.2, 0.2));
+            height = height * (1.0 - gaussian2d(x - 0.5, y - 0.5, 1, 0, 0, 0.2, 0.2));
 
         if (fields.flatBounds.value)
-            height = height * gaussian2d(x - 0.5, z - 0.5, 1, 0, 0, 0.2, 0.2);
+            height = height * gaussian2d(x - 0.5, y - 0.5, 1, 0, 0, 0.2, 0.2);
 
-        height = height * size.z
-        heightsLine.push(height)
+        height = height * size.z;
+        heightsLine.push(height);
       }
-      heights.push(heightsLine)
+      heights.push(heightsLine);
     }
 
     let density = fields.density.value;
@@ -174,23 +177,22 @@ PROTO UnevenForest [
     translation IS translation
     rotation IS rotation
     children [
-      DEF UNEVEN_TERRAIN_ELEVATION_GRID Transform {
-        translation 0 0 0
-        rotation 0.5773509358554485 0.5773489358556708 0.5773509358554485 2.0944
+      DEF UNEVEN_TERRAIN_ELEVATION_GRID Pose {
+        translation %<= -size.x / 2 >% %<= -size.y / 2 >% 0
         children [
           Shape {
             appearance IS appearance
             geometry ElevationGrid {
               %< if (xDimension > 2 && yDimension > 2) { >%
-                xDimension IS yDimension
-                xSpacing %<= size.y / (yDimension - 1) >%
-                zDimension IS xDimension
-                zSpacing %<= size.x / (xDimension - 1) >%
+                xDimension IS xDimension
+                xSpacing %<= size.x / (xDimension - 1) >%
+                yDimension IS yDimension
+                ySpacing %<= size.y / (yDimension - 1) >%
 
                 height [
                   %< for (let i = 0; i <= heights.length - 1; ++i) { >%
                     %< for (let j = 0; j <= heights[0].length - 1; ++j) { >%
-                      %<= heights[i][j] >%
+                      %<= heights[j][i] >%
                     %< } >%
                   %< } >%
                 ]
@@ -201,14 +203,8 @@ PROTO UnevenForest [
       }
       %< for (let i = 0; i < numberOfTree; ++i) { >%
         Sassafras {
-          translation %<= trees[i].x >% %<= trees[i].y >% %<= trees[i].z>%
-          %<
-            const rA = {x: 0, y: 0, z: 1, a: trees[i].angle}
-            const rB = {x: 1, y: 0, z: 0, a: Math.PI / 2}
-            const rotation = wbrotation.combine(rA, rB);
-          >%
-          rotation %<= rotation.x >% %<= rotation.y >% %<= rotation.z >% %<= rotation.a >%
-          size %<= trees[i].size >%
+          translation %<= trees[i].x -size.x / 2 >% %<= trees[i].y -size.y / 2 >% %<= trees[i].z>%
+          scale %<= trees[i].size / 10. >%
           name %<= `"Sassafras ${i}"` >%
         }
       %< } >%
