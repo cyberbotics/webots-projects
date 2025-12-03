@@ -1,0 +1,23 @@
+# Create a robot object
+robot = Robot()
+
+# Get the time step of the simulation (in milliseconds)
+time_step = int(robot.getBasicTimeStep())
+
+# Get the motors (for example, left and right motors)
+left_motor = robot.getMotor("left wheel motor")
+right_motor = robot.getMotor("right wheel motor")
+
+# Set the motor positions to infinity to make them run continuously
+left_motor.setPosition(float('inf'))  # Infinite position, meaning continuous movement
+right_motor.setPosition(float('inf'))  # Infinite position for the right motor
+
+# Set motor speeds (0.5 means half the maximum speed)
+left_motor.setVelocity(0.5)
+right_motor.setVelocity(0.5)
+
+# Start a loop to keep the robot running
+while robot.step(time_step) != -1:
+    # Additional sensor code can be added here if needed
+    # For now, the robot will continue moving forward
+    pass
