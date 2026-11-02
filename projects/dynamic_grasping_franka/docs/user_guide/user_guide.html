@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dynamic Grasping Lab — User Guide</title>
+<style>
+  @page { size: A4; margin: 18mm 17mm 20mm 17mm; }
+  :root {
+    --ink: #1d232b; --muted: #5d6875; --accent: #1f6fd1; --accent-2: #e07b00;
+    --good: #1c8a46; --bad: #c4363b; --rule: #d9dee5; --panel: #f3f6fa;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: 10.4pt; }
+  body { margin: 0; font-family: "Noto Sans", "DejaVu Sans", "Segoe UI", sans-serif; color: var(--ink); line-height: 1.45; }
+  h1, h2, h3 { line-height: 1.2; }
+  h1 { font-size: 22pt; margin: 0 0 4mm; color: var(--accent); }
+  h2 { font-size: 13.5pt; margin: 6mm 0 2mm; color: var(--ink); border-bottom: 1.5px solid var(--rule); padding-bottom: 1mm; }
+  h3 { font-size: 11pt; margin: 4mm 0 1.5mm; color: var(--accent); }
+  p { margin: 1.6mm 0; }
+  ul, ol { margin: 1.2mm 0 1.6mm; padding-left: 6mm; }
+  li { margin: 0.6mm 0; }
+  section.chapter { page-break-before: always; }
+  .chapter-no { font-size: 9pt; color: var(--accent-2); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  code, .mono { font-family: "DejaVu Sans Mono", "Noto Mono", monospace; font-size: 8.8pt; }
+  code { background: var(--panel); padding: 0 1mm; border-radius: 2px; }
+  pre { background: #1f2630; color: #e8edf3; padding: 3mm 4mm; border-radius: 3px; font-size: 8.6pt; line-height: 1.4; white-space: pre-wrap; margin: 2mm 0; }
+  .eq { background: var(--panel); border-left: 3px solid var(--accent-2); padding: 2mm 4mm; margin: 2mm 0; font-family: "DejaVu Sans Mono", monospace; font-size: 8.8pt; white-space: pre-wrap; }
+  table { border-collapse: collapse; width: 100%; margin: 2mm 0 3mm; font-size: 9.2pt; }
+  th, td { border-bottom: 1px solid var(--rule); padding: 1.4mm 2mm; text-align: left; vertical-align: top; }
+  th { background: var(--panel); font-weight: 700; }
+  figure { margin: 3mm 0; text-align: center; page-break-inside: avoid; }
+  figure img { max-width: 100%; border: 1px solid var(--rule); border-radius: 3px; }
+  figcaption { font-size: 8.6pt; color: var(--muted); margin-top: 1.2mm; }
+  .two { display: flex; gap: 4mm; } .two > * { flex: 1; }
+  .box { border: 1px solid var(--rule); border-radius: 4px; padding: 2.5mm 4mm; margin: 3mm 0; page-break-inside: avoid; }
+  .tip { background: #eef6ff; border-color: #bcd6f5; }
+  .tip b:first-child { color: var(--accent); }
+  .warn { background: #fff6ea; border-color: #f2d2a6; }
+  .warn b:first-child { color: var(--accent-2); }
+  .try { background: #eefaf2; border-color: #bfe5cc; }
+  .try b:first-child { color: var(--good); }
+  .steps { counter-reset: s; list-style: none; padding-left: 0; }
+  .steps > li { counter-increment: s; position: relative; padding-left: 9mm; margin: 2mm 0; }
+  .steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 6mm; height: 6mm; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 8.5pt; text-align: center; line-height: 6mm; }
+  .key { display: inline-block; border: 1px solid #b9c2cc; border-bottom-width: 2px; border-radius: 3px; padding: 0 1.4mm; font-size: 8.6pt; background: #fff; }
+  .btn { display: inline-block; background: var(--accent); color: #fff; border-radius: 3px; padding: 0 1.8mm; font-size: 8.8pt; font-weight: 700; }
+  .btn.grey { background: #6b7684; }
+  .pipeline { display: flex; gap: 1mm; margin: 3mm 0; }
+  .pipeline div { flex: 1; text-align: center; background: var(--accent); color: #fff; font-size: 8.4pt; padding: 1.8mm 0.5mm; border-radius: 2px; }
+  .pipeline div small { display: block; font-size: 7.2pt; opacity: .85; font-weight: 400; }
+  /* cover */
+  .cover { height: 255mm; display: flex; flex-direction: column; }
+  .cover h1 { font-size: 30pt; margin-top: 8mm; }
+  .cover .sub { font-size: 14pt; color: var(--muted); margin-bottom: 6mm; }
+  .cover figure img { border: none; border-radius: 4px; }
+  .cover .meta { margin-top: auto; font-size: 9.4pt; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 3mm; }
+  .toc { columns: 2; column-gap: 8mm; font-size: 10pt; }
+  .toc div { break-inside: avoid; padding: 0.8mm 0; border-bottom: 1px dotted var(--rule); }
+  .toc span { color: var(--accent-2); font-weight: 700; display: inline-block; width: 7mm; }
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════════════ COVER ═════════════════════════════ -->
+<div class="cover">
+  <div class="chapter-no">Webots teaching example · user guide</div>
+  <h1>Dynamic Grasping Lab</h1>
+  <div class="sub">Catching a moving ball with the Franka Emika Panda — a hands-on robotics course in one simulation</div>
+  <figure><img src="../images/scene_2.6.jpg" alt="The Panda catching the ball"></figure>
+  <p>A ball slides across the floor. A 7-joint robot arm <b>sees</b> it with a ceiling camera,
+  <b>predicts</b> where it is going, <b>decides</b> where and when to meet it, <b>moves</b> there in
+  time and <b>closes its gripper</b> at the right instant. Every one of those steps is a classic robotics
+  building block, and this guide shows you how to explore each of them, step by step.</p>
+  <div class="meta">
+    Simulator: Webots R2025a · Language: Python 3 + NumPy · Tested on Ubuntu 22.04<br>
+    Based on <i>Dynamic Object Grasping Using a 7-DoF Manipulator</i> (MuJoCo) by Alaa Hussein and Haidar Saad,
+    Manara University, supervised by Dr. Essa Alghannam.<br>
+    Robot meshes and Panda hand: Webots Franka Emika Panda model (Apache 2.0).
+  </div>
+</div>
+
+<!-- ═════════════════════════════ CONTENTS ═════════════════════════════ -->
+<section class="chapter">
+  <h1>Contents</h1>
+  <div class="toc">
+    <div><span>1</span>What you will learn</div>
+    <div><span>2</span>Installing</div>
+    <div><span>3</span>Your first catch</div>
+    <div><span>4</span>A tour of the lab window</div>
+    <div><span>5</span>Teaching mode: one phase at a time</div>
+    <div><span>6</span>The seven phases, explained</div>
+    <div><span>7</span>Experiments to try</div>
+    <div><span>8</span>Programming exercises</div>
+    <div><span>9</span>For teachers: demos, recordings, data</div>
+    <div><span>10</span>Checking that everything works</div>
+    <div><span>11</span>Troubleshooting</div>
+    <div><span>12</span>Where things are in the code</div>
+  </div>
+
+  <h2>How to read this guide</h2>
+  <p>Chapters 2–4 get you running in about 15 minutes. Chapters 5–7 are the course: work through them
+  with the simulation open. Chapter 8 is for learners who want to write code, chapter 9 for teachers,
+  and chapters 10–12 are reference.</p>
+  <div class="box tip"><b>Tip.</b> Keep this guide on one side of the screen and the simulation on the
+  other. Every "Try" box is meant to be done, not just read.</div>
+</section>
+
+<!-- ═════════════════════════════ 1 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 1</div>
+  <h1>What you will learn</h1>
+  <p>Catching a moving object is harder than ordinary pick-and-place, because <i>timing</i> matters: the
+  robot must arrive before the ball does and close its fingers at exactly the right moment. To do that,
+  it chains seven steps, shown as the pipeline at the top of the lab window:</p>
+  <div class="pipeline">
+    <div>1 Observe<small>camera + fit</small></div><div>2 Plan<small>where &amp; when</small></div>
+    <div>3 Approach<small>quintic motion</small></div><div>4 Descend<small>correct, go down</small></div>
+    <div>5 Wait<small>timed closure</small></div><div>6 Close<small>friction grasp</small></div>
+    <div>7 Lift<small>check</small></div>
+  </div>
+  <table>
+    <tr><th style="width:24%">Topic</th><th>What you will see and understand</th></tr>
+    <tr><td>Camera perception</td><td>Colour segmentation, blob analysis and the pinhole camera model turn an image into a ball position on the floor.</td></tr>
+    <tr><td>State estimation</td><td>A least-squares line fit turns noisy positions into a velocity; tracking and <i>gating</i> keep the estimate fresh while the arm moves.</td></tr>
+    <tr><td>Kinematics</td><td>Forward kinematics with screw theory (Product of Exponentials) and inverse kinematics by damped least squares.</td></tr>
+    <tr><td>Planning</td><td>Intercept planning: for each possible meeting time, is it reachable, does IK work, is the arm fast enough?</td></tr>
+    <tr><td>Trajectories</td><td>Quintic (minimum-jerk) motions and the shortest duration allowed by the joint speed limits.</td></tr>
+    <tr><td>Control</td><td>Velocity feed-forward plus proportional feedback for each joint.</td></tr>
+    <tr><td>Grasping</td><td>Friction, the minimum squeeze force N<sub>min</sub> = m·g / (2μ), and force-limited closing.</td></tr>
+  </table>
+  <div class="box tip"><b>One method per step, on purpose.</b> The example uses one planner, one
+  trajectory type and one controller, chosen because they are the easiest to understand. There are no
+  benchmarks or comparisons: the goal is to see each idea working inside a complete system.</div>
+  <h3>What you need to know beforehand</h3>
+  <ul>
+    <li>Basic Python (functions, lists, NumPy arrays) for the exercises.</li>
+    <li>Vectors and matrices (rotation matrices help for kinematics).</li>
+    <li>No prior Webots experience is needed.</li>
+  </ul>
+</section>
+
+<!-- ═════════════════════════════ 2 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 2</div>
+  <h1>Installing</h1>
+  <h2>2.1 Webots R2025a</h2>
+  <p>Download Webots R2025a from <span class="mono">cyberbotics.com</span> (free and open source). On
+  Ubuntu, the Debian package installs it in one command:</p>
+<pre>wget https://github.com/cyberbotics/webots/releases/download/R2025a/webots_2025a_amd64.deb
+sudo apt install ./webots_2025a_amd64.deb</pre>
+  <p>Webots is about 160 MB to download and about 470 MB once installed. On Windows and macOS, use the
+  installer from the website. The example is written for any platform but has been tested on Ubuntu 22.04.</p>
+
+  <h2>2.2 Python and NumPy</h2>
+  <p>The robot's program (its <i>controller</i>) is written in Python 3 and needs only NumPy:</p>
+<pre>pip install numpy</pre>
+  <div class="box warn"><b>Watch out.</b> Webots must use a Python that has NumPy. If several Pythons are
+  installed, set the right one in Webots: <i>Tools → Preferences → Python command</i>.</div>
+
+  <h2>2.3 The project</h2>
+  <p>The project is the folder <code>projects/dynamic_grasping_franka</code> of the
+  <a href="https://github.com/cyberbotics/webots-projects">webots-projects</a> repository. To get only
+  this folder (keep its structure as it is):</p>
+<pre>git clone --depth 1 --filter=blob:none --sparse https://github.com/cyberbotics/webots-projects.git
+cd webots-projects
+git sparse-checkout set projects/dynamic_grasping_franka
+cd projects/dynamic_grasping_franka</pre>
+  <p>Or download the whole repository as a ZIP from its GitHub page and open
+  <code>projects/dynamic_grasping_franka</code>.</p>
+  <p>The first time you open the world, Webots downloads the official Panda 3D model files (about
+  11 MB) and the floor and sky textures, then keeps them in its cache, so later runs also work offline.</p>
+</section>
+
+<!-- ═════════════════════════════ 3 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 3</div>
+  <h1>Your first catch</h1>
+  <ol class="steps">
+    <li><b>Open the world.</b> In Webots: <i>File → Open World…</i> and choose
+      <code>worlds/dynamic_grasping.wbt</code>. (The first time, Webots shows a welcome window; click
+      <i>Start Webots with the selected theme</i>.)</li>
+    <li><b>Run it.</b> Press <span class="key">▶</span> in the toolbar. The arm moves to its ready pose in
+      about 3 seconds.</li>
+    <li><b>Open the lab window.</b> <b>Double-click the robot arm</b> (or right-click it →
+      <i>Show Robot Window</i>). On Linux it opens in your web browser. Its top-right corner should say
+      <span style="color:var(--good);font-weight:700">connected</span>.</li>
+    <li><b>Launch a ball.</b> In the lab window, choose the scenario <i>Still ball</i> and press
+      <span class="btn">▶ Launch ball</span>. Watch the robot pick it up.</li>
+    <li><b>Go again.</b> Press <span class="btn grey">⟲ Reset</span>, wait until the arm is home
+      (<i>Launch ball</i> becomes blue again), choose <i>Gentle roll</i> and launch.</li>
+  </ol>
+  <figure>
+    <div class="two">
+      <img src="../images/scene_0.3.jpg" alt="Approach">
+      <img src="../images/scene_3.9.jpg" alt="Caught">
+    </div>
+    <figcaption>Left: the ball (orange) slides along the predicted path; red dots are meeting points that were too late,
+    the green dot is the chosen one; coloured axes show the target poses; the green disc is where the robot can grasp.
+    Top left: what the ceiling camera sees. Right: caught and lifted.</figcaption>
+  </figure>
+  <div class="box tip"><b>Suggested order.</b> <i>Still ball</i> → <i>Gentle roll</i> →
+  <i>Original MuJoCo scene</i> → <i>Diagonal crossing</i> → <i>Coming towards the robot</i> →
+  <i>Fast pass</i> → <i>Out of reach</i> (where the robot correctly refuses).</div>
+</section>
+
+<!-- ═════════════════════════════ 4 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 4</div>
+  <h1>A tour of the lab window</h1>
+  <p>The left column holds the controls; the right side holds eight tabs. The bar at the top shows
+  the seven phases: the current phase is blue, finished phases are green.</p>
+  <h2>4.1 Controls (left column)</h2>
+  <table>
+    <tr><th style="width:24%">Control</th><th>What it does</th></tr>
+    <tr><td>Scenario</td><td>Seven ready-made launches. Choosing one fills in the four sliders below it.</td></tr>
+    <tr><td>Ball start x, y · speed · heading</td><td>Design your own launch. Heading is the direction of travel in degrees (90° = towards +y).</td></tr>
+    <tr><td>Launch ball / Reset</td><td><i>Launch</i> only works when the arm is home (it is greyed out otherwise). <i>Reset</i> opens the gripper, puts the ball back and sends the arm home.</td></tr>
+    <tr><td>Perception</td><td><i>Overhead camera</i>: the robot finds the ball in camera images. <i>Simulator (exact)</i>: perfect positions, no camera.</td></tr>
+    <tr><td>Arm speed</td><td>Fraction of the joint speed limits (0.3–1). Slower arm → later meeting point.</td></tr>
+    <tr><td>Grip force</td><td>Squeeze force per finger. The hint below shows the theoretical minimum, and turns orange below it.</td></tr>
+    <tr><td>Teaching mode</td><td>Pause before each phase (chapter 5). <span class="btn">Next phase ▸</span> continues.</td></tr>
+    <tr><td>Show 3D markers</td><td>Turns the predicted path, candidate dots and target frames on or off in the 3D view.</td></tr>
+  </table>
+  <h2>4.2 The tabs</h2>
+  <table>
+    <tr><th style="width:16%">Tab</th><th>What you find there</th></tr>
+    <tr><td>Lesson</td><td>A card for the current phase: the idea, the equations, the file/function that implements it, and a <b>Check yourself</b> quiz.</td></tr>
+    <tr><td>Camera</td><td>What the ceiling camera sees, the blob accepted as the ball (cyan circle), the robot's prediction (yellow cross), and the camera's error against the simulator's truth.</td></tr>
+    <tr><td>Planner</td><td>Top view with every candidate meeting point, the <i>time needed vs time available</i> chart, and a table of candidates with the reason each was rejected.</td></tr>
+    <tr><td>Motion</td><td>Desired (quintic) and measured angle of a chosen joint, the tracking error, and where each joint sits within its limits.</td></tr>
+    <tr><td>Gripper</td><td>Finger opening and finger force: watch the switch from moving to squeezing.</td></tr>
+    <tr><td>IK lab</td><td>Pick any gripper pose with sliders; inverse kinematics finds the joint angles and the arm moves there.</td></tr>
+    <tr><td>Exercises</td><td>The six programming exercises and a <b>Check my exercises</b> button (chapter 8).</td></tr>
+    <tr><td>Log</td><td>Everything the robot decided, with times, plus <b>CSV export</b> of the run data and planner candidates.</td></tr>
+  </table>
+</section>
+
+<section class="chapter">
+  <h2>4.3 The tabs in pictures</h2>
+  <figure><img src="../images/window_camera.png" alt="Camera tab" style="width:76%">
+    <figcaption>Camera tab: the ball is found 0.9 mm from its true position. The table explains each step of the detection.</figcaption></figure>
+  <figure><img src="../images/window_planner.png" alt="Planner tab" style="width:76%">
+    <figcaption>Planner tab: candidate meeting points on the map, and the chart where "time needed" first drops below "time available".</figcaption></figure>
+</section>
+
+<section class="chapter">
+  <figure><img src="../images/window_motion.png" alt="Motion tab" style="width:76%">
+    <figcaption>Motion tab: the measured joint angle (blue) follows the quintic reference (orange) within a few milliradians.</figcaption></figure>
+  <figure><img src="../images/window_gripper.png" alt="Gripper tab" style="width:76%">
+    <figcaption>Gripper tab: the fingers stop at the ball's radius (3 cm) and the force rises to the grip force you set.</figcaption></figure>
+</section>
+
+<!-- ═════════════════════════════ 5 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 5</div>
+  <h1>Teaching mode: one phase at a time</h1>
+  <p>Real catches take about two seconds, which is too fast to follow. Teaching mode stops the
+  simulation logic before each phase, <b>freezes the ball</b>, and shows the lesson card for the phase
+  that comes next.</p>
+  <ol class="steps">
+    <li>Press <span class="btn grey">⟲ Reset</span> and wait until the arm is home.</li>
+    <li>Tick <b>Teaching mode: pause before each phase</b>.</li>
+    <li>Choose <i>Original MuJoCo scene</i> and press <span class="btn">▶ Launch ball</span>.</li>
+    <li>At each pause, read the <b>Lesson</b> card, answer the <b>Check yourself</b> quiz, look at the
+      3D view and the other tabs, then press <span class="btn">Next phase ▸</span>.</li>
+  </ol>
+  <p>The robot pauses five times: before PLAN, APPROACH, DESCEND, WAIT and LIFT. Nothing is lost while
+  paused: the plan and the predictions are shifted in time along with the frozen ball, so the catch
+  still works after a long pause.</p>
+  <figure><img src="../images/window_paused.png" alt="Teaching mode with quiz" style="width:92%">
+    <figcaption>Paused before PLAN: the pipeline outlines the next phase, the lesson explains it, and the quiz has just been answered correctly.</figcaption></figure>
+</section>
+
+<!-- ═════════════════════════════ 6 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 6</div>
+  <h1>The seven phases, explained</h1>
+
+  <h3>1 · Observe: find the ball and estimate its motion</h3>
+  <p>A 320×240 camera 2.5 m above the floor looks straight down. For each image:
+  <b>segmentation</b> keeps orange pixels; <b>blob analysis</b> keeps the group of pixels with the size
+  and shape of the ball; <b>back-projection</b> turns its centre pixel into a floor position:</p>
+  <div class="eq">f = (W/2) / tan(fov/2)                  focal length in pixels
+ray = R · ( f, −(u − W/2), −(v − H/2) )  viewing ray in the world
+p = c + t · ray,  with t chosen so that p is at the ball's height</div>
+  <p>Over 0.2 s (13 frames) a straight line is fitted by least squares; its slope is the velocity:</p>
+  <div class="eq">p(t) = p₀ + v · t        →   solve for p₀ and v</div>
+
+  <h3>2 · Plan: where and when do we meet?</h3>
+  <p>The floor is frictionless, so the ball goes straight. The planner tries meeting times
+  t = 0.05, 0.10, … s and keeps the first one that passes three checks: the point is <b>reachable</b>;
+  <b>IK</b> finds joint angles above and around the ball (trying the symmetric gripper both ways
+  round); and the arm is <b>fast enough</b>:</p>
+  <div class="eq">needed(t) = T_approach + T_descend + T_close + margin   ≤   t</div>
+
+  <h3>3 · Approach: a smooth joint-space motion</h3>
+  <p>All seven joints follow a quintic from start to goal, with zero velocity and acceleration at both ends.
+  The duration is the shortest that respects every joint's speed limit:</p>
+  <div class="eq">s(τ) = 10τ³ − 15τ⁴ + 6τ⁵,  τ = t/T       q(t) = q₀ + s(τ)·(q₁ − q₀)
+T = max_j 15·|Δq_j| / (8·dq_max,j)
+dq_cmd = dq_desired + K_p · (q_desired − q_measured)      (joint control)</div>
+  <p>Meanwhile the camera keeps <b>tracking</b> the ball: every new frame refreshes the line fit, and
+  frames far from the prediction are ignored (<i>gating</i>).</p>
+
+  <h3>4 · Descend: correct, then go down</h3>
+  <p>The meeting point is <b>corrected</b> with the latest estimate (typically 1–20 mm), then the gripper
+  goes straight down from 12 cm above, fingers open on either side of the ball's path. The gripper's
+  x-axis points along the ball's motion, so the fingers form a gate.</p>
+
+  <h3>5 · Wait: close at the right instant</h3>
+  <div class="eq">close when  time_to_arrival ≤ (4 cm − 3 cm) / 0.2 m/s = 0.05 s</div>
+  <p>Near the gripper the hand hides the ball, so the last estimate is extrapolated for these final moments.</p>
+
+  <h3>6 · Close: how hard to squeeze?</h3>
+  <div class="eq">2 · μ · N ≥ m · g      →      N_min = m·g / (2μ) = 0.1 × 9.81 / 3 ≈ 0.33 N</div>
+  <p>The finger target is set inside the ball with the motor force capped at the grip force: the fingers move
+  freely, touch, then squeeze at the cap. The two fingers are kept symmetric in software, as on the real Franka Hand.</p>
+
+  <h3>7 · Lift and check</h3>
+  <p>The gripper rises to 25 cm; the robot checks that the ball came with it. Lifting accelerates the ball,
+  so the fingers must carry more than its weight, which is why the default grip force has a large safety factor.</p>
+</section>
+
+<!-- ═════════════════════════════ 7 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 7</div>
+  <h1>Experiments to try</h1>
+  <p>Each experiment changes one thing. Predict the result first, then run it.</p>
+  <div class="box try"><b>Arm speed.</b> Launch <i>Original MuJoCo scene</i> at arm speed 1.0, then 0.5.
+  In the Planner tab, where does the accepted point move, and why? (Answer: later along the path, because
+  "time needed" doubles.)</div>
+  <div class="box try"><b>Grip force.</b> With <i>Still ball</i>, try 20 N, 2 N, 1 N and 0.2 N. At 0.2 N
+  (below N<sub>min</sub>) the ball slips during the lift; at 1 N it holds.</div>
+  <div class="box try"><b>Camera vs simulator.</b> Launch <i>Diagonal crossing</i> with each perception
+  setting. Compare the "position error" and "Correction before descending" lines in the Log.</div>
+  <div class="box try"><b>Out of reach.</b> Launch the <i>Out of reach</i> scenario. Every candidate is
+  grey or red in the Planner: a planner that says "impossible" quickly is as useful as one that finds a plan.</div>
+  <div class="box try"><b>Faster and faster.</b> Use <i>Fast pass</i> and raise the ball speed in steps of
+  0.1 m/s. When does the robot start to miss? Use the Log to explain why.</div>
+  <div class="box try"><b>IK lab.</b> Move the target to x = 0.8, z = 0.03. Does IK succeed? Compare
+  with the green disc on the floor. Then change only the yaw by 180°: same point, different wrist angle.</div>
+  <div class="box try"><b>Your own data.</b> After a catch, export the run data (Log tab → <i>Export run
+  data (CSV)</i>) and plot joint 2's desired and measured angle in Python or a spreadsheet.</div>
+  <p>More lessons, questions and extension projects are in <code>docs/LESSONS.md</code>.</p>
+</section>
+
+<!-- ═════════════════════════════ 8 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 8</div>
+  <h1>Programming exercises</h1>
+  <p>Six short exercises in the <code>exercises/</code> folder, one per building block. Each file contains one
+  function to write, with the formulas you need above it.</p>
+  <table>
+    <tr><th>#</th><th>File</th><th>You write</th></tr>
+    <tr><td>1</td><td><code>ex1_forward_kinematics.py</code></td><td>T(q) = e<sup>[S₁]q₁</sup> ⋯ e<sup>[S₇]q₇</sup> M</td></tr>
+    <tr><td>2</td><td><code>ex2_quintic.py</code></td><td>quintic position and shortest duration</td></tr>
+    <tr><td>3</td><td><code>ex3_ik_step.py</code></td><td>one damped-least-squares IK step</td></tr>
+    <tr><td>4</td><td><code>ex4_velocity_fit.py</code></td><td>least-squares line through noisy positions</td></tr>
+    <tr><td>5</td><td><code>ex5_grip_force.py</code></td><td>minimum grip force, with and without lifting</td></tr>
+    <tr><td>6</td><td><code>ex6_pixel_to_floor.py</code></td><td>pinhole back-projection, pixel to floor</td></tr>
+  </table>
+  <ol class="steps">
+    <li>Open an exercise file and replace <code>raise NotImplementedError</code> with your code.</li>
+    <li>Save, then press <b>Check my exercises</b> in the Exercises tab. There's no need to restart Webots. Or, in
+      a terminal from the project folder: <code>python3 exercises/check.py</code> (add a number to check one exercise).</li>
+    <li>A wrong answer comes with a hint. When everything is correct the tab shows <b>6 / 6 exercises correct</b>.</li>
+  </ol>
+<pre>$ python3 exercises/check.py
+✔ Exercise 1: Forward kinematics (PoE)               Correct!
+✘ Exercise 2: Quintic trajectory                     quintic_position is wrong at t = 0.21 s.
+                                                     Check τ = t/T and s = 10τ³ − 15τ⁴ + 6τ⁵.
+· Exercise 3: One IK step (damped least squares)     Not started: open exercises/ex3_ik_step.py</pre>
+  <div class="box tip"><b>How the checker works.</b> It compares your function with the code the robot
+  actually runs, on many random inputs. A pass means your version would work in the simulation too. Each
+  exercise file names the robot function that solves it, if you want to compare afterwards.</div>
+</section>
+
+<!-- ═════════════════════════════ 9 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 9</div>
+  <h1>For teachers: demos, recordings, data</h1>
+  <h2>9.1 Controller arguments</h2>
+  <p>In the Webots scene tree, select the robot and edit its <code>controllerArgs</code> field:</p>
+  <table>
+    <tr><th style="width:38%">Argument</th><th>Effect</th></tr>
+    <tr><td><code>--launch=0.5,-0.8,0.4,90</code></td><td>Launch this ball (x, y, speed, heading) as soon as the arm is home.</td></tr>
+    <tr><td><code>--perception=simulator</code></td><td>Start with exact positions instead of the camera.</td></tr>
+    <tr><td><code>--grip-force=5</code></td><td>Starting grip force in newtons.</td></tr>
+    <tr><td><code>--script=file.json</code></td><td>Play a list of window commands: a hands-free classroom demo.</td></tr>
+    <tr><td><code>--record-movie=demo.mp4</code></td><td>Record the 3D view of the first launch, until just after its result.</td></tr>
+    <tr><td><code>--exit-on-result</code></td><td>Quit Webots when the catch ends (exit code 0 = caught).</td></tr>
+  </table>
+  <h2>9.2 A scripted demo</h2>
+  <p>A script is a JSON list of steps: wait for a phase, optionally hold it, then send a command, as if a
+  user had pressed the button. This one launches a ball in teaching mode and moves on every 5 seconds:</p>
+<pre>[
+  {"wait": "IDLE", "send": {"cmd": "teach", "on": true}},
+  {"wait": "IDLE", "send": {"cmd": "launch", "x": 0.5, "y": -0.8, "speed": 0.4, "heading": 90}},
+  {"wait": "PAUSED:PLAN",     "delay": 5, "send": {"cmd": "next"}},
+  {"wait": "PAUSED:APPROACH", "delay": 5, "send": {"cmd": "next"}},
+  {"wait": "PAUSED:DESCEND",  "delay": 5, "send": {"cmd": "next"}},
+  {"wait": "PAUSED:WAIT",     "delay": 5, "send": {"cmd": "next"}},
+  {"wait": "PAUSED:LIFT",     "delay": 5, "send": {"cmd": "next"}},
+  {"wait": "CAUGHT"}
+]</pre>
+  <p>Commands include <code>launch</code>, <code>reset</code>, <code>teach</code>, <code>next</code>,
+  <code>grip_force</code>, <code>arm_speed</code>, <code>perception</code>, <code>markers</code>,
+  <code>ik_goal</code> and <code>check_exercises</code>. A full example covering every feature:
+  <code>tests/webots_scripts/full_tour.json</code>.</p>
+  <h2>9.3 Everything in one place</h2>
+  <p>All tunable numbers (ball size, gains, camera period, safety margin, grip force…) are in
+  <code>controllers/dynamic_grasping/config.py</code>. Change one, restart the simulation
+  (<span class="key">Ctrl</span>+<span class="key">Shift</span>+<span class="key">T</span>, <i>reset simulation</i>) and observe.</p>
+</section>
+
+<!-- ═════════════════════════════ 10 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 10</div>
+  <h1>Checking that everything works</h1>
+  <h2>10.1 Offline tests (no Webots needed)</h2>
+<pre>pip install pytest
+python3 -m pytest tests -q          # 20 tests</pre>
+  <p>They check the kinematics against Franka's published DH table, inverse kinematics, the quintic
+  limits, the planner, the camera geometry, the exercise checker, and the robot's whole decision logic run
+  against a small stand-in for Webots.</p>
+  <h2>10.2 Full tests in real Webots (no clicking needed)</h2>
+<pre>pip install websockets
+tests/run_webots_tests.sh           # about 8–10 minutes</pre>
+  <p>This runs every scenario, a 46-step tour of every feature, and an end-to-end check of the lab
+  window (headless Chrome clicks through it and reports any JavaScript error). It ends with
+  <b>ALL PASSED</b>. While it runs, minimized Webots windows come and go: do not close them.</p>
+  <div class="box tip"><b>Last verified result</b> (Webots R2025a, Ubuntu 22.04): 25/25 offline tests;
+  7/7 scenarios; all 46 tour steps; 44/44 window checks; no errors or warnings.</div>
+</section>
+
+<!-- ═════════════════════════════ 11 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 11</div>
+  <h1>Troubleshooting</h1>
+  <table>
+    <tr><th style="width:34%">Problem</th><th>What to do</th></tr>
+    <tr><td>The lab window stays at "connecting…"</td><td>Press ▶ in Webots (the simulation must run), then reload the page (<span class="key">F5</span>).</td></tr>
+    <tr><td>I cannot find the lab window</td><td>Double-click the robot arm, or right-click it → <i>Show Robot Window</i>. On Linux it opens in your browser, not inside Webots.</td></tr>
+    <tr><td><i>Launch ball</i> is greyed out</td><td>The arm is not home yet. Press <i>Reset</i> and wait about 2 seconds.</td></tr>
+    <tr><td>"No module named numpy" in the Webots console</td><td>Install NumPy for the Python that Webots uses, or set it in <i>Tools → Preferences → Python command</i>.</td></tr>
+    <tr><td>The robot is invisible or grey</td><td>Webots could not download the Panda 3D model files. Connect to the internet once and reopen the world (<i>File → Reload World</i>); they are cached afterwards.</td></tr>
+    <tr><td>Floor or sky look plain</td><td>Webots could not download textures (no internet). Harmless.</td></tr>
+    <tr><td>"The camera could not see the ball"</td><td>The ball started outside the camera image or under the arm. Start it further away, or switch Perception to <i>Simulator</i>.</td></tr>
+    <tr><td>"No feasible intercept"</td><td>The ball never passes where the arm can be in time. Aim it through the green disc, slow it down, or raise the arm speed.</td></tr>
+    <tr><td>"The ball slipped out"</td><td>Grip force too low. Raise it well above the minimum shown under the slider.</td></tr>
+    <tr><td>Changes to the code have no effect</td><td>Restart the controller: reset the simulation (<span class="key">Ctrl</span>+<span class="key">Shift</span>+<span class="key">T</span>) or reload the world.</td></tr>
+  </table>
+</section>
+
+<!-- ═════════════════════════════ 12 ═════════════════════════════ -->
+<section class="chapter">
+  <div class="chapter-no">Chapter 12</div>
+  <h1>Where things are in the code</h1>
+  <p>All robot code is in <code>controllers/dynamic_grasping/</code>. Each file is one idea and can be read on its own.</p>
+  <table>
+    <tr><th style="width:30%">File</th><th>Contents</th></tr>
+    <tr><td><code>dynamic_grasping.py</code></td><td>The state machine (the seven phases), joint control, tracking, messages to the window.</td></tr>
+    <tr><td><code>config.py</code></td><td>Every tunable number in one place.</td></tr>
+    <tr><td><code>perception.py</code></td><td>Camera: segmentation, blob analysis, back-projection.</td></tr>
+    <tr><td><code>kinematics.py</code></td><td>Product-of-Exponentials forward kinematics, Jacobian, damped-least-squares IK.</td></tr>
+    <tr><td><code>trajectory.py</code></td><td>Quintic trajectories and their minimum duration.</td></tr>
+    <tr><td><code>intercept_planner.py</code></td><td>The forward-scan intercept search.</td></tr>
+    <tr><td><code>gripper.py</code></td><td>Finger control, grip force, finger coupling.</td></tr>
+    <tr><td><code>scene_markers.py</code></td><td>Teaching markers drawn in the 3D view.</td></tr>
+    <tr><td><code>command_script.py</code></td><td>Plays scripted window commands.</td></tr>
+  </table>
+  <table>
+    <tr><th style="width:30%">Elsewhere</th><th>Contents</th></tr>
+    <tr><td><code>worlds/</code></td><td>The scene: arm with ceiling camera, ball, frictionless floor.</td></tr>
+    <tr><td><code>protos/</code></td><td>The robot model (<code>EduPanda.proto</code>); it uses the official Panda meshes and hand from Webots R2025a.</td></tr>
+    <tr><td><code>plugins/robot_windows/</code></td><td>The lab window (HTML, CSS, JavaScript).</td></tr>
+    <tr><td><code>exercises/</code></td><td>The six exercises and their checker.</td></tr>
+    <tr><td><code>tests/</code></td><td>Offline tests, the Webots test runner, the window check.</td></tr>
+    <tr><td><code>docs/LESSONS.md</code></td><td>The full lessons with questions and extension projects.</td></tr>
+    <tr><td><code>PORTING_NOTES.md</code></td><td>What changed from the MuJoCo original, and what testing in Webots taught us.</td></tr>
+  </table>
+  <div class="box tip"><b>Credits.</b> Based on <i>Dynamic Object Grasping Using a 7-DoF Manipulator</i>
+  (MuJoCo) by Alaa Hussein and Haidar Saad, Manara University, supervised by Dr. Essa Alghannam. Robot
+  meshes and the Panda hand come from the Webots Franka Emika Panda model (Apache 2.0).</div>
+</section>
+
+</body>
+</html>

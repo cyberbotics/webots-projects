@@ -7,6 +7,7 @@ This repo contains some additional Webots projects (PROTO files, controllers, si
 * [Forest firefighters](projects/forest_firefighters).
 * [NVIDIA JetBot collision avoidance with neural networks](projects/nvidia-jetbot-collision-avoidance).
 * [SeRoNet box spawner using a REST API in an industrial environment](projects/seronet-spawner).
+* [Dynamic grasping with the Franka Panda: a teaching example](projects/dynamic_grasping_franka) (Webots R2025a).
 
 ## How to Use it
 
