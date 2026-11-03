@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+*.log
+# temporary worlds created by the test scripts
+worlds/_*.wbt
+# Webots per-user view settings
+*.wbproj

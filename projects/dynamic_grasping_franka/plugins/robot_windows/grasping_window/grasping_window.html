@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Grasping Lab</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="grasping_window.css">
+  <script type="module" src="grasping_window.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Dynamic Grasping Lab <span class="sub">Franka Panda · Webots</span></h1>
+    <div id="status">
+      <span id="sim-time">t = 0.00 s</span>
+      <span id="fk-check" title="Distance between the TCP predicted by forward kinematics and the TCP measured by the GPS in the simulation">FK check: –</span>
+      <span id="connection" class="bad">connecting…</span>
+    </div>
+  </header>
+
+  <ol id="pipeline">
+    <li data-phase="OBSERVE">1 Observe</li>
+    <li data-phase="PLAN">2 Plan</li>
+    <li data-phase="APPROACH">3 Approach</li>
+    <li data-phase="DESCEND">4 Descend</li>
+    <li data-phase="WAIT">5 Wait</li>
+    <li data-phase="CLOSE">6 Close</li>
+    <li data-phase="LIFT">7 Lift</li>
+  </ol>
+
+  <main>
+    <!-- ════════════ Left: controls ════════════ -->
+    <section id="controls">
+      <h2>Mission</h2>
+      <label>Scenario
+        <select id="preset"></select>
+      </label>
+
+      <div class="slider"><label for="ball-x">Ball start x</label><input id="ball-x" type="range" min="-1.2" max="1.5" step="0.01"><output></output><span class="unit">m</span></div>
+      <div class="slider"><label for="ball-y">Ball start y</label><input id="ball-y" type="range" min="-1.5" max="1.5" step="0.01"><output></output><span class="unit">m</span></div>
+      <div class="slider"><label for="ball-speed">Ball speed</label><input id="ball-speed" type="range" min="0" max="0.8" step="0.01"><output></output><span class="unit">m/s</span></div>
+      <div class="slider"><label for="ball-heading">Heading</label><input id="ball-heading" type="range" min="-180" max="180" step="1"><output></output><span class="unit">°</span></div>
+
+      <div class="buttons">
+        <button id="launch" class="primary">▶ Launch ball</button>
+        <button id="reset">⟲ Reset</button>
+      </div>
+
+      <h2>Perception</h2>
+      <div class="radio-row">
+        <label class="check"><input type="radio" name="perception" value="camera" checked> Overhead camera</label>
+        <label class="check"><input type="radio" name="perception" value="simulator"> Simulator (exact)</label>
+      </div>
+
+      <h2>Robot settings</h2>
+      <div class="slider"><label for="arm-speed">Arm speed</label><input id="arm-speed" type="range" min="0.3" max="1" step="0.05" value="1"><output></output><span class="unit">× max</span></div>
+      <div class="slider"><label for="grip-force">Grip force</label><input id="grip-force" type="range" min="0.1" max="40" step="0.1" value="20"><output></output><span class="unit">N</span></div>
+      <p class="hint" id="fmin-hint"></p>
+
+      <h2>Learning aids</h2>
+      <label class="check"><input type="checkbox" id="teach"> Teaching mode: pause before each phase</label>
+      <button id="next" class="primary" disabled>Next phase ▸</button>
+      <label class="check"><input type="checkbox" id="markers" checked> Show 3D markers (path, candidates, frames)</label>
+    </section>
+
+    <!-- ════════════ Right: tabs ════════════ -->
+    <section id="panel">
+      <nav id="tabs">
+        <button data-tab="lesson" class="active">Lesson</button>
+        <button data-tab="camera">Camera</button>
+        <button data-tab="planner">Planner</button>
+        <button data-tab="motion">Motion</button>
+        <button data-tab="gripper">Gripper</button>
+        <button data-tab="ik">IK lab</button>
+        <button data-tab="exercises">Exercises</button>
+        <button data-tab="log">Log</button>
+      </nav>
+
+      <div id="tab-lesson" class="tab active">
+        <div id="lesson-card">
+          <div id="lesson-phase">IDLE</div>
+          <h3 id="lesson-title"></h3>
+          <div id="lesson-body"></div>
+          <p id="lesson-code" class="code-ref"></p>
+        </div>
+        <div id="outcome" class="hidden"></div>
+        <div id="quiz" class="hidden">
+          <h4>✎ Check yourself</h4>
+          <p id="quiz-question"></p>
+          <div id="quiz-options"></div>
+          <p id="quiz-feedback"></p>
+        </div>
+      </div>
+
+      <div id="tab-camera" class="tab">
+        <div class="row">
+          <figure>
+            <canvas id="camera-view" width="480" height="360"></canvas>
+            <figcaption>What the overhead camera sees (2.5 m above the floor, looking down). Cyan circle: the blob
+              accepted as the ball. Yellow cross: where the robot <i>believes</i> the ball is (its prediction).</figcaption>
+          </figure>
+          <div id="camera-info"></div>
+        </div>
+      </div>
+
+      <div id="tab-planner" class="tab">
+        <div class="row">
+          <figure>
+            <canvas id="map" width="360" height="360"></canvas>
+            <figcaption>Top view. Green ring: where a ball on the floor can be grasped. Cyan: predicted path.
+              Dots: candidate meeting points (<span class="c-acc">accepted</span>, <span class="c-late">too late</span>,
+              <span class="c-ik">no IK</span>, <span class="c-out">out of reach</span>). Blue: gripper. Orange: ball.</figcaption>
+          </figure>
+          <figure>
+            <canvas id="timing" width="360" height="360"></canvas>
+            <figcaption>The core of the planner. For each candidate time <i>t</i> (x axis), the dots show how long the
+              arm <i>needs</i> to get there and close the gripper. The diagonal is the time <i>available</i>.
+              The plan is the first dot that falls below the diagonal.</figcaption>
+          </figure>
+        </div>
+        <div id="plan-summary"></div>
+        <div class="table-wrap"><table id="candidates"><thead><tr><th>t (s)</th><th>ball x, y (m)</th><th>needed (s)</th><th>result</th></tr></thead><tbody></tbody></table></div>
+      </div>
+
+      <div id="tab-motion" class="tab">
+        <label>Joint <select id="joint-select"></select></label>
+        <canvas id="joint-plot" width="720" height="240"></canvas>
+        <p class="legend"><span class="l-des">— desired q(t) (quintic)</span> <span class="l-act">— measured q</span></p>
+        <canvas id="error-plot" width="720" height="140"></canvas>
+        <p class="legend"><span class="l-err">— tracking error, all joints (max |q<sub>des</sub> − q|, rad)</span></p>
+        <div id="joint-bars"></div>
+      </div>
+
+      <div id="tab-gripper" class="tab">
+        <canvas id="finger-plot" width="720" height="200"></canvas>
+        <p class="legend"><span class="l-des">— finger opening (cm)</span> <span class="l-ref">- - ball radius</span></p>
+        <canvas id="force-plot" width="720" height="200"></canvas>
+        <p class="legend"><span class="l-act">— finger force (N)</span> <span class="l-ref">- - grip force set</span> <span class="l-min">- - minimum to hold the ball</span></p>
+      </div>
+
+      <div id="tab-ik" class="tab">
+        <p>Choose a gripper pose and let inverse kinematics find the joint angles. Works while the arm is idle.</p>
+        <div class="ik-grid">
+          <div class="slider"><label for="ik-x">x</label><input id="ik-x" type="range" min="-0.8" max="0.8" step="0.01" value="0.45"><output></output><span class="unit">m</span></div>
+          <div class="slider"><label for="ik-y">y</label><input id="ik-y" type="range" min="-0.8" max="0.8" step="0.01" value="0.2"><output></output><span class="unit">m</span></div>
+          <div class="slider"><label for="ik-z">z</label><input id="ik-z" type="range" min="0.03" max="0.9" step="0.01" value="0.3"><output></output><span class="unit">m</span></div>
+          <div class="slider"><label for="ik-yaw">yaw</label><input id="ik-yaw" type="range" min="-180" max="180" step="1" value="0"><output></output><span class="unit">°</span></div>
+        </div>
+        <button id="ik-go" class="primary">Solve IK &amp; move</button>
+        <div class="row">
+          <canvas id="ik-plot" width="360" height="220"></canvas>
+          <div id="ik-result"></div>
+        </div>
+      </div>
+
+      <div id="tab-exercises" class="tab">
+        <p>Six small programming exercises, one per building block. Open the file, replace the
+          <code>raise NotImplementedError</code> with your code, save, and press the button. No need
+          to restart the simulation.</p>
+        <table class="exercise-list">
+          <tr><td>1</td><td>Forward kinematics (PoE)</td><td><code>exercises/ex1_forward_kinematics.py</code></td></tr>
+          <tr><td>2</td><td>Quintic trajectory</td><td><code>exercises/ex2_quintic.py</code></td></tr>
+          <tr><td>3</td><td>One IK step (damped least squares)</td><td><code>exercises/ex3_ik_step.py</code></td></tr>
+          <tr><td>4</td><td>Velocity from noisy positions</td><td><code>exercises/ex4_velocity_fit.py</code></td></tr>
+          <tr><td>5</td><td>Grip force and friction</td><td><code>exercises/ex5_grip_force.py</code></td></tr>
+          <tr><td>6</td><td>From pixel to floor position</td><td><code>exercises/ex6_pixel_to_floor.py</code></td></tr>
+        </table>
+        <button id="check-exercises" class="primary">✓ Check my exercises</button>
+        <ul id="exercise-results"></ul>
+        <p class="hint">Stuck? Each exercise names the file and function in the robot's own code that
+          solves it. Also works from a terminal: <code>python3 exercises/check.py</code></p>
+      </div>
+
+      <div id="tab-log" class="tab">
+        <div class="buttons export">
+          <button id="export-telemetry">⇩ Export run data (CSV)</button>
+          <button id="export-plan">⇩ Export planner candidates (CSV)</button>
+        </div>
+        <p class="hint">The run data covers the last launch: time, phase, joint angles (desired and measured),
+          gripper and ball positions, finger openings and forces. Open it in Python, MATLAB or a spreadsheet.</p>
+        <ul id="log"></ul>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,40 @@
+# Offline tests of projects/dynamic_grasping_franka (no Webots needed):
+# kinematics, IK, trajectories, planner, camera geometry, the controller's
+# state machine against a kinematic stand-in for Webots, and the exercise checker.
+# It only runs when this project changes.
+name: dynamic_grasping_franka
+
+on:
+  push:
+    paths:
+      - "projects/dynamic_grasping_franka/**"
+      - ".github/workflows/dynamic_grasping_franka.yml"
+  pull_request:
+    paths:
+      - "projects/dynamic_grasping_franka/**"
+      - ".github/workflows/dynamic_grasping_franka.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: projects/dynamic_grasping_franka
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+      - name: Run tests
+        run: python -m pytest tests -v
+      - name: Exercise templates are untouched
+        run: python exercises/check.py

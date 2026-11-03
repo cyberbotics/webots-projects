@@ -1,0 +1,164 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/91de65d9a99734e471d250c1268948b480652c5e/projects/robots/franka_emika/panda/protos/Panda.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/91de65d9a99734e471d250c1268948b480652c5e/projects/robots/franka_emika/panda/protos/PandaHand.proto"
+
+WorldInfo {
+  info [
+    "Dynamic grasping with the Franka Emika Panda - a teaching example."
+    "A ball slides across a frictionless floor; the arm predicts its path,"
+    "plans where and when to meet it, moves there and closes the gripper"
+    "at the right instant. Double-click the robot to open the lesson window."
+  ]
+  title "Dynamic Grasping with the Franka Panda"
+  basicTimeStep 4
+  contactProperties [
+    ContactProperties {
+      # Ball on the floor: no friction, so it slides in a straight line
+      # (same assumption as the original MuJoCo scene).
+      material1 "floor"
+      material2 "ball"
+      coulombFriction [
+        0
+      ]
+      bounce 0
+    }
+    ContactProperties {
+      # Ball against the gripper fingers (and the rest of the arm).
+      material1 "default"
+      material2 "ball"
+      coulombFriction [
+        1.5
+      ]
+      bounce 0
+      softCFM 1e-05
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.2363 0.0833 0.9681 2.4836
+  position 2.25 -1.6 1.5
+}
+TexturedBackground {
+  texture "noon_cloudy_countryside"
+}
+TexturedBackgroundLight {
+  texture "noon_cloudy_countryside"
+}
+Floor {
+  size 6 6
+  contactMaterial "floor"
+}
+DEF REACHABLE_AREA Pose {
+  # Teaching aid (no collision): green = where the gripper can grasp a ball
+  # on the floor, grey = too close to the robot's own base.
+  translation 0 0 0.001
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.2 0.8 0.3
+        transparency 0.75
+        roughness 1
+        metalness 0
+      }
+      geometry Cylinder {
+        height 0.001
+        radius 0.78
+        side FALSE
+        subdivision 64
+      }
+      castShadows FALSE
+    }
+    Pose {
+      translation 0 0 0.001
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.4 0.4 0.4
+            transparency 0.5
+            roughness 1
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.001
+            radius 0.25
+            side FALSE
+            subdivision 48
+          }
+          castShadows FALSE
+        }
+      ]
+    }
+  ]
+}
+Panda {
+  controller "dynamic_grasping"
+  window "grasping_window"
+  supervisor TRUE
+  endEffectorSlot [
+    PandaHand {
+    }
+    GPS {
+      # Measures the tool centre point (TCP), 0.1 m beyond the flange.
+      translation 0 0 0.1
+      name "tcp_gps"
+    }
+  ]
+  baseSlot [
+    Camera {
+      # Ceiling camera, 2.5 m above the floor, looking straight down
+      # (camera x axis -> world -z, image "up" -> world +x).
+      translation 0.6 -0.1 2.5
+      rotation 0 1 0 1.5708
+      name "overhead_camera"
+      fieldOfView 1.2
+      width 320
+      height 240
+      children [
+        Pose {
+          translation -0.06 0 0
+          children [
+            Shape {
+              appearance PBRAppearance {
+                baseColor 0.15 0.15 0.15
+                roughness 0.5
+                metalness 0
+              }
+              geometry Box {
+                size 0.1 0.08 0.06
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+DEF BALL Solid {
+  translation 0.5 -0.8 0.03
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 0.45 0.05
+        roughness 0.4
+        metalness 0
+      }
+      geometry DEF BALL_GEOMETRY Sphere {
+        radius 0.03
+        subdivision 3
+      }
+    }
+  ]
+  name "ball"
+  contactMaterial "ball"
+  boundingObject USE BALL_GEOMETRY
+  physics Physics {
+    density -1
+    mass 0.1
+  }
+}
+DEF MARKERS Group {
+}
