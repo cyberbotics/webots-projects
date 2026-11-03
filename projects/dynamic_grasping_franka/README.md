@@ -47,7 +47,8 @@ comparisons. The goal is to see each idea working inside a complete system.
 
 **Requirements:** [Webots R2025a](https://cyberbotics.com/) and Python 3 with NumPy
 (`pip install -r requirements.txt`). Nothing else: no Pinocchio, no solvers, no compiled code.
-The first run downloads the official Panda meshes (about 11 MB); Webots keeps them in its cache.
+The first run downloads the official Webots Panda model and its meshes (about 11 MB); Webots keeps
+them in its cache.
 
 This project is part of [webots-projects](https://github.com/cyberbotics/webots-projects). To get
 only this folder:
@@ -168,9 +169,8 @@ with the code the robot runs and gives a hint when something is off.
 
 ```
 projects/dynamic_grasping_franka/
-├── worlds/dynamic_grasping.wbt          the scene: arm + ceiling camera, ball, frictionless floor
-├── protos/EduPanda.proto                Panda arm (generated, see tools/); uses the official
-│                                        R2025a meshes and PandaHand by URL
+├── worlds/dynamic_grasping.wbt          the scene: the official Webots Panda with a ceiling camera
+│                                        and a TCP GPS, the ball, the frictionless floor
 ├── controllers/dynamic_grasping/
 │   ├── dynamic_grasping.py              state machine, joint controller, tracking, window messages
 │   ├── config.py                        every tunable number in one place
@@ -184,7 +184,6 @@ projects/dynamic_grasping_franka/
 ├── plugins/robot_windows/grasping_window/   the lesson window (HTML / CSS / JS)
 ├── exercises/                           six exercises + check.py
 ├── tests/                               offline tests, Webots test runner, GUI end-to-end check
-├── tools/make_edupanda_proto.py         regenerates protos/EduPanda.proto
 ├── docs/LESSONS.md                      the lessons, step by step
 ├── docs/user_guide/user_guide.html      the user guide (images in docs/images/)
 └── PORTING_NOTES.md                     what changed from MuJoCo, and why
@@ -227,8 +226,7 @@ step. [PORTING_NOTES.md](PORTING_NOTES.md) lists what changed in the move from M
 why, including the differences found by testing.
 
 **Authors of the original project:** Alaa Hussein · Haidar Saad (Manara University, supervised by
-Dr. Essa Alghannam). Robot meshes and the Panda hand come from the Webots Franka Emika Panda model
-(Apache 2.0).
+Dr. Essa Alghannam). The robot is the official Webots Franka Emika Panda model (Apache 2.0).
 
 ## License
 

@@ -24,6 +24,9 @@ Q_HOME = np.array([0.0, -0.3, 0.0, -2.0, 0.0, 1.7, 0.785])
 # wrist centre sits WRIST_OFFSET above the TCP and must stay within
 # WRIST_REACH of the shoulder (joint 2) — upper arm + forearm ≈ 0.79 m.
 SHOULDER = np.array([0.0, 0.0, 0.333])
+# Here the TCP is 0.100 m beyond the flange (the tcp_gps in the world file).
+# Franka documents the Hand's TCP at 0.1034 m; the 3.4 mm difference does not
+# matter for this grasp, but keep it in mind when comparing with Franka's docs.
 WRIST_OFFSET = 0.207   # flange (0.107) + hand to TCP (0.1)
 WRIST_REACH = 0.79
 MIN_RADIUS_XY = 0.25   # keep away from the robot's own base column

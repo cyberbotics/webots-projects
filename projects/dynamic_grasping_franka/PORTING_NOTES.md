@@ -11,28 +11,26 @@ teaching example, and why. Two kinds of change are mixed here, and each item say
 
 ## 1. Robot model
 
-**[engine] A dedicated `EduPanda.proto` instead of the stock `Panda.proto`.**
-The official Webots `Panda.proto` stores its links at a non-zero starting pose: joints 4–7 carry
-`position` values and pre-rotated link transforms. When I rebuilt its kinematic chain offline, it did
-not match the standard Panda DH table. The cause, found with Cyberbotics' help: in the R2025a
-file, the `position` fields of joints 4 and 5 (−1.7708 and −1.6) do not match the pose the links are
-actually stored at (−1.6 and 0), so the joint angles Webots reports are offset from Franka's
-convention. With these two values corrected, the official chain matches Franka's model to less than
-0.001 mm in Webots; the fix is proposed in
-[cyberbotics/webots#7078](https://github.com/cyberbotics/webots/pull/7078). Until it is released,
-`tools/make_edupanda_proto.py` builds a PROTO with every joint taken straight from the URDF joint
-frames at 0 rad. It **reuses the official meshes, collision shapes, masses and the official
-`PandaHand`**, loaded by versioned URL from the Webots R2025a repository. The controller's PoE model,
-Franka's DH table and the PROTO's joint frames agree to about 1e-5 m (checked in
-`tests/test_algorithms.py` and offline against the generated PROTO). At runtime the window's
-**FK check** compares the PoE prediction with a GPS at the TCP.
+**[engine] The official `Panda.proto`, fixed upstream during this port.**
+The example uses the stock Webots `Panda` with its `PandaHand`. While porting, I rebuilt the
+R2025a model's kinematic chain offline, and it did not match Franka's model. The cause, found with
+Cyberbotics' help: the `position` fields of joints 4 and 5 (−1.7708 and −1.6) did not match the pose
+the links are stored at (−1.6 and 0), so the joint angles Webots reported were offset from Franka's
+convention. This was fixed upstream in
+[cyberbotics/webots#7078](https://github.com/cyberbotics/webots/pull/7078); the model now matches
+Franka's to less than 0.001 mm. [cyberbotics/webots#7079](https://github.com/cyberbotics/webots/pull/7079)
+then added the `baseSlot` used for the overhead camera and Franka's datasheet joint limits. The
+controller's PoE model and Franka's DH table agree to 1e-6 m (checked in `tests/test_algorithms.py`),
+and at runtime the window's **FK check** compares the PoE prediction with a GPS at the TCP.
 
 Things worth knowing:
-- The PROTO starts at q = 0, which is outside joint 4's datasheet range (max −0.0698 rad).
-  The *motor* limit for joint 4 is therefore relaxed to 0, and the controller's own limits
-  (`config.Q_MAX`) keep the real range.
-- The base link has no `physics`, so the arm is fixed to the world.
-- A `GPS` named `tcp_gps` sits at the TCP (flange + 0.1 m) so the model can be checked live.
+- The PROTO starts at q = (0, 0, 0, −1.6, 0, 1.6, 0.79), inside the datasheet limits; the
+  controller first moves to its own home pose (`GO_HOME`).
+- The `Robot` node has no `physics`, so the arm is fixed to the world.
+- A `GPS` named `tcp_gps` sits in the `endEffectorSlot`, at the TCP (flange + 0.1 m), so the model
+  can be checked live. Franka documents the Hand's TCP at flange + 0.1034 m (see `config.py`).
+- Webots reports maximum joint speeds of 2.5 and 3.0 rad/s; the controller uses the tighter
+  datasheet values (`config.DQ_MAX`), both for planning and for its velocity commands.
 
 ## 2. Control
 
@@ -71,7 +69,7 @@ Seeding from the current pose and trying both orientations made the result repea
 | Launch | initial `qvel` | Supervisor `setVelocity()` on the ball node **[engine]** |
 
 **[teaching] Camera perception.** The MuJoCo project read the ball state directly. Here a 320×240
-camera 2.5 m above the floor (mounted in `EduPanda`'s `extensionSlot`) finds the ball by colour
+camera 2.5 m above the floor (mounted in `Panda`'s `baseSlot`) finds the ball by colour
 segmentation, blob analysis (size and shape) and pinhole back-projection. Per-frame error against
 the simulator's truth is 1–4 mm. The robot plans only from what it perceived: the simulator's truth
 is used only to judge the result ("was it caught?") and to show the camera error in the window.
@@ -149,7 +147,7 @@ All passed, with no JavaScript errors. The window was also used by hand in the W
 where it opens in the default browser.
 
 Also checked offline (25 tests, run by GitHub Actions on Python 3.10–3.13): the PoE model matches
-Franka's DH table (1e-6) and the PROTO joint frames (1e-5 m); IK, quintic limits, planner, camera
+Franka's DH table (1e-6); IK, quintic limits, planner, camera
 back-projection, the exercise checker (including its time limit), the handling of bad window
 messages, and the state machine against a kinematic stand-in for Webots whose camera has the same
 16 ms frame delay as Webots.
@@ -168,9 +166,13 @@ messages, and the state machine against a kinematic stand-in for Webots whose ca
    all be shifted by the pause, or the line fit sees a ball that "stood still".
 
 **[engine] Assets are referenced by versioned URL.** The Ubuntu Webots package downloads PROTO files
-and meshes on demand. The official Panda meshes and `PandaHand.proto` are therefore referenced with
-versioned `https://raw.githubusercontent.com/cyberbotics/webots/R2025a/...` URLs, like the world's
-other external PROTOs; the `webots://` form only works if the PROTO files are installed locally.
+and meshes on demand, so the world references every external PROTO with a versioned
+`https://raw.githubusercontent.com/cyberbotics/webots/<ref>/...` URL; the `webots://` form only works
+if the PROTO files are installed locally. R2025a does not include the Panda fixes, so `Panda.proto`
+and `PandaHand.proto` are pinned to the commit that merged
+[#7079](https://github.com/cyberbotics/webots/pull/7079) (Webots treats any ref of the official
+repository as an official asset, so the meshes inside `Panda.proto` resolve at the same commit).
+Once Webots R2026a is released, that commit becomes `R2026a`.
 Webots caches the downloaded files, so after the first run the example also works offline. On a
 slow connection the first download can fail ("Connection closed"); reloading the world retries it.
 

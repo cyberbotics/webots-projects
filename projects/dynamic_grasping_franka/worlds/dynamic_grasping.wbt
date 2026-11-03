@@ -3,7 +3,8 @@
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
-EXTERNPROTO "../protos/EduPanda.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/91de65d9a99734e471d250c1268948b480652c5e/projects/robots/franka_emika/panda/protos/Panda.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/91de65d9a99734e471d250c1268948b480652c5e/projects/robots/franka_emika/panda/protos/PandaHand.proto"
 
 WorldInfo {
   info [
@@ -93,11 +94,20 @@ DEF REACHABLE_AREA Pose {
     }
   ]
 }
-EduPanda {
+Panda {
   controller "dynamic_grasping"
   window "grasping_window"
   supervisor TRUE
-  extensionSlot [
+  endEffectorSlot [
+    PandaHand {
+    }
+    GPS {
+      # Measures the tool centre point (TCP), 0.1 m beyond the flange.
+      translation 0 0 0.1
+      name "tcp_gps"
+    }
+  ]
+  baseSlot [
     Camera {
       # Ceiling camera, 2.5 m above the floor, looking straight down
       # (camera x axis -> world -z, image "up" -> world +x).

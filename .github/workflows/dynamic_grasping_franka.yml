@@ -1,9 +1,7 @@
 # Offline tests of projects/dynamic_grasping_franka (no Webots needed):
 # kinematics, IK, trajectories, planner, camera geometry, the controller's
 # state machine against a kinematic stand-in for Webots, and the exercise checker.
-#
-# This file belongs in the root .github/workflows/ of webots-projects
-# as dynamic_grasping_franka.yml. It only runs when this project changes.
+# It only runs when this project changes.
 name: dynamic_grasping_franka
 
 on:
@@ -15,6 +13,9 @@ on:
     paths:
       - "projects/dynamic_grasping_franka/**"
       - ".github/workflows/dynamic_grasping_franka.yml"
+
+permissions:
+  contents: read
 
 defaults:
   run:

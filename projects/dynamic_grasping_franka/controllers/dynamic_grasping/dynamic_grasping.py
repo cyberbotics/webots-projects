@@ -84,7 +84,8 @@ class DynamicGraspingDemo:
             s = m.getPositionSensor()
             s.enable(self.dt_ms)
             self.sensors.append(s)
-        self.v_limits = np.array([m.getMaxVelocity() for m in self.motors])
+        # The tighter of the motor limits and Franka's datasheet limits.
+        self.v_limits = np.minimum([m.getMaxVelocity() for m in self.motors], C.DQ_MAX)
 
         self.gripper = Gripper(self.robot, self.dt_ms)
         self.tcp_gps = self.robot.getDevice("tcp_gps")

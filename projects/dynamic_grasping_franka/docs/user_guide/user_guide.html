@@ -76,7 +76,7 @@
     Simulator: Webots R2025a · Language: Python 3 + NumPy · Tested on Ubuntu 22.04<br>
     Based on <i>Dynamic Object Grasping Using a 7-DoF Manipulator</i> (MuJoCo) by Alaa Hussein and Haidar Saad,
     Manara University, supervised by Dr. Essa Alghannam.<br>
-    Robot meshes and Panda hand: Webots Franka Emika Panda model (Apache 2.0).
+    Robot: the official Webots Franka Emika Panda model (Apache 2.0).
   </div>
 </div>
 
@@ -444,7 +444,7 @@ tests/run_webots_tests.sh           # about 8–10 minutes</pre>
     <tr><td>I cannot find the lab window</td><td>Double-click the robot arm, or right-click it → <i>Show Robot Window</i>. On Linux it opens in your browser, not inside Webots.</td></tr>
     <tr><td><i>Launch ball</i> is greyed out</td><td>The arm is not home yet. Press <i>Reset</i> and wait about 2 seconds.</td></tr>
     <tr><td>"No module named numpy" in the Webots console</td><td>Install NumPy for the Python that Webots uses, or set it in <i>Tools → Preferences → Python command</i>.</td></tr>
-    <tr><td>The robot is invisible or grey</td><td>Webots could not download the Panda 3D model files. Connect to the internet once and reopen the world (<i>File → Reload World</i>); they are cached afterwards.</td></tr>
+    <tr><td>The robot is missing, invisible or grey</td><td>Webots could not download the Panda model and its 3D files. Connect to the internet once and reopen the world (<i>File → Reload World</i>); they are cached afterwards.</td></tr>
     <tr><td>Floor or sky look plain</td><td>Webots could not download textures (no internet). Harmless.</td></tr>
     <tr><td>"The camera could not see the ball"</td><td>The ball started outside the camera image or under the arm. Start it further away, or switch Perception to <i>Simulator</i>.</td></tr>
     <tr><td>"No feasible intercept"</td><td>The ball never passes where the arm can be in time. Aim it through the green disc, slow it down, or raise the arm speed.</td></tr>
@@ -472,8 +472,7 @@ tests/run_webots_tests.sh           # about 8–10 minutes</pre>
   </table>
   <table>
     <tr><th style="width:30%">Elsewhere</th><th>Contents</th></tr>
-    <tr><td><code>worlds/</code></td><td>The scene: arm with ceiling camera, ball, frictionless floor.</td></tr>
-    <tr><td><code>protos/</code></td><td>The robot model (<code>EduPanda.proto</code>); it uses the official Panda meshes and hand from Webots R2025a.</td></tr>
+    <tr><td><code>worlds/</code></td><td>The scene: the official Webots Panda with a ceiling camera and a GPS at the gripper's tip, the ball, the frictionless floor.</td></tr>
     <tr><td><code>plugins/robot_windows/</code></td><td>The lab window (HTML, CSS, JavaScript).</td></tr>
     <tr><td><code>exercises/</code></td><td>The six exercises and their checker.</td></tr>
     <tr><td><code>tests/</code></td><td>Offline tests, the Webots test runner, the window check.</td></tr>
@@ -481,8 +480,8 @@ tests/run_webots_tests.sh           # about 8–10 minutes</pre>
     <tr><td><code>PORTING_NOTES.md</code></td><td>What changed from the MuJoCo original, and what testing in Webots taught us.</td></tr>
   </table>
   <div class="box tip"><b>Credits.</b> Based on <i>Dynamic Object Grasping Using a 7-DoF Manipulator</i>
-  (MuJoCo) by Alaa Hussein and Haidar Saad, Manara University, supervised by Dr. Essa Alghannam. Robot
-  meshes and the Panda hand come from the Webots Franka Emika Panda model (Apache 2.0).</div>
+  (MuJoCo) by Alaa Hussein and Haidar Saad, Manara University, supervised by Dr. Essa Alghannam. The robot
+  is the official Webots Franka Emika Panda model (Apache 2.0).</div>
 </section>
 
 </body>

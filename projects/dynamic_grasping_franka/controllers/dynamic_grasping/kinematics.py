@@ -30,7 +30,8 @@ import numpy as np
 from config import Q_MIN, Q_MAX, DQ_MAX
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  The kinematic model (metres).  Same numbers as the URDF / EduPanda.proto.
+#  The kinematic model (metres).  Same numbers as Franka's URDF and the
+#  official Webots Panda.proto.
 # ─────────────────────────────────────────────────────────────────────────────
 
 #                 j1     j2      j3     j4      j5     j6      j7
